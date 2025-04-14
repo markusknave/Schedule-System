@@ -29,147 +29,100 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
     <title>Announcements</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/myschedule/assets/css/announcements.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        :root {
-            --carousel-height: 70vh;
-            --title-font-size: 3.5rem;
-            --title-font-size-mobile: 2rem;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-        
         .carousel-item {
-            height: var(--carousel-height);
+            height: 40vh;
+            min-height: 300px;
             background-size: cover;
             background-position: center;
             position: relative;
-            overflow: hidden;
-        }
-        
-        .carousel-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
         }
         
         .carousel-caption {
             position: absolute;
-            right: 15%;
-            bottom: 20%;
-            left: 15%;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
             padding: 20px;
-            text-align: center;
-            background-color: rgba(0,0,0,0.6);
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-            max-width: 800px;
-            margin: 0 auto;
+            color: white;
         }
         
-        .carousel-item.active .carousel-caption {
-            transform: translateY(0);
+        .announcement-content-container {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .announcement-content {
+            white-space: pre-line;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        
+        .carousel-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        
+        .pause-btn {
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
         }
         
         .carousel-title {
-            font-size: var(--title-font-size);
-            font-weight: 700;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-            margin-bottom: 15px;
-            line-height: 1.2;
-            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
         }
         
         .carousel-date {
-            font-size: 1.2rem;
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 10px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        .edit-btn-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 10;
         }
         
-        .carousel-indicators {
-            bottom: 30px;
-        }
-        
-        .carousel-indicators button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin: 0 5px;
-            background-color: rgba(255,255,255,0.5);
+        .edit-btn, .del-btn {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
             border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
         }
         
-        .carousel-indicators button.active {
-            background-color: #fff;
-            transform: scale(1.3);
+        .edit-btn:hover, .del-btn:hover {
+            background-color: rgba(56, 56, 56, 0.9);
+            color: white;
         }
         
-        .carousel-control-prev, .carousel-control-next {
-            width: 50px;
-            height: 50px;
-            background-color: rgba(0,0,0,0.3);
-            border-radius: 50%;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
         
-        #announcementsCarousel:hover .carousel-control-prev,
-        #announcementsCarousel:hover .carousel-control-next {
-            opacity: 1;
-        }
-        
-        .carousel-control-prev-icon, 
-        .carousel-control-next-icon {
-            width: 1.5rem;
-            height: 1.5rem;
-        }
-        
-        .add-announcement-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-        }
-        
-        .add-announcement-btn:hover {
-            transform: scale(1.1);
-        }
-        
-        @media (max-width: 768px) {
-            :root {
-                --carousel-height: 60vh;
-                --title-font-size: var(--title-font-size-mobile);
-            }
-            
-            .carousel-caption {
-                right: 10%;
-                left: 10%;
-                bottom: 15%;
-                padding: 15px;
-            }
-            
-            .carousel-title {
-                font-size: 1.8rem;
-            }
+        /* Adjust carousel controls to not overlap */
+        .carousel-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
         }
     </style>
 </head>
@@ -181,7 +134,6 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-                </li>
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
@@ -189,7 +141,6 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                 </li>
             </ul>
         </nav>
-        
         <!-- Sidebar -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
             <div class="container overflow-hidden">
@@ -198,7 +149,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                     <span class="brand-text font-weight-light">LNU Teacher's Board</span>
                 </a>
             </div>
-            <div class="sidebar">
+                <div class="sidebar">
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
                         <li class="nav-item">
@@ -245,7 +196,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                 </div>
             </div>
         </aside>
-
+        
         <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">
@@ -266,7 +217,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                             There are currently no announcements to display.
                         </div>
                     <?php else: ?>
-                        <div id="announcementsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="8000">
+                        <div id="announcementsCarousel" class="carousel slide" data-bs-ride="carousel">
                             <!-- Indicators -->
                             <div class="carousel-indicators">
                                 <?php foreach ($announcements as $index => $announcement): ?>
@@ -282,11 +233,27 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                 <?php foreach ($announcements as $index => $announcement): ?>
                                     <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
                                         style="background-image: url('<?= htmlspecialchars($announcement['img']) ?>')">
+                                        <div class="edit-btn-container">
+                                        <form action="edit_announcement.php" method="GET" style="display: inline;">
+                                                <input type="hidden" name="id" value="<?= $announcement['id'] ?>">
+                                                <button type="submit" class="edit-btn">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                            </form>
+                                            <button class="del-btn ml-1" onclick="confirmDelete(<?= $announcement['id'] ?>)">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </div>
                                         <div class="carousel-caption">
                                             <h2 class="carousel-title"><?= htmlspecialchars($announcement['title']) ?></h2>
                                             <div class="carousel-date">
                                                 <?= date('F j, Y \a\t g:i A', strtotime($announcement['created_at'])) ?>
                                             </div>
+                                        </div>
+                                        <div class="carousel-controls">
+                                            <button class="pause-btn" onclick="toggleAutoScroll()">
+                                                <i class="fas fa-pause"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -302,6 +269,15 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                 <span class="visually-hidden"></span>
                             </button>
                         </div>
+                        
+                        <!-- Content for each announcement (hidden until active) -->
+                        <?php foreach ($announcements as $index => $announcement): ?>
+                            <div class="announcement-content-container" id="content-<?= $index ?>" style="display: <?= $index === 0 ? 'block' : 'none' ?>;">
+                                <div class="announcement-content" id="scroll-content-<?= $index ?>">
+                                    <?= $announcement['content'] ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
             </section>
@@ -315,17 +291,101 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
 
     <script src="/myschedule/assets/js/loading_screen.js"></script>
     <script>
-    $(document).ready(function() {
-        // Initialize carousel with 8 second interval
-        $('#announcementsCarousel').carousel({
-            interval: 8000,
-            pause: "hover"
-        });
-        
-        $('#announcementsCarousel').on('slid.bs.carousel', function () {
-            $('.carousel-item.active .carousel-caption').css('transform', 'translateY(0)');
-        });
+$(document).ready(function() {
+    // Variables for auto-scroll control
+    let autoScrollEnabled = true;
+    let scrollInterval;
+    const scrollSpeed = 30; // pixels per second
+    const pauseBetweenSlides = 3000; // 3 seconds
+    
+    // Initialize carousel without autoplay
+    const carousel = new bootstrap.Carousel('#announcementsCarousel', {
+        interval: false,
+        ride: false
     });
+    
+    // Function to start auto-scrolling for current content
+    function startAutoScroll() {
+        const activeIndex = $('.carousel-item.active').index();
+        const contentElement = $(`#scroll-content-${activeIndex}`);
+        const containerHeight = contentElement.parent().height();
+        const contentHeight = contentElement[0].scrollHeight;
+        
+        // Reset scroll position
+        contentElement.scrollTop(0);
+        
+        // Clear any existing interval
+        clearInterval(scrollInterval);
+        
+        // Calculate total scroll time (in ms)
+        const scrollTime = ((contentHeight - containerHeight) / scrollSpeed) * 1000;
+        
+        // Start scrolling
+        if (contentHeight > containerHeight) {
+            const startTime = Date.now();
+            
+            scrollInterval = setInterval(() => {
+                if (!autoScrollEnabled) return;
+                
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / scrollTime, 1);
+                const scrollPosition = progress * (contentHeight - containerHeight);
+                
+                contentElement.scrollTop(scrollPosition);
+                
+                // When we reach the bottom, pause then go to next slide
+                if (progress >= 1) {
+                    clearInterval(scrollInterval);
+                    setTimeout(() => {
+                        if (autoScrollEnabled) {
+                            carousel.next();
+                        }
+                    }, pauseBetweenSlides);
+                }
+            }, 16); // ~60fps
+        } else {
+            // Content fits without scrolling, just pause then move to next
+            setTimeout(() => {
+                if (autoScrollEnabled) {
+                    carousel.next();
+                }
+            }, pauseBetweenSlides + 2000); // Extra time for reading
+        }
+    }
+    
+    // Toggle auto-scroll
+    window.toggleAutoScroll = function() {
+        autoScrollEnabled = !autoScrollEnabled;
+        $('.pause-btn i').toggleClass('fa-pause fa-play');
+        
+        if (autoScrollEnabled) {
+            startAutoScroll();
+        } else {
+            clearInterval(scrollInterval);
+        }
+    };
+    
+    // Start auto-scroll when slide changes
+    $('#announcementsCarousel').on('slid.bs.carousel', function() {
+        // Show the corresponding content
+        const activeIndex = $('.carousel-item.active').index();
+        $('.announcement-content-container').hide();
+        $(`#content-${activeIndex}`).show();
+        
+        if (autoScrollEnabled) {
+            startAutoScroll();
+        }
+    });
+    
+    // Start auto-scroll for initial slide
+    startAutoScroll();
+});
+
+function confirmDelete(id) {
+    if (confirm('Are you sure you want to delete this announcement?')) {
+        window.location.href = '/myschedule/public/admin/delete_announcement.php?id=' + id;
+    }
+}
     </script>
 </body>
 </html>
