@@ -1,0 +1,60 @@
+.schedule-header {
+    background-color: #343a40;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+.room-card {
+    margin-bottom: 30px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+.room-header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px 5px 0 0;
+}
+.schedule-card {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 15px;
+    background-color: #f8f9fa;
+}
+.schedule-card.conflict {
+    border-left: 4px solid #dc3545;
+    background-color: #fff5f5;
+}
+.day-header {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 15px;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+.no-schedules {
+    padding: 15px;
+    color: #6c757d;
+    font-style: italic;
+}
+.time-badge {
+    background-color: #17a2b8;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+}
+.conflict-badge {
+    background-color: #dc3545;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+.conflict-alert {
+    margin-bottom: 20px;
+}

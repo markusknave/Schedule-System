@@ -1,0 +1,35 @@
+.conflict-badge {
+    background-color: #dc3545;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+.room-header {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+.schedule-card {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.schedule-card.conflict {
+    border-left: 4px solid #dc3545;
+}
+.time-badge {
+    background-color: #007bff;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+/* room_details */
+.office-header {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
