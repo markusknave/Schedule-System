@@ -35,21 +35,22 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .carousel-item {
-            height: 40vh;
+            height: 50vh;
             min-height: 300px;
             background-size: cover;
             background-position: center;
             position: relative;
+            overflow: hidden;
         }
-        
         .carousel-caption {
             position: absolute;
-            bottom: 0;
+            bottom: 3rem;
             left: 0;
             right: 0;
             background: rgba(0, 0, 0, 0.7);
             padding: 20px;
             color: white;
+            position: absolute;
         }
         
         .announcement-content-container {
@@ -91,8 +92,8 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
         }
         
         .carousel-date {
-            font-size: 1rem;
-            opacity: 0.8;
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
         }
         .edit-btn-container {
         position: absolute;
@@ -114,15 +115,6 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
         .edit-btn:hover, .del-btn:hover {
             background-color: rgba(56, 56, 56, 0.9);
             color: white;
-        }
-        
-        
-        /* Adjust carousel controls to not overlap */
-        .carousel-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
         }
     </style>
 </head>
@@ -318,7 +310,7 @@ $(document).ready(function() {
         clearInterval(scrollInterval);
         
         // Calculate total scroll time (in ms)
-        const scrollTime = ((contentHeight - containerHeight) / scrollSpeed) * 1000;
+        const scrollTime = ((contentHeight - containerHeight) / scrollSpeed) * 2500;
         
         // Start scrolling
         if (contentHeight > containerHeight) {
@@ -349,7 +341,7 @@ $(document).ready(function() {
                 if (autoScrollEnabled) {
                     carousel.next();
                 }
-            }, pauseBetweenSlides + 2000); // Extra time for reading
+            }, pauseBetweenSlides + 2000);
         }
     }
     
@@ -377,7 +369,6 @@ $(document).ready(function() {
         }
     });
     
-    // Start auto-scroll for initial slide
     startAutoScroll();
 });
 

@@ -73,8 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Create Announcement</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.css">
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <script src="/myschedule/assets/tinymce/js/tinymce/tinymce.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -83,7 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             max-width: 100%;
             max-height: 300px;
             margin-top: 10px;
-            display: none;
         }
         .required-field::after {
             content: " *";
@@ -294,27 +292,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     });
 
+
     $(document).ready(function() {
-    // Initialize CKEditor
-    CKEDITOR.replace('content', {
-        toolbar: [
-            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'] },
-            { name: 'align', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
-            { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
-            { name: 'colors', items: ['TextColor', 'BGColor'] },
-            { name: 'links', items: ['Link', 'Unlink'] },
-            { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'SpecialChar'] },
-            { name: 'document', items: ['Source'] }
-        ],
+    tinymce.init({
+        selector: '#content',
         height: 300,
-        extraAllowedContent: '*(*);*{*}', // Allow all classes and styles
-        removePlugins: 'resize', // Disable resize handle
-        removeButtons: '' // Keep all buttons
+        menubar: false,
+        plugins: [
+            'advlist autolink lists link image charmap print preview anchor',
+            'searchreplace visualblocks code fullscreen',
+            'insertdatetime media table paste code help wordcount'
+        ],
+        toolbar: 'undo redo | formatselect | ' +
+        'bold italic underline strikethrough | forecolor backcolor | ' +
+        'alignleft aligncenter alignright alignjustify | ' +
+        'bullist numlist outdent indent | removeformat | help',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+        setup: function(editor) {
+            editor.on('change', function() {
+                editor.save();
+            });
+        }
     });
 
-    // Update form validation to work with CKEditor
-    $('form').submit(function() {
+    // Form validation including TinyMCE content check
+    $('form').submit(function(e) {
         let valid = true;
         
         // Check required fields
@@ -323,11 +325,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const $field = $('#' + fieldId);
             
             if (fieldId === 'content') {
-                // Special handling for CKEditor
-                const content = CKEDITOR.instances.content.getData().replace(/<[^>]*>/g, '').trim();
-                if (content === '') {
+                // Get content from TinyMCE
+                const content = tinymce.get('content').getContent({format: 'text'});
+                if (!content.trim()) {
                     valid = false;
                     $field.addClass('is-invalid');
+                    // Focus on the editor
+                    tinymce.get('content').focus();
                 } else {
                     $field.removeClass('is-invalid');
                 }
@@ -348,7 +352,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if (!valid) {
+            e.preventDefault();
             return false;
+        }
+    });
+
+    // Image preview code remains the same
+    $('#image').change(function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#imagePreview').attr('src', e.target.result).show();
+                $('.custom-file-label').text(file.name);
+            }
+            reader.readAsDataURL(file);
         }
     });
 });

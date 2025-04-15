@@ -1,15 +1,6 @@
 :root {
-    --carousel-height: 65vh;
     --title-font-size: 3.5rem;
     --title-font-size-mobile: 2rem;
-}
-
-.carousel-item {
-    height: var(--carousel-height);
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    overflow: hidden;
 }
 
 .carousel-item::before {
@@ -20,22 +11,6 @@
     right: 0;
     bottom: 0;
     background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
-}
-
-.carousel-caption {
-    position: absolute;
-    right: 15%;
-    bottom: 20%;
-    left: 15%;
-    padding: 20px;
-    text-align: center;
-    background-color: rgba(0,0,0,0.6);
-    border-radius: 15px;
-    backdrop-filter: blur(5px);
-    transform: translateY(20px);
-    transition: all 0.5s ease;
-    max-width: 800px;
-    margin: 0 auto;
 }
 
 .carousel-item.active .carousel-caption {
@@ -49,12 +24,6 @@
     margin-bottom: 15px;
     line-height: 1.2;
     color: #fff;
-}
-
-.carousel-date {
-    font-size: 1.2rem;
-    color: rgba(255,255,255,0.8);
-    margin-bottom: 10px;
 }
 
 .carousel-indicators {
@@ -127,10 +96,6 @@
         padding: 15px;
     }
     
-    .carousel-title {
-        font-size: 1.8rem;
-    }
-
     .qr-code-container {
         width: 60px !important;
         height: 60px !important;
@@ -141,22 +106,6 @@
         text-align: center;
     }
     
-}
-
-.announcement-content-container {
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    margin-top: 20px;
-    max-height: 300px;
-    overflow: hidden;
-    position: relative;
-}
-
-.announcement-content {
-    white-space: normal;
-    overflow-y: auto;
-    max-height: 300px;
 }
 
 .announcement-content p {
