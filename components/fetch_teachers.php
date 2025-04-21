@@ -9,7 +9,7 @@ $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
 $office_id = $_SESSION['office_id'];
-$where_clause = "WHERE office_id = $office_id";
+$where_clause = "WHERE office_id = $office_id AND deleted_at IS NULL";
 
 if (!empty($search)) {
     $search = $conn->real_escape_string($search);

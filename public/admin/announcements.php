@@ -15,7 +15,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 $office_id = $_SESSION['office_id'];
 $announcements_query = $conn->query("
     SELECT * FROM announcements 
-    WHERE office_id = $office_id 
+    WHERE office_id = $office_id
+    AND deleted_at IS NULL
     ORDER BY created_at DESC
 ");
 $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);

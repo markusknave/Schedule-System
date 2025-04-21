@@ -26,58 +26,62 @@ $archived_data = [];
 
 switch ($type) {
     case 'announcements':
-        $query = "SELECT COUNT(*) AS total FROM archived_announcement WHERE office_id = $office_id";
+        $query = "SELECT COUNT(*) AS total FROM announcements WHERE office_id = $office_id AND deleted_at IS NOT NULL";
         $total_result = $conn->query($query);
         $total_items = $total_result->fetch_assoc()['total'];
         
         $query = "SELECT a.*, o.name AS deleted_by 
-                  FROM archived_announcement a 
-                  JOIN offices o ON a.office_id = o.id 
-                  WHERE a.office_id = $office_id 
-                  ORDER BY a.created_at DESC 
-                  LIMIT $limit OFFSET $offset";
+                FROM announcements a 
+                JOIN offices o ON a.office_id = o.id 
+                WHERE a.office_id = $office_id 
+                AND a.deleted_at IS NOT NULL
+                ORDER BY a.deleted_at DESC 
+                LIMIT $limit OFFSET $offset";
         $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
         break;
         
     case 'teachers':
-        $query = "SELECT COUNT(*) AS total FROM archived_teachers WHERE office_id = $office_id";
+        $query = "SELECT COUNT(*) AS total FROM teachers WHERE office_id = $office_id AND deleted_at IS NOT NULL";
         $total_result = $conn->query($query);
         $total_items = $total_result->fetch_assoc()['total'];
         
         $query = "SELECT t.*, o.name AS deleted_by 
-                  FROM archived_teachers t 
-                  JOIN offices o ON t.office_id = o.id 
-                  WHERE t.office_id = $office_id 
-                  ORDER BY t.created_at DESC 
-                  LIMIT $limit OFFSET $offset";
+                FROM teachers t 
+                JOIN offices o ON t.office_id = o.id 
+                WHERE t.office_id = $office_id 
+                AND t.deleted_at IS NOT NULL
+                ORDER BY t.deleted_at DESC 
+                LIMIT $limit OFFSET $offset";
         $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
         break;
         
     case 'rooms':
-        $query = "SELECT COUNT(*) AS total FROM archived_rooms WHERE office_id = $office_id";
+        $query = "SELECT COUNT(*) AS total FROM rooms WHERE office_id = $office_id AND deleted_at IS NOT NULL";
         $total_result = $conn->query($query);
         $total_items = $total_result->fetch_assoc()['total'];
         
         $query = "SELECT r.*, o.name AS deleted_by 
-                  FROM archived_rooms r 
-                  JOIN offices o ON r.office_id = o.id 
-                  WHERE r.office_id = $office_id 
-                  ORDER BY r.created_at DESC 
-                  LIMIT $limit OFFSET $offset";
+                FROM rooms r 
+                JOIN offices o ON r.office_id = o.id 
+                WHERE r.office_id = $office_id 
+                AND r.deleted_at IS NOT NULL
+                ORDER BY r.deleted_at DESC 
+                LIMIT $limit OFFSET $offset";
         $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
         break;
         
     case 'schedules':
-        $query = "SELECT COUNT(*) AS total FROM archived_schedules WHERE office_id = $office_id";
+        $query = "SELECT COUNT(*) AS total FROM schedules WHERE office_id = $office_id AND deleted_at IS NOT NULL";
         $total_result = $conn->query($query);
         $total_items = $total_result->fetch_assoc()['total'];
         
         $query = "SELECT s.*, o.name AS deleted_by 
-                  FROM archived_schedules s 
-                  JOIN offices o ON s.office_id = o.id 
-                  WHERE s.office_id = $office_id 
-                  ORDER BY s.created_at DESC 
-                  LIMIT $limit OFFSET $offset";
+                FROM schedules s 
+                JOIN offices o ON s.office_id = o.id 
+                WHERE s.office_id = $office_id 
+                AND s.deleted_at IS NOT NULL
+                ORDER BY s.deleted_at DESC 
+                LIMIT $limit OFFSET $offset";
         $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
         break;
 }
@@ -277,7 +281,7 @@ $total_pages = ceil($total_items / $limit);
                                             </div>
                                             <div class="archive-item-meta">
                                                 Deleted by: <?= htmlspecialchars($item['deleted_by']) ?> | 
-                                                <?= date('M j, Y g:i A', strtotime($item['created_at'])) ?>
+                                                <?= date('M j, Y g:i A', strtotime($item['deleted_at'])) ?>
                                             </div>
                                         </div>
                                         
@@ -345,7 +349,7 @@ $total_pages = ceil($total_items / $limit);
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitle">Confirm Action</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -353,7 +357,6 @@ $total_pages = ceil($total_items / $limit);
                     Are you sure you want to perform this action?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" id="confirmAction">Confirm</button>
                 </div>
             </div>
@@ -361,68 +364,63 @@ $total_pages = ceil($total_items / $limit);
     </div>
 
     <script>
-    $(document).ready(function() {
-        let currentAction = '';
-        let currentType = '';
-        let currentId = '';
+$(document).ready(function() {
+    // Restore button click
+    $(document).on('click', '.restore-btn', function() {
+        currentType = $(this).data('type');
+        currentId = $(this).data('id');
+        currentAction = 'restore';
         
-        // Restore button click
-        $(document).on('click', '.restore-btn', function() {
-            currentType = $(this).data('type');
-            currentId = $(this).data('id');
-            currentAction = 'restore';
-            
-            $('#modalTitle').text('Confirm Restoration');
-            $('#modalBody').html(`Are you sure you want to restore this ${currentType}?`);
-            $('#confirmModal').modal('show');
-        });
+        $('#modalTitle').text('Confirm Restoration');
+        $('#modalBody').html(`Are you sure you want to restore this ${currentType}?`);
+        $('#confirmModal').modal('show');
+    });
+    
+    // Delete button click
+    $(document).on('click', '.delete-btn', function() {
+        currentType = $(this).data('type');
+        currentId = $(this).data('id');
+        currentAction = 'delete';
         
-        // Delete button click
-        $(document).on('click', '.delete-btn', function() {
-            currentType = $(this).data('type');
-            currentId = $(this).data('id');
-            currentAction = 'delete';
-            
-            $('#modalTitle').text('Confirm Permanent Deletion');
-            $('#modalBody').html(`Are you sure you want to permanently delete this ${currentType}? This action cannot be undone.`);
-            $('#confirmModal').modal('show');
-        });
+        $('#modalTitle').text('Confirm Permanent Deletion');
+        $('#modalBody').html(`Are you sure you want to permanently delete this ${currentType}? This action cannot be undone.`);
+        $('#confirmModal').modal('show');
+    });
+    
+    // Confirm action
+    $('#confirmAction').click(function() {
+        $('#confirmModal').modal('hide');
         
-        // Confirm action
-        $('#confirmAction').click(function() {
-            $('#confirmModal').modal('hide');
-            
-            let url = '';
-            let data = {
+        let url = '';
+        if (currentAction === 'restore') {
+            url = '/myschedule/components/restore_item.php';
+        } else if (currentAction === 'delete') {
+            url = '/myschedule/components/delete_item_permanently.php';
+        }
+        
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
                 id: currentId,
-                type: currentType
-            };
-            
-            if (currentAction === 'restore') {
-                url = '/myschedule/components/restore_item.php';
-            } else if (currentAction === 'delete') {
-                url = '/myschedule/components/delete_item_permanently.php';
-            }
-            
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: data,
-                success: function(response) {
-                    response = JSON.parse(response);
-                    if (response.success) {
-                        location.reload();
-                    } else {
-                        alert('Error: ' + response.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    alert('Error: ' + error);
+                type: currentType,
+                permanent: true
+            },
+            success: function(response) {
+                response = JSON.parse(response);
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + response.message);
                 }
-            });
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);
+            }
         });
     });
-    </script>
+});    
+</script>
     <script src="/myschedule/assets/js/loading_screen.js"></script>
 </body>
 </html>

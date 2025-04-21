@@ -1,53 +1,67 @@
 <?php
 session_start();
+require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/components/login.html");
     exit();
 }
 
-// Include database connection
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
+// Handle both GET and POST requests
+$announcement_id = $_REQUEST['id'] ?? ($_POST['announcement_id'] ?? null);
+$office_id = $_SESSION['office_id'];
+$permanent = $_REQUEST['permanent'] ?? false;
 
-if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $office_id = $_SESSION['office_id'];
-    
-    // Get announcement data first
-    $announcement_data = $conn->prepare("SELECT * FROM announcements WHERE id = ? AND office_id = ?");
-    $announcement_data->bind_param("ii", $id, $office_id);
-    $announcement_data->execute();
-    $announcement = $announcement_data->get_result()->fetch_assoc();
-    
-    if ($announcement) {
-        // Archive the announcement
-        $archive_stmt = $conn->prepare("INSERT INTO archived_announcement (office_id, announcement_id, title, img, content, created_at) VALUES (?, ?, ?, ?, ?, ?)");
-        $archive_stmt->bind_param("iissss", $office_id, $id, $announcement['title'], $announcement['img'], $announcement['content'], $announcement['created_at']);
-        
-        if ($archive_stmt->execute()) {
-            // Now delete from main table
-            $delete_stmt = $conn->prepare("DELETE FROM announcements WHERE id = ?");
-            $delete_stmt->bind_param("i", $id);
-            
-            if ($delete_stmt->execute()) {
-                $_SESSION['message'] = "Announcement archived successfully";
-            } else {
-                $_SESSION['error'] = "Error archiving announcement: " . $delete_stmt->error;
-            }
-            $delete_stmt->close();
-        } else {
-            $_SESSION['error'] = "Error archiving announcement: " . $archive_stmt->error;
-        }
-        $archive_stmt->close();
-    } else {
-        $_SESSION['error'] = "Announcement not found or you don't have permission";
-    }
-
-    $announcement_data->close();
-    $conn->close();
-    
+if (!$announcement_id) {
+    $_SESSION['error'] = "No announcement ID provided";
     header("Location: /myschedule/public/admin/announcements.php");
     exit();
 }
+
+// First, get the announcement details before deleting
+$query = $conn->prepare("SELECT img FROM announcements WHERE id = ? AND office_id = ?");
+$query->bind_param("ii", $announcement_id, $office_id);
+$query->execute();
+$result = $query->get_result();
+$announcement = $result->fetch_assoc();
+$query->close();
+
+if ($permanent) {
+    // Permanent delete - delete record and image
+    $delete_stmt = $conn->prepare("DELETE FROM announcements WHERE id = ? AND office_id = ?");
+    $delete_stmt->bind_param("ii", $announcement_id, $office_id);
+    
+    if ($delete_stmt->execute()) {
+        // Delete the associated image file if it exists
+        if (!empty($announcement['img'])) {
+            $image_path = $_SERVER['DOCUMENT_ROOT'] . parse_url($announcement['img'], PHP_URL_PATH);
+            if (file_exists($image_path)) {
+                unlink($image_path);
+            }
+        }
+        $_SESSION['success'] = "Announcement permanently deleted successfully";
+    } else {
+        $_SESSION['error'] = "Error deleting announcement: " . $delete_stmt->error;
+    }
+} else {
+    // Soft delete - just update deleted_at
+    $delete_stmt = $conn->prepare("UPDATE announcements SET deleted_at = NOW() WHERE id = ? AND office_id = ?");
+    $delete_stmt->bind_param("ii", $announcement_id, $office_id);
+    
+    if ($delete_stmt->execute()) {
+        $_SESSION['success'] = "Announcement archived successfully";
+    } else {
+        $_SESSION['error'] = "Error archiving announcement: " . $delete_stmt->error;
+    }
+}
+
+$delete_stmt->close();
+$conn->close();
+
+// Redirect back to appropriate page
+header("Location: " . ($permanent ? 
+    "/myschedule/public/admin/archived.php?type=announcements" : 
+    "/myschedule/public/admin/announcements.php"));
+exit();
 ?>

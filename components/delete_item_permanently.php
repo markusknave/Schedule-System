@@ -1,45 +1,47 @@
 <?php
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 if (!isset($_SESSION['office_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    header("Location: login.html");
     exit();
 }
 
-$id = $_POST['id'];
-$type = $_POST['type'];
-$office_id = $_SESSION['office_id'];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $id = $_POST['id'];
+    $type = $_POST['type'];
+    $office_id = $_SESSION['office_id'];
 
-try {
+    $table = '';
     switch ($type) {
-        case 'announcements':
-            $stmt = $conn->prepare("DELETE FROM archived_announcement WHERE id = ? AND office_id = ?");
-            $stmt->bind_param("ii", $id, $office_id);
-            $stmt->execute();
-            break;
-            
         case 'teachers':
-            $stmt = $conn->prepare("DELETE FROM archived_teachers WHERE id = ? AND office_id = ?");
-            $stmt->bind_param("ii", $id, $office_id);
-            $stmt->execute();
+            $table = 'teachers';
             break;
-            
         case 'rooms':
-            $stmt = $conn->prepare("DELETE FROM archived_rooms WHERE id = ? AND office_id = ?");
-            $stmt->bind_param("ii", $id, $office_id);
-            $stmt->execute();
+            $table = 'rooms';
             break;
-            
+        case 'announcements':
+            $table = 'announcements';
+            break;
         case 'schedules':
-            $stmt = $conn->prepare("DELETE FROM archived_schedules WHERE id = ? AND office_id = ?");
-            $stmt->bind_param("ii", $id, $office_id);
-            $stmt->execute();
+            $table = 'schedules';
             break;
     }
-    
-    echo json_encode(['success' => true]);
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+
+    if (!empty($table)) {
+        $stmt = $conn->prepare("DELETE FROM $table WHERE id = ? AND office_id = ?");
+        $stmt->bind_param("ii", $id, $office_id);
+        
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true, 'message' => ucfirst($type) . ' permanently deleted']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error deleting ' . $type]);
+        }
+        $stmt->close();
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Invalid type']);
+    }
+    $conn->close();
 }
 ?>
