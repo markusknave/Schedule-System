@@ -24,7 +24,7 @@ $scheduled_rooms_query = $conn->query("
     FROM schedules s
     LEFT JOIN rooms r ON s.room_id = r.id
     WHERE (r.office_id = $office_id OR r.id IS NULL)
-    ORDER BY r.name
+    ORDER BY name
 ");
 $all_rooms = $scheduled_rooms_query->fetch_all(MYSQLI_ASSOC);
 
@@ -39,18 +39,34 @@ $schedules_query = $conn->query("
         s.day,
         s.start_time,
         s.end_time,
-        s.room_id,
-        COALESCE(r.name, 'TBA') AS room_name,
-        COALESCE(sub.name, 'TBA') AS subject_name,
-        COALESCE(CONCAT(t.firstname, ' ', t.lastname), 'TBA') AS teacher_name,
+        CASE 
+            WHEN r.id IS NULL OR r.deleted_at IS NOT NULL THEN NULL
+            ELSE s.room_id
+        END AS room_id,
+        CASE 
+            WHEN r.id IS NULL OR r.deleted_at IS NOT NULL THEN 'TBA'
+            ELSE r.name
+        END AS room_name,
+        CASE 
+            WHEN sub.id IS NULL OR sub.deleted_at IS NOT NULL THEN 'TBA'
+            ELSE sub.name
+        END AS subject_name,
+        CASE 
+            WHEN t.id IS NULL OR t.deleted_at IS NOT NULL THEN 'TBA'
+            ELSE CONCAT(t.firstname, ' ', t.lastname)
+        END AS teacher_name,
         COALESCE(t.unit, '') AS unit
     FROM schedules s
-    LEFT JOIN teachers t ON s.teach_id = t.id AND t.deleted_at IS NULL
-    LEFT JOIN rooms r ON s.room_id = r.id AND r.deleted_at IS NULL
-    LEFT JOIN subjects sub ON s.subject_id = sub.id AND sub.deleted_at IS NULL
-    WHERE (t.office_id = $office_id OR t.office_id IS NULL)
+    LEFT JOIN teachers t ON s.teach_id = t.id
+    LEFT JOIN rooms r ON s.room_id = r.id
+    LEFT JOIN subjects sub ON s.subject_id = sub.id
+    WHERE s.office_id = $office_id
     AND s.deleted_at IS NULL
-    ORDER BY r.name, s.day, s.start_time
+    ORDER BY 
+        CASE WHEN r.name IS NULL THEN 1 ELSE 0 END,
+        COALESCE(r.name, 'ZZZ'), 
+        s.day, 
+        s.start_time
 ");
 $schedules = $schedules_query->fetch_all(MYSQLI_ASSOC);
 
@@ -78,7 +94,20 @@ foreach ($schedules as $schedule) {
 }
 
 // Organize schedules by room
-$room_schedules = [];
+$room_schedules = [
+    'TBA' => [
+        'room_name' => 'TBA',
+        'days' => [
+            'Monday' => [],
+            'Tuesday' => [],
+            'Wednesday' => [],
+            'Thursday' => [],
+            'Friday' => []
+        ]
+    ]
+];
+
+// Add all active rooms
 foreach ($rooms as $room) {
     $room_schedules[$room['id']] = [
         'room_name' => $room['name'],
@@ -93,7 +122,8 @@ foreach ($rooms as $room) {
 }
 
 foreach ($schedules as $schedule) {
-    $room_id = $schedule['room_id'];
+    // Use 'TBA' as room_id if the room is deleted
+    $room_id = ($schedule['room_name'] === 'TBA') ? 'TBA' : $schedule['room_id'];
     $day = $schedule['day'];
     
     if (isset($room_schedules[$room_id]['days'][$day])) {
