@@ -23,6 +23,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             break;
         case 'announcements':
             $table = 'announcements';
+            // First get the image path
+            $query = $conn->prepare("SELECT img FROM announcements WHERE id = ? AND office_id = ?");
+            $query->bind_param("ii", $id, $office_id);
+            $query->execute();
+            $result = $query->get_result();
+            $announcement = $result->fetch_assoc();
+            $query->close();
             break;
         case 'schedules':
             $table = 'schedules';
@@ -34,6 +41,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("ii", $id, $office_id);
         
         if ($stmt->execute()) {
+            // If this was an announcement, delete the image
+            if ($type === 'announcements' && !empty($announcement['img'])) {
+                $image_path = $_SERVER['DOCUMENT_ROOT'] . parse_url($announcement['img'], PHP_URL_PATH);
+                if (file_exists($image_path)) {
+                    unlink($image_path);
+                }
+            }
             echo json_encode(['success' => true, 'message' => ucfirst($type) . ' permanently deleted']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Error deleting ' . $type]);

@@ -31,7 +31,6 @@ if ($permanent) {
     // Permanent delete - delete record and image
     $delete_stmt = $conn->prepare("DELETE FROM announcements WHERE id = ? AND office_id = ?");
     $delete_stmt->bind_param("ii", $announcement_id, $office_id);
-    
     if ($delete_stmt->execute()) {
         // Delete the associated image file if it exists
         if (!empty($announcement['img'])) {
@@ -59,9 +58,7 @@ if ($permanent) {
 $delete_stmt->close();
 $conn->close();
 
-// Redirect back to appropriate page
-header("Location: " . ($permanent ? 
-    "/myschedule/public/admin/archived.php?type=announcements" : 
-    "/myschedule/public/admin/announcements.php"));
+// Redirect back to approriate page
+header("Location: /myschedule/public/admin/announcements.php");
 exit();
 ?>
