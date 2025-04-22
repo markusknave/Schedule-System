@@ -14,9 +14,23 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 // Get current office ID
 $office_id = $_SESSION['office_id'];
 
-// Get all rooms for this office
-$rooms_query = $conn->query("SELECT id, name FROM rooms WHERE office_id = $office_id");
+// Get all active rooms for this office
+$rooms_query = $conn->query("SELECT id, name FROM rooms WHERE office_id = $office_id AND deleted_at IS NULL");
 $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
+
+// Also include rooms that have schedules but might be archived
+$scheduled_rooms_query = $conn->query("
+    SELECT DISTINCT r.id, COALESCE(r.name, 'TBA') AS name 
+    FROM schedules s
+    LEFT JOIN rooms r ON s.room_id = r.id
+    WHERE (r.office_id = $office_id OR r.id IS NULL)
+    ORDER BY r.name
+");
+$all_rooms = $scheduled_rooms_query->fetch_all(MYSQLI_ASSOC);
+
+// Combine both results
+$rooms = array_merge($rooms, $all_rooms);
+$rooms = array_unique($rooms, SORT_REGULAR);
 
 // Get all schedules for this office, grouped by room
 $schedules_query = $conn->query("
@@ -26,15 +40,16 @@ $schedules_query = $conn->query("
         s.start_time,
         s.end_time,
         s.room_id,
-        r.name AS room_name,
-        sub.name AS subject_name,
-        CONCAT(t.firstname, ' ', t.lastname) AS teacher_name,
-        t.unit
+        COALESCE(r.name, 'TBA') AS room_name,
+        COALESCE(sub.name, 'TBA') AS subject_name,
+        COALESCE(CONCAT(t.firstname, ' ', t.lastname), 'TBA') AS teacher_name,
+        COALESCE(t.unit, '') AS unit
     FROM schedules s
-    JOIN teachers t ON s.teach_id = t.id
-    JOIN rooms r ON s.room_id = r.id
-    JOIN subjects sub ON s.subject_id = sub.id
-    WHERE t.office_id = $office_id
+    LEFT JOIN teachers t ON s.teach_id = t.id AND t.deleted_at IS NULL
+    LEFT JOIN rooms r ON s.room_id = r.id AND r.deleted_at IS NULL
+    LEFT JOIN subjects sub ON s.subject_id = sub.id AND sub.deleted_at IS NULL
+    WHERE (t.office_id = $office_id OR t.office_id IS NULL)
+    AND s.deleted_at IS NULL
     ORDER BY r.name, s.day, s.start_time
 ");
 $schedules = $schedules_query->fetch_all(MYSQLI_ASSOC);
@@ -44,6 +59,11 @@ $conflicts = [];
 $schedule_slots = [];
 
 foreach ($schedules as $schedule) {
+    // Skip if any related record is soft-deleted
+    if ($schedule['teacher_name'] === 'TBA' || $schedule['room_name'] === 'TBA' || $schedule['subject_name'] === 'TBA') {
+        continue;
+    }
+    
     $key = $schedule['room_id'] . '-' . $schedule['day'] . '-' . $schedule['start_time'] . '-' . $schedule['end_time'];
     
     if (!isset($schedule_slots[$key])) {

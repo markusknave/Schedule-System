@@ -18,7 +18,7 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : ""; // Get search ter
 
 // Base query conditions
 $office_id = $_SESSION['office_id'];
-$where_clause = "WHERE office_id = $office_id";
+$where_clause = "WHERE office_id = $office_id AND deleted_at IS NULL";
 
 // Add search conditions if search term exists
 if (!empty($search)) {

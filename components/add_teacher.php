@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $office_id = $_SESSION['office_id'];
 
     // Insert new teacher
-    $stmt = $conn->prepare("INSERT INTO teachers (office_id, firstname, middlename, lastname, extension, email, unit) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO teachers (office_id, firstname, middlename, lastname, extension, email, unit, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, Now())");
     $stmt->bind_param("issssss", $office_id, $firstname, $middlename, $lastname, $extension, $email, $unit);
     if ($stmt->execute()) {
         header("Location: /myschedule/public/admin/dashboard.php");

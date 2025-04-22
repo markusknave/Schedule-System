@@ -19,7 +19,7 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
 // Base query conditions
 $office_id = $_SESSION['office_id'];
-$where_clause = "WHERE r.office_id = $office_id";
+$where_clause = "WHERE r.office_id = $office_id AND r.deleted_at IS NULL";
 
 // Add search conditions if search term exists
 if (!empty($search)) {
@@ -193,7 +193,6 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
     </div>
 </div>
 
-<!-- Replace the Rooms Table section with this: -->
 <div class="d-block d-md-none"> <!-- Mobile view -->
     <div class="card mb-4 border-primary">
         <div class="card-header bg-dark text-white">

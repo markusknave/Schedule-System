@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $office_id = $_SESSION['office_id'];
 
     // Insert new room
-    $stmt = $conn->prepare("INSERT INTO rooms (name, office_id) VALUES (?, ?)");
+    $stmt = $conn->prepare("INSERT INTO rooms (name, office_id, created_at) VALUES (?, ?, Now())");
     $stmt->bind_param("si", $name, $office_id);
     
     if ($stmt->execute()) {
