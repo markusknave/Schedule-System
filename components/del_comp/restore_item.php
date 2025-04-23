@@ -26,6 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         case 'schedules':
             $table = 'schedules';
             break;
+        case 'subjects':
+            $table = 'subjects';
+            break;
     }
 
     if (!empty($table)) {
