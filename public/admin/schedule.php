@@ -3,7 +3,7 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.html");
     exit();
 }
 
@@ -152,7 +152,7 @@ foreach ($schedules as $schedule) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<?php include COMPONENTS_PATH . '/loading_screen.php'; ?>
+<?php ?>
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -195,6 +195,12 @@ foreach ($schedules as $schedule) {
                             <a href="rooms.php" class="nav-link">
                                 <i class="nav-icon fas fa-grip-horizontal"></i>
                                 <p>Rooms</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="subjects.php" class="nav-link">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>Subjects</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -341,14 +347,5 @@ foreach ($schedules as $schedule) {
         </div>
     </div>
 
-    <script>
-    $(document).ready(function() {
-        // Add loading screen functionality
-        $(window).on('beforeunload', function() {
-            $('.loading-screen').show();
-        });
-    });
-    </script>
-    <script src="/myschedule/assets/js/loading_screen.js"></script>
 </body>
 </html>

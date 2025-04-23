@@ -68,7 +68,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<?php include COMPONENTS_PATH . '/loading_screen.php'; ?>
+<?php ?>
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -109,6 +109,12 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                             <a href="rooms.php" class="nav-link active">
                                 <i class="nav-icon fas fa-grip-horizontal"></i>
                                 <p>Rooms</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="subjects.php" class="nav-link">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>Subjects</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -321,7 +327,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="addRoomForm" action="/myschedule/components/add_room.php" method="POST">
+                <form id="addRoomForm" action="/myschedule/components/room_comp/add_room.php" method="POST">
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="roomName">Room Name</label>
@@ -346,7 +352,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="editRoomForm" action="/myschedule/components/edit_room.php" method="POST">
+                <form id="editRoomForm" action="/myschedule/components/room_comp/edit_room.php" method="POST">
                     <input type="hidden" id="editRoomId" name="room_id">
                     <div class="modal-body">
                         <div class="form-group">
@@ -369,7 +375,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                 <div class="modal-header">
                     <h5 class="modal-title">Confirm Deletion</h5>
                 </div>
-                <form id="deleteRoomForm" action="/myschedule/components/delete_room.php" method="POST">
+                <form id="deleteRoomForm" action="/myschedule/components/room_comp/delete_room.php" method="POST">
                     <input type="hidden" id="deleteRoomId" name="room_id">
                     <div class="modal-body">
                         <p>Are you sure you want to delete this room? This action cannot be undone.</p>
@@ -385,11 +391,6 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
 
     <script>
 $(document).ready(function() {
-    // Loading screen functionality
-    $(window).on('beforeunload', function() {
-        $('.loading-screen').show();
-    });
-
     // Show success/error messages
     $('.alert').delay(3000).fadeOut('slow');
 
@@ -401,7 +402,7 @@ $(document).ready(function() {
 
     // Export to CSV
     $('#exportToCsv').click(function() {
-        window.location.href = '/myschedule/components/export_rooms.php';
+        window.location.href = '/myschedule/components/room_comp/export_rooms.php';
     });
 
     // Edit Room Button Click
@@ -424,7 +425,7 @@ $(document).ready(function() {
     // View Room Button Click
     $(document).on('click', '.view-room', function() {
         const roomId = $(this).data('id');
-        window.location.href = '/myschedule/public/admin/room_details.php?id=' + roomId;
+        window.location.href = '/myschedule/components/room_comp/room_details.php?id=' + roomId;
     });
 
     // Add Room Button Click
@@ -502,7 +503,7 @@ $(document).ready(function() {
         }
         
         $.ajax({
-            url: '/myschedule/components/fetch_rooms.php',
+            url: '/myschedule/components/room_comp/fetch_rooms.php',
             type: 'GET',
             data: { 
                 search: search, 
@@ -564,6 +565,5 @@ $(document).ready(function() {
     });
 });
 </script>
-    <script src="/myschedule/assets/js/loading_screen.js"></script>
 </body>
 </html>

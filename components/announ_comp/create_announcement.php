@@ -3,7 +3,7 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.html");
     exit();
 }
 
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<?php include COMPONENTS_PATH . '/loading_screen.php'; ?>
+<?php ?>
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -244,7 +244,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <script src="/myschedule/assets/js/loading_screen.js"></script>
     <script>
         
     $(document).ready(function() {

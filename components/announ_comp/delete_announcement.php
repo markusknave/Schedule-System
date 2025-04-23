@@ -4,7 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.html");
     exit();
 }
 

@@ -3,7 +3,7 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.html");
     exit();
 }
 
@@ -11,41 +11,38 @@ if (!isset($_SESSION['office_id'])) {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-// Get room ID from URL
-$room_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+// Get subject ID from URL
+$subject_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Get room details
-$room_query = $conn->prepare("SELECT name FROM rooms WHERE id = ?");
-$room_query->bind_param("i", $room_id);
-$room_query->execute();
-$room_result = $room_query->get_result();
-$room = $room_result->fetch_assoc();
+// Get subject details
+$subject_query = $conn->prepare("SELECT subject_code, name FROM subjects WHERE id = ?");
+$subject_query->bind_param("i", $subject_id);
+$subject_query->execute();
+$subject_result = $subject_query->get_result();
+$subject = $subject_result->fetch_assoc();
 
-if (!$room) {
-    header("Location: /myschedule/public/admin/rooms.php");
+if (!$subject) {
+    header("Location: /myschedule/public/admin/subjects.php");
     exit();
 }
 
-// Get all schedules for this room
-$schedules_query = $conn->prepare("
+// Get all teachers teaching this subject
+$teachers_query = $conn->prepare("
     SELECT 
-        s.id,
-        s.day,
-        s.start_time,
-        s.end_time,
+        t.id,
+        CONCAT(t.firstname, ' ', t.lastname) AS teacher_name,
         o.name AS office_name,
-        sub.name AS subject_name,
-        CONCAT(t.firstname, ' ', t.lastname) AS teacher_name
-    FROM schedules s
-    JOIN teachers t ON s.teach_id = t.id
+        COUNT(sc.id) AS schedule_count
+    FROM teachers t
+    JOIN schedules sc ON t.id = sc.teach_id
     JOIN offices o ON t.office_id = o.id
-    JOIN subjects sub ON s.subject_id = sub.id
-    WHERE s.room_id = ?
-    ORDER BY s.day, s.start_time
+    WHERE sc.subject_id = ?
+    GROUP BY t.id, teacher_name, office_name
+    ORDER BY teacher_name
 ");
-$schedules_query->bind_param("i", $room_id);
-$schedules_query->execute();
-$schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
+$teachers_query->bind_param("i", $subject_id);
+$teachers_query->execute();
+$teachers = $teachers_query->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -53,19 +50,27 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Details - <?php echo htmlspecialchars($room['name']); ?></title>
+    <title>Subject Details - <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['name']); ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/myschedule/assets/css/room.css">
+    <link rel="stylesheet" href="/myschedule/assets/css/subject.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-
+        .teacher-card {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+        .teacher-card:hover {
+            background-color: #e9ecef;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<?php include COMPONENTS_PATH . '/loading_screen.php'; ?>
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -92,31 +97,37 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
                         <li class="nav-item">
-                            <a href="dashboard.php" class="nav-link">
+                            <a href="/myschedule/public/admin/dashboard.php" class="nav-link">
                                 <i class="nav-icon fas fa-users"></i>
                                 <p>Teachers Management</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="schedule.php" class="nav-link">
+                            <a href="/myschedule/public/admin/schedule.php" class="nav-link">
                                 <i class="nav-icon fa fa-calendar"></i>
                                 <p>Schedules</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="rooms.php" class="nav-link active">
+                            <a href="/myschedule/public/admin/rooms.php" class="nav-link">
                                 <i class="nav-icon fas fa-grip-horizontal"></i>
                                 <p>Rooms</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="announcements.php" class="nav-link">
+                            <a href="/myschedule/public/admin/subjects.php" class="nav-link active">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>Subjects</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/myschedule/public/admin/announcements.php" class="nav-link">
                                 <i class="nav-icon fa fa-exclamation-circle"></i>
                                 <p>Announcements</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="archived.php" class="nav-link">
+                            <a href="/myschedule/public/admin/archived.php" class="nav-link">
                                 <i class="nav-icon fa fa-archive"></i>
                                 <p>Archived</p>
                             </a>
@@ -141,11 +152,11 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1>Room: <?php echo htmlspecialchars($room['name']); ?></h1>
+                            <h1>Subject: <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['name']); ?></h1>
                         </div>
                         <div class="col-sm-6">
-                            <a href="/myschedule/public/admin/rooms.php" class="btn btn-default float-right">
-                                <i class="fas fa-arrow-left"></i> Back to Rooms
+                            <a href="/myschedule/public/admin/subjects.php" class="btn btn-default float-right">
+                                <i class="fas fa-arrow-left"></i> Back to Subjects
                             </a>
                         </div>
                     </div>
@@ -154,67 +165,40 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
             
             <section class="content">
                 <div class="container-fluid">
-                    <?php if (empty($schedules)): ?>
+                    <?php if (empty($teachers)): ?>
                         <div class="alert alert-info">
-                            No schedules found for this room.
+                            No teachers found for this subject.
                         </div>
                     <?php else: ?>
-                        <!-- Group schedules by office -->
-                        <?php 
-                        $grouped_schedules = [];
-                        foreach ($schedules as $schedule) {
-                            $grouped_schedules[$schedule['office_name']][] = $schedule;
-                        }
-                        ?>
-                        
-                        <?php foreach ($grouped_schedules as $office_name => $office_schedules): ?>
-                            <div class="card mb-4">
-                                <div class="card-header office-header">
-                                    <h3 class="card-title"><?php echo htmlspecialchars($office_name); ?></h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <?php foreach ($office_schedules as $schedule): ?>
-                                            <div class="col-md-6 col-lg-4 mb-3">
-                                                <div class="schedule-card">
-                                                    <div class="d-flex justify-content-between mb-2">
-                                                        <span class="time-badge">
-                                                            <?php echo date('h:i A', strtotime($schedule['start_time'])) . ' - ' . date('h:i A', strtotime($schedule['end_time'])); ?>
-                                                        </span>
-                                                        <span class="badge badge-secondary">
-                                                            <?php echo htmlspecialchars($schedule['day']); ?>
-                                                        </span>
-                                                    </div>
-                                                    <div class="mb-2">
-                                                        <strong>Subject:</strong> 
-                                                        <?php echo htmlspecialchars($schedule['subject_name']); ?>
-                                                    </div>
-                                                    <div>
-                                                        <strong>Teacher:</strong> 
-                                                        <?php echo htmlspecialchars($schedule['teacher_name']); ?>
-                                                    </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Teachers Teaching This Subject</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <?php foreach ($teachers as $teacher): ?>
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="teacher-card">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <h5 class="mb-0"><?php echo htmlspecialchars($teacher['teacher_name']); ?></h5>
+                                                    <span class="badge badge-primary"><?php echo htmlspecialchars($teacher['schedule_count']); ?> class<?php echo $teacher['schedule_count'] > 1 ? 'es' : ''; ?></span>
                                                 </div>
+                                                <div class="mb-2">
+                                                    <strong>Office:</strong> <?php echo htmlspecialchars($teacher['office_name']); ?>
+                                                </div>
+                                                <a href="/myschedule/public/admin/teacher_details.php?id=<?php echo $teacher['id']; ?>" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-user"></i> View Teacher
+                                                </a>
                                             </div>
-                                        <?php endforeach; ?>
-                                    </div>
+                                        </div>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        </div>
                     <?php endif; ?>
                 </div>
             </section>
         </div>
     </div>
-
-
-    <script>
-    $(document).ready(function() {
-        // Add loading screen functionality
-        $(window).on('beforeunload', function() {
-            $('.loading-screen').show();
-        });
-    });
-    </script>
-    <script src="/myschedule/assets/js/loading_screen.js"></script>
 </body>
 </html>

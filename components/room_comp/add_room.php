@@ -3,7 +3,7 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
-    header("Location: login.html");
+    header("Location: /myschedule/login.html");
     exit();
 }
 

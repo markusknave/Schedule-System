@@ -120,7 +120,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<?php include COMPONENTS_PATH . '/loading_screen.php'; ?>
+<?php ?>
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -161,6 +161,12 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                             <a href="rooms.php" class="nav-link">
                                 <i class="nav-icon fas fa-grip-horizontal"></i>
                                 <p>Rooms</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="subjects.php" class="nav-link">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>Subjects</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -227,7 +233,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                     <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
                                         style="background-image: url('<?= htmlspecialchars($announcement['img']) ?>')">
                                         <div class="edit-btn-container">
-                                        <form action="edit_announcement.php" method="GET" style="display: inline;">
+                                        <form action="/myschedule/components/announ_comp/edit_announcement.php" method="GET" style="display: inline;">
                                                 <input type="hidden" name="id" value="<?= $announcement['id'] ?>">
                                                 <button type="submit" class="edit-btn">
                                                     <i class="fas fa-edit"></i> Edit
@@ -277,12 +283,11 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
         </div>
         
         <!-- Add Announcement Button -->
-        <a href="create_announcement.php" class="btn btn-primary btn-lg add-announcement-btn">
+        <a href="/myschedule/components/announ_comp/create_announcement.php" class="btn btn-primary btn-lg add-announcement-btn">
             <i class="fas fa-plus"></i>
         </a>
     </div>
 
-    <script src="/myschedule/assets/js/loading_screen.js"></script>
     <script>
 $(document).ready(function() {
     // Variables for auto-scroll control
@@ -375,7 +380,7 @@ $(document).ready(function() {
 
 function confirmDelete(id) {
     if (confirm('Are you sure you want to delete this announcement?')) {
-        window.location.href = '/myschedule/public/admin/delete_announcement.php?id=' + id;
+        window.location.href = '/myschedule/components/announ_comp/delete_announcement.php?id=' + id;
     }
 }
     </script>

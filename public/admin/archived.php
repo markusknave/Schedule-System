@@ -3,7 +3,7 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.html");
     exit();
 }
 
@@ -84,6 +84,21 @@ switch ($type) {
                 LIMIT $limit OFFSET $offset";
         $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
         break;
+
+        case 'subjects':
+            $query = "SELECT COUNT(*) AS total FROM subjects WHERE office_id = $office_id AND deleted_at IS NOT NULL";
+            $total_result = $conn->query($query);
+            $total_items = $total_result->fetch_assoc()['total'];
+            
+            $query = "SELECT s.*, o.name AS deleted_by 
+                    FROM subjects s 
+                    JOIN offices o ON s.office_id = o.id 
+                    WHERE s.office_id = $office_id 
+                    AND s.deleted_at IS NOT NULL
+                    ORDER BY s.deleted_at DESC 
+                    LIMIT $limit OFFSET $offset";
+            $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+            break;
 }
 
 $total_pages = ceil($total_items / $limit);
@@ -142,7 +157,7 @@ $total_pages = ceil($total_items / $limit);
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<?php include COMPONENTS_PATH . '/loading_screen.php'; ?>
+<?php ?>
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -184,6 +199,12 @@ $total_pages = ceil($total_items / $limit);
                             <a href="rooms.php" class="nav-link">
                                 <i class="nav-icon fas fa-grip-horizontal"></i>
                                 <p>Rooms</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="subjects.php" class="nav-link">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>Subjects</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -246,6 +267,10 @@ $total_pages = ceil($total_items / $limit);
                                 <a class="nav-link <?= $type === 'schedules' ? 'active' : '' ?>" 
                                    href="?type=schedules">Schedules</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link <?= $type === 'subjects' ? 'active' : '' ?>" 
+                                href="?type=subjects">Subjects</a>
+                            </li>
                         </ul>
                     </div>
 
@@ -275,6 +300,9 @@ $total_pages = ceil($total_items / $limit);
                                                         break;
                                                     case 'schedules':
                                                         echo "Schedule ID: " . htmlspecialchars($item['id']);
+                                                        break;
+                                                    case 'subjects':
+                                                        echo htmlspecialchars($item['subject_code'] . ' - ' . $item['name']);
                                                         break;
                                                 }
                                                 ?>
@@ -393,9 +421,9 @@ $(document).ready(function() {
         
         let url = '';
         if (currentAction === 'restore') {
-            url = '/myschedule/components/restore_item.php';
+            url = '/myschedule/components/del_comp/restore_item.php';
         } else if (currentAction === 'delete') {
-            url = '/myschedule/components/delete_item_permanently.php';
+            url = '/myschedule/components/del_comp/delete_item_permanently.php';
         }
         
         $.ajax({
@@ -421,6 +449,5 @@ $(document).ready(function() {
     });
 });    
 </script>
-    <script src="/myschedule/assets/js/loading_screen.js"></script>
 </body>
 </html>
