@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `announcements` (
   CONSTRAINT `FK_announcements_offices` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table sched_load_system.announcements: ~1 rows (approximately)
+-- Dumping data for table sched_load_system.announcements: ~0 rows (approximately)
 
 -- Dumping structure for table sched_load_system.offices
 CREATE TABLE IF NOT EXISTS `offices` (
@@ -64,9 +64,11 @@ CREATE TABLE IF NOT EXISTS `rooms` (
   UNIQUE KEY `name` (`name`),
   KEY `FK_rooms_offices` (`office_id`),
   CONSTRAINT `FK_rooms_offices` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table sched_load_system.rooms: ~0 rows (approximately)
+-- Dumping data for table sched_load_system.rooms: ~1 rows (approximately)
+INSERT INTO `rooms` (`id`, `name`, `office_id`, `created_at`, `deleted_at`) VALUES
+	(10, 'Lab 4', 2, '2025-04-23 02:03:46', NULL);
 
 -- Dumping structure for table sched_load_system.schedules
 CREATE TABLE IF NOT EXISTS `schedules` (
@@ -89,21 +91,33 @@ CREATE TABLE IF NOT EXISTS `schedules` (
   CONSTRAINT `FK_schedules_teachers` FOREIGN KEY (`teach_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE,
   CONSTRAINT `schedules_ibfk_2` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`id`) ON DELETE CASCADE,
   CONSTRAINT `schedules_ibfk_3` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table sched_load_system.schedules: ~0 rows (approximately)
+-- Dumping data for table sched_load_system.schedules: ~1 rows (approximately)
+INSERT INTO `schedules` (`id`, `teach_id`, `subject_id`, `room_id`, `office_id`, `day`, `start_time`, `end_time`, `created_at`, `deleted_at`) VALUES
+	(1, 26, 2, 10, 2, 'Friday', '10:06:26', '11:06:27', '2025-04-23 02:06:34', NULL);
 
 -- Dumping structure for table sched_load_system.subjects
 CREATE TABLE IF NOT EXISTS `subjects` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `office_id` int DEFAULT NULL,
+  `subject_code` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `Index 3` (`subject_code`),
+  KEY `FK_subjects_offices` (`office_id`),
+  CONSTRAINT `FK_subjects_offices` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table sched_load_system.subjects: ~0 rows (approximately)
+-- Dumping data for table sched_load_system.subjects: ~2 rows (approximately)
+INSERT INTO `subjects` (`id`, `office_id`, `subject_code`, `name`, `created_at`, `deleted_at`) VALUES
+	(2, 2, 'IT111', 'Java Programming I', '2025-04-23 02:03:15', NULL),
+	(4, 2, 'IT112', 'Java II', '2025-04-23 04:17:33', NULL),
+	(7, 2, 'IT113', 'Java Programming II', '2025-04-23 06:07:13', NULL),
+	(8, 2, 'IT114', 'Java III', '2025-04-23 06:07:29', NULL);
 
 -- Dumping structure for table sched_load_system.teachers
 CREATE TABLE IF NOT EXISTS `teachers` (
@@ -118,9 +132,11 @@ CREATE TABLE IF NOT EXISTS `teachers` (
   `created_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table sched_load_system.teachers: ~0 rows (approximately)
+-- Dumping data for table sched_load_system.teachers: ~1 rows (approximately)
+INSERT INTO `teachers` (`id`, `office_id`, `firstname`, `middlename`, `lastname`, `extension`, `email`, `unit`, `created_at`, `deleted_at`) VALUES
+	(26, 2, 'Gilbert Franz Anthony', '', 'Ormeneta', '', 'o@g.com', 'IT', '2025-04-22 00:21:00', NULL);
 
 -- Dumping structure for table sched_load_system.users
 CREATE TABLE IF NOT EXISTS `users` (
@@ -136,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table sched_load_system.users: ~0 rows (approximately)
+-- Dumping data for table sched_load_system.users: ~1 rows (approximately)
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `role`, `created_at`, `deleted_at`) VALUES
 	(1, 'Gilbert', 'Ormeneta', 'gormeneta@gmail.com', '$2y$10$RmoUPg4fYSQlqL.AiYJHxOwkIrVOKrbYDcoNK48p69U25z62niPju', 'teacher', '2025-03-26 02:12:30', NULL);
 
