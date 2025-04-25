@@ -1,5 +1,6 @@
 <?php
 session_start();
+@include '../../components/links.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
@@ -44,88 +45,14 @@ $shown_count = $result->num_rows;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Teachers Management</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/myschedule/assets/css/teacher.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <span class="nav-link">Logged in as, <?php echo htmlspecialchars($_SESSION['office_name'] ?? 'User'); ?></span>
-                </li>
-            </ul>
-        </nav>
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
-            <div class="container overflow-hidden">
-                <a href="#" class="brand-link">
-                    <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
-                    <span class="brand-text font-weight-light">LNU Teacher's Board</span>
-                </a>
-            </div>
-                <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="dashboard.php" class="nav-link active">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Teachers Management</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="schedule.php" class="nav-link">
-                                <i class="nav-icon fa fa-calendar"></i>
-                                <p>Schedules</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="rooms.php" class="nav-link">
-                                <i class="nav-icon fas fa-grip-horizontal"></i>
-                                <p>Rooms</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="subjects.php" class="nav-link">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>Subjects</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="announcements.php" class="nav-link">
-                                <i class="nav-icon fa fa-exclamation-circle"></i>
-                                <p>Announcements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="archived.php" class="nav-link">
-                                <i class="nav-icon fa fa-archive"></i>
-                                <p>Archived</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div style="position: absolute; bottom: 0;" class="nav-item overflow-hidden">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="/myschedule/components/logout.php" class="nav-link">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+        <?php include '../../components/header.php'; ?>
+        <?php include '../../components/sidebar.php'; ?>
+
         <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">
@@ -201,9 +128,6 @@ $shown_count = $result->num_rows;
                                                     <i class="fas fa-envelope mr-1"></i> <?= htmlspecialchars($row['email']) ?>
                                                 </p>
                                                 <div class="d-flex justify-content-end">
-                                                    <button class="btn btn-sm btn-info mr-2 view-teacher" data-id="<?= $row['id'] ?>">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
                                                     <button class="btn btn-sm btn-success mr-2 edit-teacher" 
                                                         data-id="<?= $row['id'] ?>" 
                                                         data-firstname="<?= htmlspecialchars($row['firstname']) ?>"
@@ -288,9 +212,6 @@ $shown_count = $result->num_rows;
                                                         <td><?= htmlspecialchars($row['email']) ?></td>
                                                         <td><?= htmlspecialchars($row['unit']) ?></td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-info view-teacher" data-id="<?= $row['id'] ?>">
-                                                                <i class="fas fa-eye"></i> View
-                                                            </button>
                                                             <button class="btn btn-sm btn-success edit-teacher" 
                                                                 data-id="<?= $row['id'] ?>" 
                                                                 data-firstname="<?= htmlspecialchars($row['firstname']) ?>"
@@ -427,187 +348,7 @@ $shown_count = $result->num_rows;
                         </div>
                     </div>
 
-                    <script>
-                    $(document).ready(function() {
-                        // Show success/error messages
-                        $('.alert').delay(3000).fadeOut('slow');
-
-                        // Initialize all modals properly
-                        $('.modal').modal({
-                            show: false,
-                            backdrop: 'static'
-                        });
-
-                        // Edit Teacher Button Click
-                        $(document).on('click', '.edit-teacher', function() {
-                            const teacherId = $(this).data('id');
-                            const firstname = $(this).data('firstname');
-                            const middlename = $(this).data('middlename');
-                            const lastname = $(this).data('lastname');
-                            const extension = $(this).data('extension');
-                            const email = $(this).data('email');
-                            const unit = $(this).data('unit');
-                            
-                            $('#editTeacherId').val(teacherId);
-                            $('#editFirstname').val(firstname);
-                            $('#editMiddlename').val(middlename);
-                            $('#editLastname').val(lastname);
-                            $('#editExtension').val(extension);
-                            $('#editEmail').val(email);
-                            $('#editUnit').val(unit);
-                            $('#editTeacherModal').modal('show');
-                        });
-
-                        // Delete Teacher Button Click
-                        $(document).on('click', '.delete-teacher', function() {
-                            const teacherId = $(this).data('id');
-                            $('#deleteTeacherId').val(teacherId);
-                            $('#deleteTeacherModal').modal('show');
-                        });
-
-                        // View Teacher Button Click
-                        $(document).on('click', '.view-teacher', function() {
-                            const teacherId = $(this).data('id');
-                            window.location.href = '/myschedule/components/teach_comp/teacher_details.php?id=' + teacherId;
-                        });
-
-                        // Add Teacher Button Click
-                        $('#addTeacherButton').click(function() {
-                            $('#addTeacherModal').modal('show');
-                        });
-
-                        // Add Teacher Form Submission
-                        $('#addTeacherForm').submit(function(e) {
-                            e.preventDefault();
-                            const form = $(this);
-                            const formData = form.serialize();
-                            
-                            $.ajax({
-                                url: form.attr('action'),
-                                method: form.attr('method'),
-                                data: formData,
-                                success: function(response) {
-                                    $('#addTeacherModal').modal('hide');
-                                    location.reload();
-                                },
-                                error: function(xhr, status, error) {
-                                    alert('Error: ' + error);
-                                }
-                            });
-                        });
-
-                        // Edit Teacher Form Submission
-                        $('#editTeacherForm').submit(function(e) {
-                            e.preventDefault();
-                            const form = $(this);
-                            const formData = form.serialize();
-                            
-                            $.ajax({
-                                url: form.attr('action'),
-                                method: form.attr('method'),
-                                data: formData,
-                                success: function(response) {
-                                    location.reload();
-                                },
-                                error: function(xhr, status, error) {
-                                    alert('Error: ' + error);
-                                }
-                            });
-                        });
-
-                        // Delete Teacher Form Submission
-                        $('#deleteTeacherForm').submit(function(e) {
-                            e.preventDefault();
-                            const form = $(this);
-                            const formData = form.serialize();
-                            
-                            $.ajax({
-                                url: form.attr('action'),
-                                method: form.attr('method'),
-                                data: formData,
-                                success: function(response) {
-                                    location.reload();
-                                },
-                                error: function(xhr, status, error) {
-                                    alert('Error: ' + error);
-                                }
-                            });
-                        });
-
-// Dynamic search functionality
-function loadTeachers(search = "", page = 1) {
-    const isMobile = $(window).width() < 768;
-    
-    // Show loading state
-    if (isMobile) {
-        $('#mobileTeachersList').html('<div class="list-group-item text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
-    } else {
-        $('#teachersTableBody').html('<tr><td colspan="4" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
-    }
-    
-    $.ajax({
-        url: '/myschedule/components/teach_comp/fetch_teachers.php',
-        type: 'GET',
-        data: { 
-            search: search, 
-            page: page,
-            mobile: isMobile
-        },
-        success: function(response) {
-            if (isMobile) {
-                $('#mobileTeachersList').html(response);
-            } else {
-                $('#teachersTableBody').html(response);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", status, error);
-            // Fallback to regular page reload if AJAX fails
-            window.location.href = 'dashboard.php?page=' + page + 
-                (search ? '&search=' + encodeURIComponent(search) : '');
-        }
-    });
-}
-
-                        // Handle window resize to switch between mobile and desktop views
-                        let resizeTimer;
-                        $(window).on('resize', function() {
-                            clearTimeout(resizeTimer);
-                            resizeTimer = setTimeout(function() {
-                                const searchVal = $('#searchInput').val();
-                                const currentPage = $('.page-item.active .page-link-ajax').data('page') || 1;
-                                loadTeachers(searchVal, currentPage);
-                            }, 200);
-                        });
-
-                        // Initial load based on current view
-                        loadTeachers('<?= htmlspecialchars($search) ?>', <?= $page ?>);
-
-                        // Live search with debounce
-                        let searchTimer;
-                        $('#searchInput').on('input', function() {
-                            clearTimeout(searchTimer);
-                            const searchVal = $(this).val();
-                            searchTimer = setTimeout(() => {
-                                loadTeachers(searchVal, 1);
-                            }, 300);
-                        });
-
-                        // Search button click
-                        $('#searchButton').click(function() {
-                            const searchVal = $('#searchInput').val();
-                            loadTeachers(searchVal, 1);
-                        });
-
-                        // Handle pagination click
-                        $(document).on('click', '.page-link-ajax', function(e) {
-                            e.preventDefault();
-                            const page = $(this).data('page');
-                            const searchVal = $('#searchInput').val();
-                            loadTeachers(searchVal, page);
-                        });
-                    });
-                    </script>
+                    <script src="../../assets/js/teacher.js"></script>
                 </div>
             </section>
         </div>
