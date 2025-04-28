@@ -26,14 +26,15 @@ if (!$subject) {
     exit();
 }
 
-// Get all teachers teaching this subject
+// Get all teachers teaching this subject (corrected query)
 $teachers_query = $conn->prepare("
     SELECT 
         t.id,
-        CONCAT(t.firstname, ' ', t.lastname) AS teacher_name,
+        CONCAT(u.firstname, ' ', u.lastname) AS teacher_name,
         o.name AS office_name,
         COUNT(sc.id) AS schedule_count
     FROM teachers t
+    JOIN users u ON t.user_id = u.id
     JOIN schedules sc ON t.id = sc.teach_id
     JOIN offices o ON t.office_id = o.id
     WHERE sc.subject_id = ?

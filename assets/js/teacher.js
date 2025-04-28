@@ -5,7 +5,6 @@ $(document).ready(function() {
     // Initialize all modals properly
     $('.modal').modal({
         show: false,
-        backdrop: 'static'
     });
 
     // Edit Teacher Button Click
@@ -142,24 +141,46 @@ $(document).ready(function() {
         });
     });
 
-    // Delete Teacher Form Submission
-    $('#deleteTeacherForm').submit(function(e) {
-        e.preventDefault();
-        const form = $(this);
-        const formData = form.serialize();
-        
-        $.ajax({
-            url: form.attr('action'),
-            method: form.attr('method'),
-            data: formData,
-            success: function(response) {
-                loadTeachers($('#searchInput').val(), 1);
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
+// Delete Teacher Form Submission
+$('#deleteTeacherForm').submit(function(e) {
+    e.preventDefault();
+    const form = $(this);
+    const formData = form.serialize();
+    
+    $.ajax({
+        url: form.attr('action'),
+        method: form.attr('method'),
+        data: formData,
+        dataType: 'json',  // Add this to expect JSON response
+        success: function(response) {
+            // Close the modal
+            $('#deleteTeacherModal').modal('hide');
+            
+            // Show success message
+            $('<div class="alert alert-success alert-dismissible fade show float-right">' + 
+              response.message + 
+              '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+              '<span aria-hidden="true">&times;</span></button></div>')
+              .insertBefore('.content-header .container-fluid .row .col-sm-6')
+              .delay(3000).fadeOut('slow', function() { $(this).remove(); });
+            
+            // Refresh the teachers list
+            loadTeachers($('#searchInput').val(), 1);
+        },
+        error: function(xhr, status, error) {
+            // Show error message in modal
+            $('#deleteTeacherModal .modal-body').prepend(
+                '<div class="alert alert-danger">Error: ' + error + '</div>'
+            );
+            // Remove error after 5 seconds
+            setTimeout(function() {
+                $('#deleteTeacherModal .alert-danger').fadeOut('slow', function() {
+                    $(this).remove();
+                });
+            }, 5000);
+        }
     });
+});
 
     // Dynamic search functionality
     function loadTeachers(search = "", page = 1) {

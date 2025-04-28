@@ -10,8 +10,8 @@ $response = [
     'success' => false,
     'message' => '',
     'total_teachers' => 0,
-    'mobile_html' => '',
-    'desktop_html' => '',
+    'mobile_html' => '<div class="list-group-item text-center">No teachers found.</div>',
+    'desktop_html' => '<tr><td colspan="4" class="text-center">No teachers found.</td></tr>',
     'mobile_pagination' => '',
     'desktop_pagination' => ''
 ];
@@ -46,7 +46,8 @@ try {
         throw new Exception("Database error: " . $conn->error);
     }
 
-    $total_teachers = $total_result->fetch_assoc()['total'];
+    $total_row = $total_result->fetch_assoc();
+    $total_teachers = isset($total_row['total']) ? (int)$total_row['total'] : 0;
     $total_pages = ceil($total_teachers / $limit);
 
     // Get teacher data with user details
@@ -67,10 +68,7 @@ try {
     $teachers = $result->fetch_all(MYSQLI_ASSOC);
 
     // Generate HTML content
-    if (empty($teachers)) {
-        $response['mobile_html'] = '<div class="list-group-item text-center">No teachers found.</div>';
-        $response['desktop_html'] = '<tr><td colspan="4" class="text-center">No teachers found.</td></tr>';
-    } else {
+    if (!empty($teachers)) {
         // Generate mobile HTML
         $mobile_html = '';
         foreach ($teachers as $teacher) {
@@ -130,25 +128,27 @@ try {
         $response['desktop_html'] = $desktop_html;
     }
 
-    // Generate pagination
-    $mobile_pagination = '<div class="list-group-item">
-        <nav><ul class="pagination justify-content-center mt-3">';
-    for ($i = 1; $i <= $total_pages; $i++) {
-        $mobile_pagination .= '<li class="page-item '.($page == $i ? 'active' : '').'">
-                <a class="page-link page-link-ajax" href="#" data-page="'.$i.'">'.$i.'</a>
-            </li>';
-    }
-    $mobile_pagination .= '</ul></nav></div>';
-    $response['mobile_pagination'] = $mobile_pagination;
+    // Generate pagination only if we have more than one page
+    if ($total_pages > 1) {
+        $mobile_pagination = '<div class="list-group-item">
+            <nav><ul class="pagination justify-content-center mt-3">';
+        for ($i = 1; $i <= $total_pages; $i++) {
+            $mobile_pagination .= '<li class="page-item '.($page == $i ? 'active' : '').'">
+                    <a class="page-link page-link-ajax" href="#" data-page="'.$i.'">'.$i.'</a>
+                </li>';
+        }
+        $mobile_pagination .= '</ul></nav></div>';
+        $response['mobile_pagination'] = $mobile_pagination;
 
-    $desktop_pagination = '<nav><ul class="pagination justify-content-center mt-3">';
-    for ($i = 1; $i <= $total_pages; $i++) {
-        $desktop_pagination .= '<li class="page-item '.($page == $i ? 'active' : '').'">
-                <a class="page-link page-link-ajax" href="#" data-page="'.$i.'">'.$i.'</a>
-            </li>';
+        $desktop_pagination = '<nav><ul class="pagination justify-content-center mt-3">';
+        for ($i = 1; $i <= $total_pages; $i++) {
+            $desktop_pagination .= '<li class="page-item '.($page == $i ? 'active' : '').'">
+                    <a class="page-link page-link-ajax" href="#" data-page="'.$i.'">'.$i.'</a>
+                </li>';
+        }
+        $desktop_pagination .= '</ul></nav>';
+        $response['desktop_pagination'] = $desktop_pagination;
     }
-    $desktop_pagination .= '</ul></nav>';
-    $response['desktop_pagination'] = $desktop_pagination;
 
     $response['success'] = true;
     $response['total_teachers'] = $total_teachers;

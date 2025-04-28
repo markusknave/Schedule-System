@@ -7,6 +7,7 @@ if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
     exit();
 }
+
 // Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
@@ -19,21 +20,31 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : ""; // Get search ter
 
 // Base query conditions
 $office_id = $_SESSION['office_id'];
-$where_clause = "WHERE office_id = $office_id AND deleted_at IS NULL";
+$where_clause = "WHERE t.office_id = $office_id AND t.deleted_at IS NULL AND u.deleted_at IS NULL";
 
 // Add search conditions if search term exists
 if (!empty($search)) {
-    $search = $conn->real_escape_string($search); // Prevent SQL injection
-    $where_clause .= " AND (firstname LIKE '%$search%' OR lastname LIKE '%$search%' OR email LIKE '%$search%' OR unit LIKE '%$search%')";
+    $search = $conn->real_escape_string($search);
+    $where_clause .= " AND (u.firstname LIKE '%$search%' OR u.lastname LIKE '%$search%' OR u.email LIKE '%$search%' OR t.unit LIKE '%$search%')";
 }
 
 // Get total number of teachers (with search if applicable)
-$total_result = $conn->query("SELECT COUNT(*) AS total FROM teachers $where_clause");
+$total_query = "SELECT COUNT(*) AS total 
+                FROM teachers t
+                JOIN users u ON t.user_id = u.id
+                $where_clause";
+$total_result = $conn->query($total_query);
 $total_teachers = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_teachers / $limit);
 
 // Fetch teachers with limit for pagination (and search if applicable)
-$query = "SELECT * FROM teachers $where_clause LIMIT $limit OFFSET $offset";
+$query = "SELECT t.id, t.unit, t.created_at, 
+                 u.firstname, u.middlename, u.lastname, u.extension, u.email
+          FROM teachers t
+          JOIN users u ON t.user_id = u.id
+          $where_clause
+          ORDER BY u.lastname, u.firstname
+          LIMIT $limit OFFSET $offset";
 $result = $conn->query($query);
 
 $shown_count = $result->num_rows;
@@ -60,25 +71,6 @@ $shown_count = $result->num_rows;
                     <div class="row mb-2">
                         <div class="col-sm-6">
                             <h1>Teachers Management</h1>
-                        </div>
-                        <div class="col-sm-6">
-                            <?php if (isset($_SESSION['success'])): ?>
-                                <div class="alert alert-success alert-dismissible fade show float-right">
-                                    <?php echo $_SESSION['success']; ?>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <?php unset($_SESSION['success']); ?>
-                            <?php elseif (isset($_SESSION['error'])): ?>
-                                <div class="alert alert-danger alert-dismissible fade show float-right">
-                                    <?php echo $_SESSION['error']; ?>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <?php unset($_SESSION['error']); ?>
-                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -282,7 +274,9 @@ $shown_count = $result->num_rows;
                     </div>
 
                     <!-- Edit Teacher Modal -->
-                    <div class="modal fade" id="editTeacherModal" tabindex="-1" role="dialog" aria-labelledby="editTeacherModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="editTeacherModal" tabindex="-1" role="dialog" 
+     aria-labelledby="editTeacherModalLabel" aria-hidden="true"
+     data-bs-backdrop="true" data-bs-keyboard="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">

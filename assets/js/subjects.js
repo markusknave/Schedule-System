@@ -5,7 +5,6 @@ $(document).ready(function() {
     // Initialize all modals properly
     $('.modal').modal({
         show: false,
-        backdrop: 'static'
     });
 
     // Edit Subject Button Click

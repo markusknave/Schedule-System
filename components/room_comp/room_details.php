@@ -35,9 +35,10 @@ $schedules_query = $conn->prepare("
         s.end_time,
         o.name AS office_name,
         sub.name AS subject_name,
-        CONCAT(t.firstname, ' ', t.lastname) AS teacher_name
+        CONCAT(u.firstname, ' ', u.lastname) AS teacher_name
     FROM schedules s
     JOIN teachers t ON s.teach_id = t.id
+    JOIN users u ON t.user_id = u.id
     JOIN offices o ON t.office_id = o.id
     JOIN subjects sub ON s.subject_id = sub.id
     WHERE s.room_id = ?

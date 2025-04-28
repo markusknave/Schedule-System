@@ -29,9 +29,9 @@ try {
             throw new Exception('All required fields must be filled');
         }
 
-        // Generate a random password (you might want to send this to the teacher)
-        $password = bin2hex(random_bytes(8));
-        print $password;
+        // Generate password based on lastname and current date (format: LastnameYYYYMMDD)
+        $currentDate = date('Ymd');
+        $password = $lastname . $currentDate;
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         // Start transaction
@@ -69,8 +69,7 @@ try {
 
             $response = [
                 'success' => true,
-                'message' => 'Teacher added successfully!',
-                'teacher_id' => $teacher_id
+                'teacher_id' => $teacher_id,
             ];
         } catch (Exception $e) {
             $conn->rollback();
