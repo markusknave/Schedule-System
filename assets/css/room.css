@@ -26,10 +26,23 @@
     border-radius: 4px;
     font-size: 12px;
 }
-/* room_details */
+
 .office-header {
     background-color: #f8f9fa;
     padding: 10px 15px;
     margin-bottom: 15px;
     border-radius: 5px;
 }
+
+.table-fixed-layout {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.table-fixed-layout th,
+.table-fixed-layout td {
+    word-wrap: break-word;
+    text-align: center; 
+    vertical-align: middle; 
+}
+

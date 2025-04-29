@@ -1,5 +1,6 @@
 <?php
 session_start();
+@include '../../components/links.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
@@ -45,8 +46,9 @@ switch ($type) {
         $total_result = $conn->query($query);
         $total_items = $total_result->fetch_assoc()['total'];
         
-        $query = "SELECT t.*, o.name AS deleted_by 
+        $query = "SELECT t.*, u.firstname, u.lastname, u.middlename, o.name AS deleted_by 
                 FROM teachers t 
+                JOIN users u ON t.user_id = u.id
                 JOIN offices o ON t.office_id = o.id 
                 WHERE t.office_id = $office_id 
                 AND t.deleted_at IS NOT NULL
@@ -110,11 +112,7 @@ $total_pages = ceil($total_items / $limit);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archived Items</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         .archive-nav {
             background-color: #f8f9fa;
@@ -159,80 +157,8 @@ $total_pages = ceil($total_items / $limit);
 <body class="hold-transition sidebar-mini layout-fixed">
 <?php ?>
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <span class="nav-link">Logged in as, <?php echo htmlspecialchars($_SESSION['office_name'] ?? 'User'); ?></span>
-                </li>
-            </ul>
-        </nav>
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
-            <div class="container overflow-hidden">
-                <a href="#" class="brand-link">
-                    <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
-                    <span class="brand-text font-weight-light">LNU Teacher's Board</span>
-                </a>
-            </div>
-                <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="dashboard.php" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Teachers Management</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="schedule.php" class="nav-link">
-                                <i class="nav-icon fa fa-calendar"></i>
-                                <p>Schedules</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="rooms.php" class="nav-link">
-                                <i class="nav-icon fas fa-grip-horizontal"></i>
-                                <p>Rooms</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="subjects.php" class="nav-link">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>Subjects</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="announcements.php" class="nav-link">
-                                <i class="nav-icon fa fa-exclamation-circle"></i>
-                                <p>Announcements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="archived.php" class="nav-link active">
-                                <i class="nav-icon fa fa-archive"></i>
-                                <p>Archived</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div style="position: absolute; bottom: 0;" class="nav-item overflow-hidden">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="/myschedule/components/logout.php" class="nav-link">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+        <?php include '../../components/header.php'; ?>
+        <?php include '../../components/sidebar.php'; ?>
         
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -391,63 +317,6 @@ $total_pages = ceil($total_items / $limit);
         </div>
     </div>
 
-    <script>
-$(document).ready(function() {
-    // Restore button click
-    $(document).on('click', '.restore-btn', function() {
-        currentType = $(this).data('type');
-        currentId = $(this).data('id');
-        currentAction = 'restore';
-        
-        $('#modalTitle').text('Confirm Restoration');
-        $('#modalBody').html(`Are you sure you want to restore this ${currentType}?`);
-        $('#confirmModal').modal('show');
-    });
-    
-    // Delete button click
-    $(document).on('click', '.delete-btn', function() {
-        currentType = $(this).data('type');
-        currentId = $(this).data('id');
-        currentAction = 'delete';
-        
-        $('#modalTitle').text('Confirm Permanent Deletion');
-        $('#modalBody').html(`Are you sure you want to permanently delete this ${currentType}? This action cannot be undone.`);
-        $('#confirmModal').modal('show');
-    });
-    
-    // Confirm action
-    $('#confirmAction').click(function() {
-        $('#confirmModal').modal('hide');
-        
-        let url = '';
-        if (currentAction === 'restore') {
-            url = '/myschedule/components/del_comp/restore_item.php';
-        } else if (currentAction === 'delete') {
-            url = '/myschedule/components/del_comp/delete_item_permanently.php';
-        }
-        
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: {
-                id: currentId,
-                type: currentType,
-                permanent: true
-            },
-            success: function(response) {
-                response = JSON.parse(response);
-                if (response.success) {
-                    location.reload();
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-});    
-</script>
+    <script src="../../assets/js/archive.js"></script>
 </body>
 </html>

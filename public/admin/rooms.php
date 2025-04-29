@@ -1,5 +1,6 @@
 <?php
 session_start();
+@include '../../components/links.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
@@ -60,89 +61,24 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Room Management</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/myschedule/assets/css/room.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+<style >
+    th {
+    min-width: 300px !important;
+    text-align: center !important;
+    }
+
+    tr{
+        min-width: 300px !important;
+        text-align: center !important;
+    }
+</style>
 <body class="hold-transition sidebar-mini layout-fixed">
 <?php ?>
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <span class="nav-link">Logged in as, <?php echo htmlspecialchars($_SESSION['office_name'] ?? 'User'); ?></span>
-                </li>
-            </ul>
-        </nav>
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
-            <div class="container overflow-hidden">
-                <a href="#" class="brand-link">
-                    <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
-                    <span class="brand-text font-weight-light">LNU Teacher's Board</span>
-                </a>
-            </div>
-                <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="dashboard.php" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Teachers Management</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="schedule.php" class="nav-link">
-                                <i class="nav-icon fa fa-calendar"></i>
-                                <p>Schedules</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="rooms.php" class="nav-link active">
-                                <i class="nav-icon fas fa-grip-horizontal"></i>
-                                <p>Rooms</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="subjects.php" class="nav-link">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>Subjects</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="announcements.php" class="nav-link">
-                                <i class="nav-icon fa fa-exclamation-circle"></i>
-                                <p>Announcements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="archived.php" class="nav-link">
-                                <i class="nav-icon fa fa-archive"></i>
-                                <p>Archived</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div style="position: absolute; bottom: 0;" class="nav-item overflow-hidden">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="/myschedule/components/logout.php" class="nav-link">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+        <?php include '../../components/header.php'; ?>
+        <?php include '../../components/sidebar.php'; ?>
         <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">
@@ -178,28 +114,28 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                 <div class="container-fluid">
                     <!-- Action Buttons -->
                     <div class="row mb-3">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between">
-            <div>
-                <button class="btn btn-primary" id="addRoomButton">
-                    <i class="fas fa-plus"></i> Add New Room
-                </button>
-                <button class="btn btn-secondary ml-2" id="exportToCsv">
-                    <i class="fas fa-file-export"></i> Export to CSV
-                </button>
-            </div>
-            <div>
-                <form class="d-flex" style="width: 300px">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search rooms..." 
-                        value="<?= htmlspecialchars($search) ?>">
-                    <button type="button" class="btn btn-primary ml-2" id="searchButton">Search</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="d-block d-md-none"> <!-- Mobile view -->
+                        <div class="col-md-12">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <button class="btn btn-primary" id="addRoomButton">
+                                        <i class="fas fa-plus"></i> Add New Room
+                                    </button>
+                                    <button class="btn btn-secondary ml-2" id="exportToCsv">
+                                        <i class="fas fa-file-export"></i> Export to CSV
+                                    </button>
+                                </div>
+                                <div>
+                                    <form class="d-flex" style="width: 300px">
+                                        <input type="text" id="searchInput" class="form-control" placeholder="Search rooms..." 
+                                            value="<?= htmlspecialchars($search) ?>">
+                                        <button type="button" class="btn btn-primary ml-2" id="searchButton">Search</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+<!-- Mobile view -->
+<div class="d-block d-md-none"> 
     <div class="card mb-4 border-primary">
         <div class="card-header bg-dark text-white">
             <h5 class="mb-0"><i class="fas fa-door-open mr-2"></i>Rooms Management</h5>
@@ -276,7 +212,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
     <div class="card">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover table-fixed-layout">
                     <thead class="thead-dark">
                         <tr>
                             <th>Room Name</th>
@@ -285,31 +221,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                         </tr>
                     </thead>
                     <tbody id="roomsTableBody">
-                        <?php if (empty($rooms)): ?>
-                            <tr>
-                                <td colspan="4" class="text-center">No rooms found for your office.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($rooms as $room): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($room['name']) ?></td>
-                                    <td><?= htmlspecialchars($room['schedule_count']) ?></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info view-room" data-id="<?= $room['id'] ?>">
-                                            <i class="fas fa-eye"></i> View
-                                        </button>
-                                        <button class="btn btn-sm btn-success edit-room" 
-                                            data-id="<?= $room['id'] ?>" 
-                                            data-name="<?= htmlspecialchars($room['name']) ?>">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </button>
-                                        <button class="btn btn-sm btn-danger delete-room" data-id="<?= $room['id'] ?>">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                        <!-- AJAX will fill this -->
                     </tbody>
                 </table>
             </div>
@@ -388,182 +300,13 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
             </div>
         </div>
     </div>
-
+    <script src="../../assets/js/rooms.js"></script>
     <script>
-$(document).ready(function() {
-    // Show success/error messages
-    $('.alert').delay(3000).fadeOut('slow');
-
-    // Initialize all modals properly
-    $('.modal').modal({
-        show: false,
-        backdrop: 'static'
-    });
-
-    // Export to CSV
-    $('#exportToCsv').click(function() {
-        window.location.href = '/myschedule/components/room_comp/export_rooms.php';
-    });
-
-    // Edit Room Button Click
-    $(document).on('click', '.edit-room', function() {
-        const roomId = $(this).data('id');
-        const roomName = $(this).data('name');
-        
-        $('#editRoomId').val(roomId);
-        $('#editRoomName').val(roomName);
-        $('#editRoomModal').modal('show');
-    });
-
-    // Delete Room Button Click
-    $(document).on('click', '.delete-room', function() {
-        const roomId = $(this).data('id');
-        $('#deleteRoomId').val(roomId);
-        $('#deleteRoomModal').modal('show');
-    });
-
-    // View Room Button Click
-    $(document).on('click', '.view-room', function() {
-        const roomId = $(this).data('id');
-        window.location.href = '/myschedule/components/room_comp/room_details.php?id=' + roomId;
-    });
-
-    // Add Room Button Click
-    $('#addRoomButton').click(function() {
-        $('#addRoomModal').modal('show');
-    });
-
-    // Add Room Form Submission
-    $('#addRoomForm').submit(function(e) {
-        e.preventDefault();
-        const form = $(this);
-        const formData = form.serialize();
-        
-        $.ajax({
-            url: form.attr('action'),
-            method: form.attr('method'),
-            data: formData,
-            success: function(response) {
-                $('#addRoomModal').modal('hide');
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-    // Edit Room Form Submission
-    $('#editRoomForm').submit(function(e) {
-        e.preventDefault();
-        const form = $(this);
-        const formData = form.serialize();
-        
-        $.ajax({
-            url: form.attr('action'),
-            method: form.attr('method'),
-            data: formData,
-            success: function(response) {
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-    // Delete Room Form Submission
-    $('#deleteRoomForm').submit(function(e) {
-        e.preventDefault();
-        const form = $(this);
-        const formData = form.serialize();
-        
-        $.ajax({
-            url: form.attr('action'),
-            method: form.attr('method'),
-            data: formData,
-            success: function(response) {
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-    // Dynamic search functionality
-    function loadRooms(search = "", page = 1) {
-        const isMobile = $(window).width() < 768;
-        
-        // Show loading state
-        if (isMobile) {
-            $('#mobileRoomsList').html('<div class="list-group-item text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
-        } else {
-            $('#roomsTableBody').html('<tr><td colspan="3" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
-        }
-        
-        $.ajax({
-            url: '/myschedule/components/room_comp/fetch_rooms.php',
-            type: 'GET',
-            data: { 
-                search: search, 
-                page: page,
-                mobile: isMobile
-            },
-            success: function(response) {
-                if (isMobile) {
-                    $('#mobileRoomsList').html(response);
-                } else {
-                    $('#roomsTableBody').html(response);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX Error:", status, error);
-                // Fallback to regular page reload if AJAX fails
-                window.location.href = 'rooms.php?page=' + page + 
-                    (search ? '&search=' + encodeURIComponent(search) : '');
-            }
-        });
-    }
-
-    // Handle window resize to switch between mobile and desktop views
-    let resizeTimer;
-    $(window).on('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            const searchVal = $('#searchInput').val();
-            const currentPage = $('.page-item.active .page-link-ajax').data('page') || 1;
-            loadRooms(searchVal, currentPage);
-        }, 200);
-    });
-
-    // Initial load based on current view
-    loadRooms('<?= htmlspecialchars($search) ?>', <?= $page ?>);
-
-    // Live search with debounce
-    let searchTimer;
-    $('#searchInput').on('input', function() {
-        clearTimeout(searchTimer);
-        const searchVal = $(this).val();
-        searchTimer = setTimeout(() => {
-            loadRooms(searchVal, 1);
-        }, 300);
-    });
-
-    // Search button click
-    $('#searchButton').click(function() {
-        const searchVal = $('#searchInput').val();
-        loadRooms(searchVal, 1);
-    });
-
-    // Handle pagination click
-    $(document).on('click', '.page-link-ajax', function(e) {
-        e.preventDefault();
-        const page = $(this).data('page');
-        const searchVal = $('#searchInput').val();
-        loadRooms(searchVal, page);
-    });
-});
-</script>
+        const phpVars = {
+            searchTerm: '<?= htmlspecialchars($search, ENT_QUOTES) ?>',
+            currentPage: <?= $page ?>,
+            baseUrl: '/myschedule/components/room_comp/'
+        };
+    </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+@include '../../components/links.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
@@ -53,11 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if ($stmt->execute()) {
                 $success = 'Announcement created successfully!';
-                // Clear form
                 $title = $content = '';
+
+                header('Location: ../../public/admin/announcements.php');
+                exit();
             } else {
                 $error = 'Error saving announcement: ' . $conn->error;
-                // Delete the uploaded file if database insert failed
                 unlink($target_file);
             }
         }
@@ -71,12 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Announcement</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/myschedule/assets/tinymce/js/tinymce/tinymce.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         .image-preview {
             max-width: 100%;
@@ -93,75 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="hold-transition sidebar-mini layout-fixed">
 <?php ?>
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <span class="nav-link">Logged in as, <?php echo htmlspecialchars($_SESSION['office_name'] ?? 'User'); ?></span>
-                </li>
-            </ul>
-        </nav>
-        
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
-            <div class="container overflow-hidden">
-                <a href="#" class="brand-link">
-                    <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
-                    <span class="brand-text font-weight-light">LNU Teacher's Board</span>
-                </a>
-            </div>
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="dashboard.php" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Teachers Management</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="schedule.php" class="nav-link">
-                                <i class="nav-icon fa fa-calendar"></i>
-                                <p>Schedules</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="rooms.php" class="nav-link">
-                                <i class="nav-icon fas fa-grip-horizontal"></i>
-                                <p>Rooms</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="announcements.php" class="nav-link">
-                                <i class="nav-icon fa fa-exclamation-circle"></i>
-                                <p>Announcements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="archived.php" class="nav-link">
-                                <i class="nav-icon fa fa-archive"></i>
-                                <p>Archived</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div style="position: absolute; bottom: 0;" class="nav-item overflow-hidden">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="/myschedule/components/logout.php" class="nav-link">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+    <?php include '../../components/header.php'; ?>
+    <?php include '../../components/sidebar.php'; ?>
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -173,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="announcements.php">Announcements</a></li>
+                                <li class="breadcrumb-item"><a href="../../public/admin/announcements.php">Announcements</a></li>
                                 <li class="breadcrumb-item active">Create</li>
                             </ol>
                         </div>

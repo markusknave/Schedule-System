@@ -1,5 +1,6 @@
 <?php
 session_start();
+@include '../../components/links.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
@@ -53,11 +54,13 @@ $schedules_query = $conn->query("
         END AS subject_name,
         CASE 
             WHEN t.id IS NULL OR t.deleted_at IS NOT NULL THEN 'TBA'
-            ELSE CONCAT(t.firstname, ' ', t.lastname)
+            WHEN u.id IS NULL OR u.deleted_at IS NOT NULL THEN 'TBA'
+            ELSE CONCAT(u.firstname, ' ', u.lastname)
         END AS teacher_name,
         COALESCE(t.unit, '') AS unit
     FROM schedules s
     LEFT JOIN teachers t ON s.teach_id = t.id
+    LEFT JOIN users u ON t.user_id = u.id
     LEFT JOIN rooms r ON s.room_id = r.id
     LEFT JOIN subjects sub ON s.subject_id = sub.id
     WHERE s.office_id = $office_id
@@ -75,7 +78,6 @@ $conflicts = [];
 $schedule_slots = [];
 
 foreach ($schedules as $schedule) {
-    // Skip if any related record is soft-deleted
     if ($schedule['teacher_name'] === 'TBA' || $schedule['room_name'] === 'TBA' || $schedule['subject_name'] === 'TBA') {
         continue;
     }
@@ -144,91 +146,13 @@ foreach ($schedules as $schedule) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Room Schedules</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/myschedule/assets/css/schedule.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <?php ?>
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <span class="nav-link">Logged in as, <?php echo htmlspecialchars($_SESSION['office_name'] ?? 'User'); ?></span>
-                </li>
-            </ul>
-        </nav>
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
-            <div class="container overflow-hidden">
-
-                <a href="#" class="brand-link">
-                    <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
-                    <span class="brand-text font-weight-light">LNU Teacher's Board</span>
-                </a>
-            </div>
-                <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-
-                        <li class="nav-item">
-                            <a href="dashboard.php" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Teachers Management</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="schedule.php" class="nav-link active">
-                                <i class="nav-icon fa fa-calendar"></i>
-                                <p>Schedules</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="rooms.php" class="nav-link">
-                                <i class="nav-icon fas fa-grip-horizontal"></i>
-                                <p>Rooms</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="subjects.php" class="nav-link">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>Subjects</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="announcements.php" class="nav-link">
-                                <i class="nav-icon fa fa-exclamation-circle"></i>
-                                <p>Announcements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="archived.php" class="nav-link">
-                                <i class="nav-icon fa fa-archive"></i>
-                                <p>Archived</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div style="position: absolute; bottom: 0;" class="nav-item overflow-hidden">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="/myschedule/components/logout.php" class="nav-link">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+        <?php include '../../components/header.php'; ?>
+        <?php include '../../components/sidebar.php'; ?>
         <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">

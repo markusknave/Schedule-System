@@ -1,5 +1,6 @@
 <?php
 session_start();
+@include '../../components/links.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
@@ -62,88 +63,24 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Subject Management</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/myschedule/assets/css/subject.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+<style>
+        th {
+    min-width: 300px !important;
+    text-align: center !important;
+    }
+
+    tr{
+        min-width: 300px !important;
+        text-align: center !important;
+    }
+</style>
 <body class="hold-transition sidebar-mini layout-fixed">
+    <input type="hidden" value="<?= $page ?>" id="current-page">
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <span class="nav-link">Logged in as, <?php echo htmlspecialchars($_SESSION['office_name'] ?? 'User'); ?></span>
-                </li>
-            </ul>
-        </nav>
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
-            <div class="container overflow-hidden">
-                <a href="#" class="brand-link">
-                    <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
-                    <span class="brand-text font-weight-light">LNU Teacher's Board</span>
-                </a>
-            </div>
-                <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="dashboard.php" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Teachers Management</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="schedule.php" class="nav-link">
-                                <i class="nav-icon fa fa-calendar"></i>
-                                <p>Schedules</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="rooms.php" class="nav-link">
-                                <i class="nav-icon fas fa-grip-horizontal"></i>
-                                <p>Rooms</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="subjects.php" class="nav-link active">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>Subjects</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="announcements.php" class="nav-link">
-                                <i class="nav-icon fa fa-exclamation-circle"></i>
-                                <p>Announcements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="archived.php" class="nav-link">
-                                <i class="nav-icon fa fa-archive"></i>
-                                <p>Archived</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div style="position: absolute; bottom: 0;" class="nav-item overflow-hidden">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="/myschedule/components/logout.php" class="nav-link">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+        <?php include '../../components/header.php'; ?>
+        <?php include '../../components/sidebar.php'; ?>
         <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">
@@ -152,25 +89,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                         <div class="col-sm-6">
                             <h1>Subject Management</h1>
                         </div>
-                        <div class="col-sm-6">
-                            <?php if (isset($_SESSION['success'])): ?>
-                                <div class="alert alert-success alert-dismissible fade show float-right">
-                                    <?php echo $_SESSION['success']; ?>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <?php unset($_SESSION['success']); ?>
-                            <?php elseif (isset($_SESSION['error'])): ?>
-                                <div class="alert alert-danger alert-dismissible fade show float-right">
-                                    <?php echo $_SESSION['error']; ?>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <?php unset($_SESSION['error']); ?>
-                            <?php endif; ?>
-                        </div>
+                        <div class="col-sm-6" id="messageContainer"></div>
                     </div>
                 </div>
             </section>
@@ -243,7 +162,6 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                     </span>
                                 </div>
                                 
-                                <!-- Mobile Pagination -->
                                 <nav aria-label="Page navigation" class="mt-2">
                                     <ul class="pagination pagination-sm justify-content-center">
                                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
@@ -317,26 +235,6 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-sm-6">
-                        <?php if (isset($_SESSION['success'])): ?>
-                            <div class="alert alert-success alert-dismissible fade show float-right">
-                                <?php echo $_SESSION['success']; ?>
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <?php unset($_SESSION['success']); ?>
-                        <?php elseif (isset($_SESSION['error'])): ?>
-                            <div class="alert alert-danger alert-dismissible fade show float-right">
-                                <?php echo $_SESSION['error']; ?>
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <?php unset($_SESSION['error']); ?>
-                        <?php endif; ?>
                     </div>
 
                     <!-- Add Subject Modal -->
@@ -418,240 +316,10 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                             </div>
                         </div>
                     </div>
-
-                    <script>
-                    $(document).ready(function() {
-                        // Show success/error messages
-                        $('.alert').delay(3000).fadeOut('slow');
-
-                        // Initialize all modals properly
-                        $('.modal').modal({
-                            show: false,
-                            backdrop: 'static'
-                        });
-
-                        // Edit Subject Button Click
-                        $(document).on('click', '.edit-subject', function() {
-                            const subjectId = $(this).data('id');
-                            const subjectCode = $(this).data('code');
-                            const subjectName = $(this).data('name');
-                            
-                            $('#editSubjectId').val(subjectId);
-                            $('#editSubjectCode').val(subjectCode);
-                            $('#editSubjectName').val(subjectName);
-                            $('#editSubjectModal').modal('show');
-                        });
-
-                        // Delete Subject Button Click
-                        $(document).on('click', '.delete-subject', function() {
-                            const subjectId = $(this).data('id');
-                            $('#deleteSubjectId').val(subjectId);
-                            $('#deleteSubjectModal').modal('show');
-                        });
-
-                        // View Subject Button Click
-                        $(document).on('click', '.view-subject', function() {
-                            const subjectId = $(this).data('id');
-                            window.location.href = '/myschedule/components/subj_comp/subject_details.php?id=' + subjectId;
-                        });
-
-                        // Add Subject Button Click
-                        $('#addSubjectButton').click(function() {
-                            $('#addSubjectModal').modal('show');
-                        });
-
-                        // Add Subject Form Submission
-                        $('#addSubjectForm').submit(function(e) {
-                            e.preventDefault();
-                            const form = $(this);
-                            const formData = form.serialize();
-                            
-                            $.ajax({
-                                url: form.attr('action'),
-                                method: form.attr('method'),
-                                data: formData,
-                                dataType: 'json',
-                                success: function(response) {
-                                    if (response.success) {
-                                        $('#addSubjectModal').modal('hide');
-                                        // Show success message
-                                        $('<div class="alert alert-success alert-dismissible fade show float-right">' + 
-                                        response.message + 
-                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-                                        '<span aria-hidden="true">&times;</span></button></div>')
-                                        .insertBefore('.content-header .container-fluid .row .col-sm-6')
-                                        .delay(3000).fadeOut('slow', function() { $(this).remove(); });
-                                        location.reload();
-                                    } else {
-                                        // Show error message in modal
-                                        $('#addSubjectModal .modal-body').prepend(
-                                            '<div class="alert alert-danger">' + response.message + '</div>'
-                                        );
-                                        // Remove error after 5 seconds
-                                        setTimeout(function() {
-                                            $('#addSubjectModal .alert-danger').fadeOut('slow', function() {
-                                                $(this).remove();
-                                            });
-                                        }, 5000);
-                                    }
-                                },
-                                error: function(xhr, status, error) {
-                                    $('#addSubjectModal .modal-body').prepend(
-                                        '<div class="alert alert-danger">Error: ' + error + '</div>'
-                                    );
-                                    setTimeout(function() {
-                                        $('#addSubjectModal .alert-danger').fadeOut('slow', function() {
-                                            $(this).remove();
-                                        });
-                                    }, 5000);
-                                }
-                            });
-                        });
-
-                        // Edit Subject Form Submission
-                        $('#editSubjectForm').submit(function(e) {
-                            e.preventDefault();
-                            const form = $(this);
-                            const formData = form.serialize();
-                            
-                            $.ajax({
-                                url: form.attr('action'),
-                                method: form.attr('method'),
-                                data: formData,
-                                dataType: 'json',
-                                success: function(response) {
-                                    if (response.success) {
-                                        $('#editSubjectModal').modal('hide');
-                                        // Show success message
-                                        $('<div class="alert alert-success alert-dismissible fade show float-right">' + 
-                                        response.message + 
-                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-                                        '<span aria-hidden="true">&times;</span></button></div>')
-                                        .insertBefore('.content-header .container-fluid .row .col-sm-6')
-                                        .delay(3000).fadeOut('slow', function() { $(this).remove(); });
-                                        location.reload();
-                                    } else {
-                                        // Show error message in modal
-                                        $('#editSubjectModal .modal-body').prepend(
-                                            '<div class="alert alert-danger">' + response.message + '</div>'
-                                        );
-                                        // Remove error after 5 seconds
-                                        setTimeout(function() {
-                                            $('#editSubjectModal .alert-danger').fadeOut('slow', function() {
-                                                $(this).remove();
-                                            });
-                                        }, 5000);
-                                    }
-                                },
-                                error: function(xhr, status, error) {
-                                    $('#editSubjectModal .modal-body').prepend(
-                                        '<div class="alert alert-danger">Error: ' + error + '</div>'
-                                    );
-                                    setTimeout(function() {
-                                        $('#editSubjectModal .alert-danger').fadeOut('slow', function() {
-                                            $(this).remove();
-                                        });
-                                    }, 5000);
-                                }
-                            });
-                        });
-
-                        // Delete Subject Form Submission
-                        $('#deleteSubjectForm').submit(function(e) {
-                            e.preventDefault();
-                            const form = $(this);
-                            const formData = form.serialize();
-                            
-                            $.ajax({
-                                url: form.attr('action'),
-                                method: form.attr('method'),
-                                data: formData,
-                                success: function(response) {
-                                    location.reload();
-                                },
-                                error: function(xhr, status, error) {
-                                    alert('Error: ' + error);
-                                }
-                            });
-                        });
-
-                        // Dynamic search functionality
-                        function loadSubjects(search = "", page = 1) {
-                            const isMobile = $(window).width() < 768;
-                            
-                            // Show loading state
-                            if (isMobile) {
-                                $('#mobileSubjectsList').html('<div class="list-group-item text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
-                            } else {
-                                $('#subjectsTableBody').html('<tr><td colspan="4" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
-                            }
-                            
-                            $.ajax({
-                                url: '/myschedule/components/subj_comp/fetch_subjects.php',
-                                type: 'GET',
-                                data: { 
-                                    search: search, 
-                                    page: page,
-                                    mobile: isMobile
-                                },
-                                success: function(response) {
-                                    if (isMobile) {
-                                        $('#mobileSubjectsList').html(response);
-                                    } else {
-                                        $('#subjectsTableBody').html(response);
-                                    }
-                                },
-                                error: function(xhr, status, error) {
-                                    console.error("AJAX Error:", status, error);
-                                    // Fallback to regular page reload if AJAX fails
-                                    window.location.href = 'subjects.php?page=' + page + 
-                                        (search ? '&search=' + encodeURIComponent(search) : '');
-                                }
-                            });
-                        }
-
-                        // Handle window resize to switch between mobile and desktop views
-                        let resizeTimer;
-                        $(window).on('resize', function() {
-                            clearTimeout(resizeTimer);
-                            resizeTimer = setTimeout(function() {
-                                const searchVal = $('#searchInput').val();
-                                const currentPage = $('.page-item.active .page-link-ajax').data('page') || 1;
-                                loadSubjects(searchVal, currentPage);
-                            }, 200);
-                        });
-
-                        // Initial load based on current view
-                        loadSubjects('<?= htmlspecialchars($search) ?>', <?= $page ?>);
-
-                        // Live search with debounce
-                        let searchTimer;
-                        $('#searchInput').on('input', function() {
-                            clearTimeout(searchTimer);
-                            const searchVal = $(this).val();
-                            searchTimer = setTimeout(() => {
-                                loadSubjects(searchVal, 1);
-                            }, 300);
-                        });
-
-                        // Search button click
-                        $('#searchButton').click(function() {
-                            const searchVal = $('#searchInput').val();
-                            loadSubjects(searchVal, 1);
-                        });
-
-                        // Handle pagination click
-                        $(document).on('click', '.page-link-ajax', function(e) {
-                            e.preventDefault();
-                            const page = $(this).data('page');
-                            const searchVal = $('#searchInput').val();
-                            loadSubjects(searchVal, page);
-                        });
-                    });
-                    </script>
                 </div>
             </section>
         </div>
     </div>
+    <script src="../../assets/js/subjects.js"></script>
 </body>
 </html>

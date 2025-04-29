@@ -4,7 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $room_id = $_POST['room_id'];
+    $room_id = strtoupper($_POST['room_id']);
     $name = $_POST['name'];
 
     // Update query

@@ -13,8 +13,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $subject_id = $_POST['subject_id'];
-    $subject_code = trim($_POST['subject_code']);
-    $name = trim($_POST['name']);
+    $subject_code = strtoupper(trim($_POST['subject_code']));
+    $name = strtoupper(trim($_POST['name']));
     $office_id = $_SESSION['office_id'];
     $response = ['success' => false, 'message' => ''];
     

@@ -1,31 +1,81 @@
 <?php
 session_start();
+header('Content-Type: application/json');
+
+if (!isset($_SESSION['office_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit();
+}
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $teacher_id = $_POST['teacher_id'];
-    $firstname = $_POST['firstname'];
-    $middlename = $_POST['middlename'];
-    $lastname = $_POST['lastname'];
-    $extension = $_POST['extension'];
-    $email = $_POST['email'];
-    $unit = $_POST['unit'];
+$response = ['success' => false, 'message' => ''];
 
-    // Update query
-    $stmt = $conn->prepare("UPDATE teachers SET firstname=?, middlename=?, lastname=?, extension=?,email=?, unit=? WHERE id=?");
-    $stmt->bind_param("ssssssi", $firstname, $middlename, $lastname, $extension, $email, $unit, $teacher_id);
+try {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $firstname = strtoupper($_POST['firstname'] ?? '');
+        $middlename = strtoupper($_POST['middlename'] ?? '');
+        $lastname = strtoupper($_POST['lastname'] ?? '');
+        $extension = strtoupper($_POST['extension'] ?? '');
+        $email = $_POST['email'] ?? '';
+        $unit = strtoupper($_POST['unit'] ?? '');   
+        $office_id = $_SESSION['office_id'];
 
-    if ($stmt->execute()) {
-        $_SESSION['success'] = "Teacher updated successfully!";
-    } else {
-        $_SESSION['error'] = "Error updating teacher: " . $stmt->error;
+        // Verify teacher belongs to this office
+        $check = $conn->prepare("SELECT t.id, t.user_id FROM teachers t WHERE t.id = ? AND t.office_id = ?");
+        $check->bind_param("ii", $teacher_id, $office_id);
+        $check->execute();
+        $result = $check->get_result();
+        
+        if (!$result->num_rows) {
+            throw new Exception("Teacher not found or access denied");
+        }
+        
+        $teacher = $result->fetch_assoc();
+        $user_id = $teacher['user_id'];
+
+        // Start transaction
+        $conn->begin_transaction();
+
+        try {
+            // Update user information in users table
+            $user_stmt = $conn->prepare("UPDATE users SET 
+                firstname=?, middlename=?, lastname=?, extension=?, email=?
+                WHERE id=?");
+            $user_stmt->bind_param("sssssi", $firstname, $middlename, $lastname, $extension, $email, $user_id);
+
+            if (!$user_stmt->execute()) {
+                throw new Exception("Failed to update user information: " . $user_stmt->error);
+            }
+            $user_stmt->close();
+
+            // Update unit in teachers table
+            $teacher_stmt = $conn->prepare("UPDATE teachers SET 
+                unit=? 
+                WHERE id=?");
+            $teacher_stmt->bind_param("si", $unit, $teacher_id);
+
+            if (!$teacher_stmt->execute()) {
+                throw new Exception("Failed to update teacher unit: " . $teacher_stmt->error);
+            }
+            $teacher_stmt->close();
+
+            // Commit transaction
+            $conn->commit();
+
+            $response = [
+                'success' => true,
+                'message' => 'Teacher updated successfully!'
+            ];
+        } catch (Exception $e) {
+            $conn->rollback();
+            throw $e;
+        }
     }
-
-    $stmt->close();
-    $conn->close();
-
-    header("Location: /myschedule/public/admin/dashboard.php");
-    exit();
+} catch (Exception $e) {
+    $response['message'] = $e->getMessage();
 }
+
+echo json_encode($response);
 ?>

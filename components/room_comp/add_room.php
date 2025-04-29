@@ -13,7 +13,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
+    $name = strtoupper($_POST['name']);
     $office_id = $_SESSION['office_id'];
 
     // Insert new room
