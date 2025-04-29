@@ -16,7 +16,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 $limit = 5; // Teachers per page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
-$search = isset($_GET['search']) ? trim($_GET['search']) : ""; // Get search term from URL
+$search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
 // Base query conditions
 $office_id = $_SESSION['office_id'];
@@ -39,12 +39,12 @@ $total_pages = ceil($total_teachers / $limit);
 
 // Fetch teachers with limit for pagination (and search if applicable)
 $query = "SELECT t.id, t.unit, t.created_at, 
-                 u.firstname, u.middlename, u.lastname, u.extension, u.email
-          FROM teachers t
-          JOIN users u ON t.user_id = u.id
-          $where_clause
-          ORDER BY u.lastname, u.firstname
-          LIMIT $limit OFFSET $offset";
+        u.firstname, u.middlename, u.lastname, u.extension, u.email
+        FROM teachers t
+        JOIN users u ON t.user_id = u.id
+         $where_clause
+         ORDER BY u.lastname, u.firstname
+        LIMIT $limit OFFSET $offset";
 $result = $conn->query($query);
 
 $shown_count = $result->num_rows;
@@ -57,6 +57,17 @@ $shown_count = $result->num_rows;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Teachers Management</title>
     <link rel="stylesheet" href="/myschedule/assets/css/teacher.css">
+    <style>
+        th {
+        min-width: 300px !important;
+        text-align: center !important;
+        }
+
+        tr{
+            min-width: 300px !important;
+            text-align: center !important;
+        }
+    </style>
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -148,7 +159,6 @@ $shown_count = $result->num_rows;
                                     </span>
                                 </div>
                                 
-                                <!-- Mobile Pagination -->
                                 <nav aria-label="Page navigation" class="mt-2">
                                     <ul class="pagination pagination-sm justify-content-center">
                                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">

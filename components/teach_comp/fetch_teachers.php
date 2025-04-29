@@ -37,9 +37,9 @@ try {
 
     // Get total count
     $total_query = "SELECT COUNT(*) AS total 
-                   FROM teachers t
-                   JOIN users u ON t.user_id = u.id
-                   $where_clause";
+                FROM teachers t
+                JOIN users u ON t.user_id = u.id
+                $where_clause";
     $total_result = $conn->query($total_query);
     
     if (!$total_result) {
@@ -52,12 +52,12 @@ try {
 
     // Get teacher data with user details
     $query = "SELECT t.id, t.unit, t.created_at, 
-                     u.firstname, u.middlename, u.lastname, u.extension, u.email
-              FROM teachers t
-              JOIN users u ON t.user_id = u.id
-              $where_clause 
-              ORDER BY u.lastname, u.firstname 
-              LIMIT $limit OFFSET $offset";
+            u.firstname, u.middlename, u.lastname, u.extension, u.email
+            FROM teachers t
+            JOIN users u ON t.user_id = u.id
+            $where_clause 
+            ORDER BY u.lastname, u.firstname 
+            LIMIT $limit OFFSET $offset";
     
     $result = $conn->query($query);
     
@@ -67,9 +67,7 @@ try {
 
     $teachers = $result->fetch_all(MYSQLI_ASSOC);
 
-    // Generate HTML content
     if (!empty($teachers)) {
-        // Generate mobile HTML
         $mobile_html = '';
         foreach ($teachers as $teacher) {
             $mobile_html .= '<div class="list-group-item">
@@ -101,7 +99,6 @@ try {
         }
         $response['mobile_html'] = $mobile_html;
 
-        // Generate desktop HTML
         $desktop_html = '';
         foreach ($teachers as $teacher) {
             $desktop_html .= '<tr>
@@ -128,7 +125,6 @@ try {
         $response['desktop_html'] = $desktop_html;
     }
 
-    // Generate pagination only if we have more than one page
     if ($total_pages > 1) {
         $mobile_pagination = '<div class="list-group-item">
             <nav><ul class="pagination justify-content-center mt-3">';

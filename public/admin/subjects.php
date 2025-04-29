@@ -65,6 +65,17 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
     <title>Dashboard - Subject Management</title>
     <link rel="stylesheet" href="/myschedule/assets/css/subject.css">
 </head>
+<style>
+        th {
+    min-width: 300px !important;
+    text-align: center !important;
+    }
+
+    tr{
+        min-width: 300px !important;
+        text-align: center !important;
+    }
+</style>
 <body class="hold-transition sidebar-mini layout-fixed">
     <input type="hidden" value="<?= $page ?>" id="current-page">
     <div class="wrapper">
@@ -78,25 +89,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                         <div class="col-sm-6">
                             <h1>Subject Management</h1>
                         </div>
-                        <div class="col-sm-6">
-                            <?php if (isset($_SESSION['success'])): ?>
-                                <div class="alert alert-success alert-dismissible fade show float-right">
-                                    <?php echo $_SESSION['success']; ?>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <?php unset($_SESSION['success']); ?>
-                            <?php elseif (isset($_SESSION['error'])): ?>
-                                <div class="alert alert-danger alert-dismissible fade show float-right">
-                                    <?php echo $_SESSION['error']; ?>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <?php unset($_SESSION['error']); ?>
-                            <?php endif; ?>
-                        </div>
+                        <div class="col-sm-6" id="messageContainer"></div>
                     </div>
                 </div>
             </section>
@@ -169,7 +162,6 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                     </span>
                                 </div>
                                 
-                                <!-- Mobile Pagination -->
                                 <nav aria-label="Page navigation" class="mt-2">
                                     <ul class="pagination pagination-sm justify-content-center">
                                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
@@ -243,26 +235,6 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-sm-6">
-                        <?php if (isset($_SESSION['success'])): ?>
-                            <div class="alert alert-success alert-dismissible fade show float-right">
-                                <?php echo $_SESSION['success']; ?>
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <?php unset($_SESSION['success']); ?>
-                        <?php elseif (isset($_SESSION['error'])): ?>
-                            <div class="alert alert-danger alert-dismissible fade show float-right">
-                                <?php echo $_SESSION['error']; ?>
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <?php unset($_SESSION['error']); ?>
-                        <?php endif; ?>
                     </div>
 
                     <!-- Add Subject Modal -->

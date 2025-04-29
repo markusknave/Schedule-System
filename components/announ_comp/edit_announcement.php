@@ -1,5 +1,6 @@
 <?php
 session_start();
+@include '../../components/links.php';
 
 // Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
@@ -87,9 +88,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $announcement = $result->fetch_assoc();
+
+                header('Location: ../../public/admin/announcements.php');
+                exit();
             } else {
                 $error = 'Error updating announcement: ' . $conn->error;
-                // Delete the uploaded file if database update failed
                 if ($image_changed && isset($target_file)) {
                     unlink($target_file);
                 }
@@ -105,13 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Announcement</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.css">
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/myschedule/assets/tinymce/js/tinymce/tinymce.min.js"></script>
+
     <style>
         .image-preview {
             max-width: 100%;
@@ -125,81 +123,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .current-image {
             margin-top: 10px;
         }
-        
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <?php ?>
     <div class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <span class="nav-link">Logged in as, <?php echo htmlspecialchars($_SESSION['office_name'] ?? 'User'); ?></span>
-                </li>
-            </ul>
-        </nav>
-        
-        <!-- Sidebar -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
-            <div class="container overflow-hidden">
-                <a href="#" class="brand-link">
-                    <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
-                    <span class="brand-text font-weight-light">LNU Teacher's Board</span>
-                </a>
-            </div>
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="dashboard.php" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Teachers Management</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="schedule.php" class="nav-link">
-                                <i class="nav-icon fa fa-calendar"></i>
-                                <p>Schedules</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="rooms.php" class="nav-link">
-                                <i class="nav-icon fas fa-grip-horizontal"></i>
-                                <p>Rooms</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="announcements.php" class="nav-link">
-                                <i class="nav-icon fa fa-exclamation-circle"></i>
-                                <p>Announcements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="archived.php" class="nav-link">
-                                <i class="nav-icon fa fa-archive"></i>
-                                <p>Archived</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div style="position: absolute; bottom: 0;" class="nav-item overflow-hidden">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="/myschedule/components/logout.php" class="nav-link">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+    <?php include '../../components/header.php'; ?>
+    <?php include '../../components/sidebar.php'; ?>
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -211,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="announcements.php">Announcements</a></li>
+                                <li class="breadcrumb-item"><a href="../../public/admin/announcements.php">Announcements</a></li>
                                 <li class="breadcrumb-item active">Edit</li>
                             </ol>
                         </div>
@@ -290,6 +220,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script>
     $(document).ready(function() {
+        // Initialize TinyMCE
+        tinymce.init({
+            selector: '#content',
+            height: 300,
+            menubar: false,
+            plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table paste code help wordcount'
+            ],
+            toolbar: 'undo redo | formatselect | ' +
+            'bold italic underline strikethrough | forecolor backcolor | ' +
+            'alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent | removeformat | help',
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+            setup: function(editor) {
+                editor.on('change', function() {
+                    editor.save();
+                });
+            }
+        });
+
         // Show image preview when file is selected
         $('#image').change(function() {
             const file = this.files[0];
@@ -303,26 +255,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
         
-        // Initialize CKEditor
-        CKEDITOR.replace('content', {
-            toolbar: [
-                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote'] },
-                { name: 'align', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
-                { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
-                { name: 'colors', items: ['TextColor', 'BGColor'] },
-                { name: 'links', items: ['Link', 'Unlink'] },
-                { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'SpecialChar'] },
-                { name: 'document', items: ['Source'] }
-            ],
-            height: 300,
-            extraAllowedContent: '*(*);*{*}',
-            removePlugins: 'resize',
-            removeButtons: ''
-        });
-
-        // Form validation
-        $('form').submit(function() {
+        // Form validation including TinyMCE content check
+        $('form').submit(function(e) {
             let valid = true;
             
             // Check required fields
@@ -331,11 +265,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const $field = $('#' + fieldId);
                 
                 if (fieldId === 'content') {
-                    // Special handling for CKEditor
-                    const content = CKEDITOR.instances.content.getData().replace(/<[^>]*>/g, '').trim();
-                    if (content === '') {
+                    // Get content from TinyMCE
+                    const content = tinymce.get('content').getContent({format: 'text'});
+                    if (!content.trim()) {
                         valid = false;
                         $field.addClass('is-invalid');
+                        // Focus on the editor
+                        tinymce.get('content').focus();
                     } else {
                         $field.removeClass('is-invalid');
                     }
@@ -348,6 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
             
             if (!valid) {
+                e.preventDefault();
                 return false;
             }
         });

@@ -54,11 +54,13 @@ $schedules_query = $conn->query("
         END AS subject_name,
         CASE 
             WHEN t.id IS NULL OR t.deleted_at IS NOT NULL THEN 'TBA'
-            ELSE CONCAT(t.firstname, ' ', t.lastname)
+            WHEN u.id IS NULL OR u.deleted_at IS NOT NULL THEN 'TBA'
+            ELSE CONCAT(u.firstname, ' ', u.lastname)
         END AS teacher_name,
         COALESCE(t.unit, '') AS unit
     FROM schedules s
     LEFT JOIN teachers t ON s.teach_id = t.id
+    LEFT JOIN users u ON t.user_id = u.id
     LEFT JOIN rooms r ON s.room_id = r.id
     LEFT JOIN subjects sub ON s.subject_id = sub.id
     WHERE s.office_id = $office_id
@@ -76,7 +78,6 @@ $conflicts = [];
 $schedule_slots = [];
 
 foreach ($schedules as $schedule) {
-    // Skip if any related record is soft-deleted
     if ($schedule['teacher_name'] === 'TBA' || $schedule['room_name'] === 'TBA' || $schedule['subject_name'] === 'TBA') {
         continue;
     }

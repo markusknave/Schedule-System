@@ -130,3 +130,7 @@
 .carousel-caption .btn:hover {
     opacity: 1;
 }
+
+.announcement-content::-webkit-scrollbar{
+    display: none;
+}

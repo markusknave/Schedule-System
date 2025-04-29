@@ -63,6 +63,17 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
     <title>Dashboard - Room Management</title>
     <link rel="stylesheet" href="/myschedule/assets/css/room.css">
 </head>
+<style >
+    th {
+    min-width: 300px !important;
+    text-align: center !important;
+    }
+
+    tr{
+        min-width: 300px !important;
+        text-align: center !important;
+    }
+</style>
 <body class="hold-transition sidebar-mini layout-fixed">
 <?php ?>
     <div class="wrapper">
@@ -103,28 +114,28 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                 <div class="container-fluid">
                     <!-- Action Buttons -->
                     <div class="row mb-3">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between">
-            <div>
-                <button class="btn btn-primary" id="addRoomButton">
-                    <i class="fas fa-plus"></i> Add New Room
-                </button>
-                <button class="btn btn-secondary ml-2" id="exportToCsv">
-                    <i class="fas fa-file-export"></i> Export to CSV
-                </button>
-            </div>
-            <div>
-                <form class="d-flex" style="width: 300px">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search rooms..." 
-                        value="<?= htmlspecialchars($search) ?>">
-                    <button type="button" class="btn btn-primary ml-2" id="searchButton">Search</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="d-block d-md-none"> <!-- Mobile view -->
+                        <div class="col-md-12">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <button class="btn btn-primary" id="addRoomButton">
+                                        <i class="fas fa-plus"></i> Add New Room
+                                    </button>
+                                    <button class="btn btn-secondary ml-2" id="exportToCsv">
+                                        <i class="fas fa-file-export"></i> Export to CSV
+                                    </button>
+                                </div>
+                                <div>
+                                    <form class="d-flex" style="width: 300px">
+                                        <input type="text" id="searchInput" class="form-control" placeholder="Search rooms..." 
+                                            value="<?= htmlspecialchars($search) ?>">
+                                        <button type="button" class="btn btn-primary ml-2" id="searchButton">Search</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+<!-- Mobile view -->
+<div class="d-block d-md-none"> 
     <div class="card mb-4 border-primary">
         <div class="card-header bg-dark text-white">
             <h5 class="mb-0"><i class="fas fa-door-open mr-2"></i>Rooms Management</h5>
@@ -201,7 +212,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
     <div class="card">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover table-fixed-layout">
                     <thead class="thead-dark">
                         <tr>
                             <th>Room Name</th>
@@ -210,31 +221,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                         </tr>
                     </thead>
                     <tbody id="roomsTableBody">
-                        <?php if (empty($rooms)): ?>
-                            <tr>
-                                <td colspan="4" class="text-center">No rooms found for your office.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($rooms as $room): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($room['name']) ?></td>
-                                    <td><?= htmlspecialchars($room['schedule_count']) ?></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info view-room" data-id="<?= $room['id'] ?>">
-                                            <i class="fas fa-eye"></i> View
-                                        </button>
-                                        <button class="btn btn-sm btn-success edit-room" 
-                                            data-id="<?= $room['id'] ?>" 
-                                            data-name="<?= htmlspecialchars($room['name']) ?>">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </button>
-                                        <button class="btn btn-sm btn-danger delete-room" data-id="<?= $room['id'] ?>">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                        <!-- AJAX will fill this -->
                     </tbody>
                 </table>
             </div>
@@ -313,182 +300,13 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
             </div>
         </div>
     </div>
-
+    <script src="../../assets/js/rooms.js"></script>
     <script>
-$(document).ready(function() {
-    // Show success/error messages
-    $('.alert').delay(3000).fadeOut('slow');
-
-    // Initialize all modals properly
-    $('.modal').modal({
-        show: false,
-        backdrop: 'static'
-    });
-
-    // Export to CSV
-    $('#exportToCsv').click(function() {
-        window.location.href = '/myschedule/components/room_comp/export_rooms.php';
-    });
-
-    // Edit Room Button Click
-    $(document).on('click', '.edit-room', function() {
-        const roomId = $(this).data('id');
-        const roomName = $(this).data('name');
-        
-        $('#editRoomId').val(roomId);
-        $('#editRoomName').val(roomName);
-        $('#editRoomModal').modal('show');
-    });
-
-    // Delete Room Button Click
-    $(document).on('click', '.delete-room', function() {
-        const roomId = $(this).data('id');
-        $('#deleteRoomId').val(roomId);
-        $('#deleteRoomModal').modal('show');
-    });
-
-    // View Room Button Click
-    $(document).on('click', '.view-room', function() {
-        const roomId = $(this).data('id');
-        window.location.href = '/myschedule/components/room_comp/room_details.php?id=' + roomId;
-    });
-
-    // Add Room Button Click
-    $('#addRoomButton').click(function() {
-        $('#addRoomModal').modal('show');
-    });
-
-    // Add Room Form Submission
-    $('#addRoomForm').submit(function(e) {
-        e.preventDefault();
-        const form = $(this);
-        const formData = form.serialize();
-        
-        $.ajax({
-            url: form.attr('action'),
-            method: form.attr('method'),
-            data: formData,
-            success: function(response) {
-                $('#addRoomModal').modal('hide');
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-    // Edit Room Form Submission
-    $('#editRoomForm').submit(function(e) {
-        e.preventDefault();
-        const form = $(this);
-        const formData = form.serialize();
-        
-        $.ajax({
-            url: form.attr('action'),
-            method: form.attr('method'),
-            data: formData,
-            success: function(response) {
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-    // Delete Room Form Submission
-    $('#deleteRoomForm').submit(function(e) {
-        e.preventDefault();
-        const form = $(this);
-        const formData = form.serialize();
-        
-        $.ajax({
-            url: form.attr('action'),
-            method: form.attr('method'),
-            data: formData,
-            success: function(response) {
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-    // Dynamic search functionality
-    function loadRooms(search = "", page = 1) {
-        const isMobile = $(window).width() < 768;
-        
-        // Show loading state
-        if (isMobile) {
-            $('#mobileRoomsList').html('<div class="list-group-item text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
-        } else {
-            $('#roomsTableBody').html('<tr><td colspan="3" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
-        }
-        
-        $.ajax({
-            url: '/myschedule/components/room_comp/fetch_rooms.php',
-            type: 'GET',
-            data: { 
-                search: search, 
-                page: page,
-                mobile: isMobile
-            },
-            success: function(response) {
-                if (isMobile) {
-                    $('#mobileRoomsList').html(response);
-                } else {
-                    $('#roomsTableBody').html(response);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX Error:", status, error);
-                // Fallback to regular page reload if AJAX fails
-                window.location.href = 'rooms.php?page=' + page + 
-                    (search ? '&search=' + encodeURIComponent(search) : '');
-            }
-        });
-    }
-
-    // Handle window resize to switch between mobile and desktop views
-    let resizeTimer;
-    $(window).on('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            const searchVal = $('#searchInput').val();
-            const currentPage = $('.page-item.active .page-link-ajax').data('page') || 1;
-            loadRooms(searchVal, currentPage);
-        }, 200);
-    });
-
-    // Initial load based on current view
-    loadRooms('<?= htmlspecialchars($search) ?>', <?= $page ?>);
-
-    // Live search with debounce
-    let searchTimer;
-    $('#searchInput').on('input', function() {
-        clearTimeout(searchTimer);
-        const searchVal = $(this).val();
-        searchTimer = setTimeout(() => {
-            loadRooms(searchVal, 1);
-        }, 300);
-    });
-
-    // Search button click
-    $('#searchButton').click(function() {
-        const searchVal = $('#searchInput').val();
-        loadRooms(searchVal, 1);
-    });
-
-    // Handle pagination click
-    $(document).on('click', '.page-link-ajax', function(e) {
-        e.preventDefault();
-        const page = $(this).data('page');
-        const searchVal = $('#searchInput').val();
-        loadRooms(searchVal, page);
-    });
-});
-</script>
+        const phpVars = {
+            searchTerm: '<?= htmlspecialchars($search, ENT_QUOTES) ?>',
+            currentPage: <?= $page ?>,
+            baseUrl: '/myschedule/components/room_comp/'
+        };
+    </script>
 </body>
 </html>

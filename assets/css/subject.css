@@ -23,3 +23,13 @@
     background-color: #343a40;
     color: white;
 }
+
+#messageContainer {
+
+    align-items: center;
+}
+
+#messageContainer .alert {
+    margin-bottom: 0;
+    padding: 0.5rem 1rem;
+}

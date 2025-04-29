@@ -16,12 +16,12 @@ $response = ['success' => false, 'message' => ''];
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $firstname = $_POST['firstname'] ?? '';
-        $middlename = $_POST['middlename'] ?? '';
-        $lastname = $_POST['lastname'] ?? '';
-        $extension = $_POST['extension'] ?? '';
+        $firstname = strtoupper($_POST['firstname'] ?? '');
+        $middlename = strtoupper($_POST['middlename'] ?? '');
+        $lastname = strtoupper($_POST['lastname'] ?? '');
+        $extension = strtoupper($_POST['extension'] ?? '');
         $email = $_POST['email'] ?? '';
-        $unit = $_POST['unit'] ?? '';
+        $unit = strtoupper($_POST['unit'] ?? '');        
         $office_id = $_SESSION['office_id'];
         
         // Validate required fields
