@@ -13,7 +13,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 // Pagination settings
-$limit = 5; // Teachers per page
+$limit = isset($_GET['mobile']) ? 5 : 7;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
@@ -57,12 +57,23 @@ $shown_count = $result->num_rows;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Teachers Management</title>
     <link rel="stylesheet" href="/myschedule/assets/css/teacher.css">
+    <style>
+        th {
+        min-width: 300px !important;
+        text-align: center !important;
+        }
+
+        tr{
+            min-width: 300px !important;
+            text-align: center !important;
+        }
+    </style>
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         <?php include '../../components/header.php'; ?>
-        <?php include '../../components/sidebar.php'; ?>
+        <?php include '../../components/office_sidebar.php'; ?>
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -148,7 +159,6 @@ $shown_count = $result->num_rows;
                                     </span>
                                 </div>
                                 
-                                <!-- Mobile Pagination -->
                                 <nav aria-label="Page navigation" class="mt-2">
                                     <ul class="pagination pagination-sm justify-content-center">
                                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
@@ -180,7 +190,7 @@ $shown_count = $result->num_rows;
                         <div class="card">
                             <div class="card-body p-0">
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
+                                    <table class="table table-striped table-hover overflow-hidden">
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th>Name</th>
@@ -275,8 +285,8 @@ $shown_count = $result->num_rows;
 
                     <!-- Edit Teacher Modal -->
                     <div class="modal fade" id="editTeacherModal" tabindex="-1" role="dialog" 
-                        aria-labelledby="editTeacherModalLabel" aria-hidden="true"
-                        data-bs-backdrop="true" data-bs-keyboard="true">
+     aria-labelledby="editTeacherModalLabel" aria-hidden="true"
+     data-bs-backdrop="true" data-bs-keyboard="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">

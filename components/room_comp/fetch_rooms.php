@@ -40,92 +40,65 @@ $query = $conn->query("
 ");
 $rooms = $query->fetch_all(MYSQLI_ASSOC);
 
-// Check if this is an AJAX request
-$is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+$response = [
+    'mobile_html' => '',
+    'desktop_html' => '',
+    'total_rooms' => $total_rooms
+];
 
-if ($is_ajax) {
-    $is_mobile = isset($_GET['mobile']) && $_GET['mobile'] == 'true';
-    
-    if (empty($rooms)) {
-        if ($is_mobile) {
-            echo '<div class="list-group-item text-center">No rooms found.</div>';
-        } else {
-            echo '<tr><td colspan="3" class="text-center">No rooms found.</td></tr>';
-        }
-    } else {
-        if ($is_mobile) {
-            // Mobile view response
-            foreach ($rooms as $room) {
-                echo '<div class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0 font-weight-bold">'
-                            .htmlspecialchars($room['name']).
-                        '</h6>
-                        <span class="badge bg-info">'.htmlspecialchars($room['schedule_count']).' schedules</span>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-sm btn-info mr-2 view-room" data-id="'.$room['id'].'">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-success mr-2 edit-room" 
-                            data-id="'.$room['id'].'" 
-                            data-name="'.htmlspecialchars($room['name']).'">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger delete-room" data-id="'.$room['id'].'">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>';
-            }
-        } else {
-            // Desktop view response
-            foreach ($rooms as $room) {
-                echo '<tr>
-                    <td>'.htmlspecialchars($room['name']).'</td>
-                    <td>'.htmlspecialchars($room['schedule_count']).'</td>
-                    <td>
-                        <button class="btn btn-sm btn-info view-room" data-id="'.$room['id'].'">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        <button class="btn btn-sm btn-success edit-room" 
-                            data-id="'.$room['id'].'" 
-                            data-name="'.htmlspecialchars($room['name']).'">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-sm btn-danger delete-room" data-id="'.$room['id'].'">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </td>
-                </tr>';
-            }
-        }
-    }
-    
-    // Output pagination for AJAX
-    if ($is_mobile) {
-        echo '<div class="list-group-item">
-            <nav><ul class="pagination justify-content-center mt-3">';
-        for ($i = 1; $i <= $total_pages; $i++) {
-            echo '<li class="page-item '.($page == $i ? 'active' : '').'">
-                    <a class="page-link page-link-ajax" href="#" data-page="'.$i.'">'.$i.'</a>
-                </li>';
-        }
-        echo '</ul></nav>
-        </div>';
-    } else {
-        echo '<tr><td colspan="3">
-            <nav><ul class="pagination justify-content-center mt-3">';
-        for ($i = 1; $i <= $total_pages; $i++) {
-            echo '<li class="page-item '.($page == $i ? 'active' : '').'">
-                    <a class="page-link page-link-ajax" href="#" data-page="'.$i.'">'.$i.'</a>
-                </li>';
-        }
-        echo '</ul></nav>
-        </td></tr>';
-    }
+if (empty($rooms)) {
+    $response['mobile_html'] = '<div class="list-group-item text-center">No rooms found.</div>';
+    $response['desktop_html'] = '<tr><td colspan="3" class="text-center">No rooms found.</td></tr>';
 } else {
-    echo "";
+    // Mobile view HTML
+    foreach ($rooms as $room) {
+        $response['mobile_html'] .= '<div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0 font-weight-bold">'
+                    .htmlspecialchars($room['name']).
+                '</h6>
+                <span class="badge bg-info">'.htmlspecialchars($room['schedule_count']).' schedules</span>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-sm btn-info mr-2 view-room" data-id="'.$room['id'].'">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-success mr-2 edit-room" 
+                    data-id="'.$room['id'].'" 
+                    data-name="'.htmlspecialchars($room['name']).'">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger delete-room" data-id="'.$room['id'].'">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>';
+    }
+    
+    // Desktop view HTML
+    foreach ($rooms as $room) {
+        $response['desktop_html'] .= '<tr>
+            <td>'.htmlspecialchars($room['name']).'</td>
+            <td>'.htmlspecialchars($room['schedule_count']).'</td>
+            <td>
+                <button class="btn btn-sm btn-info view-room" data-id="'.$room['id'].'">
+                    <i class="fas fa-eye"></i> View
+                </button>
+                <button class="btn btn-sm btn-success edit-room" 
+                    data-id="'.$room['id'].'" 
+                    data-name="'.htmlspecialchars($room['name']).'">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn btn-sm btn-danger delete-room" data-id="'.$room['id'].'">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </td>
+        </tr>';
+    }
 }
+
+// Return JSON response
+header('Content-Type: application/json');
+echo json_encode($response);
+exit();
 ?>

@@ -13,7 +13,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 // Pagination settings
-$limit = 5; // Teachers per page
+$limit = isset($_GET['mobile']) ? 5 : 7;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
@@ -83,6 +83,7 @@ $shown_count = $result->num_rows;
                         <div class="col-sm-6">
                             <h1>Teachers Management</h1>
                         </div>
+                        <div class="col-sm-6" id="messageContainer"></div>
                     </div>
                 </div>
             </section>
@@ -190,7 +191,7 @@ $shown_count = $result->num_rows;
                         <div class="card">
                             <div class="card-body p-0">
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
+                                    <table class="table table-striped table-hover overflow-hidden">
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th>Name</th>

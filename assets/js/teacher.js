@@ -7,6 +7,17 @@ $(document).ready(function() {
         show: false,
     });
 
+    function showAlert(message, type = 'success') {
+        $('#messageContainer').html(`
+            <div class="alert alert-${type} alert-dismissible fade show float-right">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `).delay(3000).fadeOut('slow', function() { $(this).remove(); });
+    }
+
     // Edit Teacher Button Click
     $(document).on('click', '.edit-teacher', function() {
         const teacherId = $(this).data('id');
@@ -58,22 +69,10 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#addTeacherModal').modal('hide');
-                    $('<div class="alert alert-success alert-dismissible fade show float-right">' + 
-                    response.message + 
-                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-                    '<span aria-hidden="true">&times;</span></button></div>')
-                    .insertBefore('.content-header .container-fluid .row .col-sm-6')
-                    .delay(3000).fadeOut('slow', function() { $(this).remove(); });
+                    showAlert(response.message);
                     loadTeachers($('#searchInput').val(), 1);
                 } else {
-                    $('#addTeacherModal .modal-body').prepend(
-                        '<div class="alert alert-danger">' + response.message + '</div>'
-                    );
-                    setTimeout(function() {
-                        $('#addTeacherModal .alert-danger').fadeOut('slow', function() {
-                            $(this).remove();
-                        });
-                    }, 5000);
+                    showAlert(response.message, 'danger');
                 }
             },
             error: function(xhr, status, error) {
@@ -102,22 +101,10 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#editTeacherModal').modal('hide');
-                    $('<div class="alert alert-success alert-dismissible fade show float-right">' + 
-                    response.message + 
-                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-                    '<span aria-hidden="true">&times;</span></button></div>')
-                    .insertBefore('.content-header .container-fluid .row .col-sm-6')
-                    .delay(3000).fadeOut('slow', function() { $(this).remove(); });
+                    showAlert(response.message);
                     loadTeachers($('#searchInput').val(), 1);
                 } else {
-                    $('#editTeacherModal .modal-body').prepend(
-                        '<div class="alert alert-danger">' + response.message + '</div>'
-                    );
-                    setTimeout(function() {
-                        $('#editTeacherModal .alert-danger').fadeOut('slow', function() {
-                            $(this).remove();
-                        });
-                    }, 5000);
+                    showAlert(response.message, 'danger');
                 }
             },
             error: function(xhr, status, error) {
@@ -144,14 +131,13 @@ $(document).ready(function() {
             data: formData,
             dataType: 'json',
             success: function(response) {
-                $('#deleteTeacherModal').modal('hide');
-                $('<div class="alert alert-success alert-dismissible fade show float-right">' + 
-                response.message + 
-                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-                '<span aria-hidden="true">&times;</span></button></div>')
-                .insertBefore('.content-header .container-fluid .row .col-sm-6')
-                .delay(3000).fadeOut('slow', function() { $(this).remove(); });
-                loadTeachers($('#searchInput').val(), 1);
+                if (response.success) {
+                    $('#deleteTeacherModal').modal('hide');
+                    showAlert(response.message);
+                    loadTeachers($('#searchInput').val(), 1);
+                } else {
+                    showAlert(response.message, 'danger');
+                }
             },
             error: function(xhr, status, error) {
                 $('#deleteTeacherModal .modal-body').prepend(
@@ -168,6 +154,7 @@ $(document).ready(function() {
 
     function loadTeachers(search = "", page = 1) {
     const isMobile = $(window).width() < 768;
+    const limit = isMobile ? 5 : 7;
         
     // Show loading state
     if (isMobile) {
@@ -182,6 +169,7 @@ $(document).ready(function() {
         data: { 
             search: search, 
             page: page,
+            limit: limit,
             mobile: isMobile
         },
         success: function(response) {
@@ -233,7 +221,7 @@ $(document).ready(function() {
             } else {
                 $('#teachersTableBody').html(response.desktop_html);
                 
-                const total_pages = Math.ceil(response.total_teachers / 5);
+                const total_pages = Math.ceil(response.total_teachers / 7);
                 let paginationHtml = `
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">

@@ -69,6 +69,7 @@ $(document).ready(function() {
     // Dynamic search functionality
     function loadSubjects(search = "", page = 1) {
         const isMobile = $(window).width() < 768;
+        const limit = isMobile ? 5 : 7;
         
         // Show loading state
         if (isMobile) {
@@ -84,6 +85,7 @@ $(document).ready(function() {
             data: { 
                 search: search, 
                 page: page,
+                limit: limit,
                 mobile: isMobile
             },
             success: function(response) {
@@ -143,7 +145,7 @@ $(document).ready(function() {
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
-                                ${Array.from({length: Math.min(5, total_pages)}, (_, i) => {
+                                ${Array.from({length: Math.min(7, total_pages)}, (_, i) => {
                                     const pageNum = Math.max(1, Math.min(page - 2, total_pages - 4)) + i;
                                     return `
                                         <li class="page-item ${page === pageNum ? 'active' : ''}">
