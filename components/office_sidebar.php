@@ -10,37 +10,43 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_dashboard.php' ? 'active' : '' ?>">
+                    <a href="/myschedule/public/office/office_dashboard.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_dashboard.php' ? 'active' : '' ?>">
                         <i class="nav-icon fas fa-users"></i>
                         <p>Teachers Management</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="schedule.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_schedule.php' ? 'active' : '' ?>">
+                    <a href="/myschedule/public/office/office_schedule.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_schedule.php' ? 'active' : '' ?>">
                         <i class="nav-icon fa fa-calendar"></i>
                         <p>Schedules</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="rooms.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_rooms.php' ? 'active' : '' ?>">
+                    <a href="/myschedule/public/office/office_rooms.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_rooms.php' ? 'active' : '' ?>">
                         <i class="nav-icon fas fa-grip-horizontal"></i>
                         <p>Rooms</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="subjects.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_subjects.php' ? 'active' : '' ?>">
+                    <a href="/myschedule/public/office/office_subjects.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_subjects.php' ? 'active' : '' ?>">
                         <i class="nav-icon fas fa-book"></i>
                         <p>Subjects</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="announcements.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_announcements.php' ? 'active' : '' ?>">
+                    <a href="/myschedule/public/office/office_sections.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_sections.php' ? 'active' : '' ?>">
+                    <i class="nav-icon fa-solid fa-people-line"></i>
+                        <p>Sections</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/myschedule/public/office/office_announcements.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_announcements.php' ? 'active' : '' ?>">
                         <i class="nav-icon fa fa-exclamation-circle"></i>
                         <p>Announcements</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="archived.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_archived.php' ? 'active' : '' ?>">
+                    <a href="/myschedule/public/office/office_archived.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'office_archived.php' ? 'active' : '' ?>">
                         <i class="nav-icon fa fa-archive"></i>
                         <p>Archived</p>
                     </a>

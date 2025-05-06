@@ -1,8 +1,6 @@
 $(document).ready(function() {
-    // Show success/error messages
     $('.alert').delay(3000).fadeOut('slow');
 
-    // Initialize all modals properly
     $('.modal').modal({
         show: false,
     });
@@ -18,7 +16,6 @@ $(document).ready(function() {
         `).delay(3000).fadeOut('slow', function() { $(this).remove(); });
     }
 
-    // Edit Teacher Button Click
     $(document).on('click', '.edit-teacher', function() {
         const teacherId = $(this).data('id');
         const firstname = $(this).data('firstname');
@@ -38,22 +35,23 @@ $(document).ready(function() {
         $('#editTeacherModal').modal('show');
     });
 
-    // Delete Teacher Button Click
     $(document).on('click', '.delete-teacher', function() {
         const teacherId = $(this).data('id');
         $('#deleteTeacherId').val(teacherId);
         $('#deleteTeacherModal').modal('show');
     });
 
-    // View Teacher Button Click
     $(document).on('click', '.view-teacher', function() {
         const teacherId = $(this).data('id');
         window.location.href = '/myschedule/components/teach_comp/teacher_details.php?id=' + teacherId;
     });
 
-    // Add Teacher Button Click
     $('#addTeacherButton').click(function() {
         $('#addTeacherModal').modal('show');
+    });
+
+    $('#addTeacherModal').on('hidden.bs.modal', function () {
+        $(this).find('form')[0].reset();
     });
 
     $('#addTeacherForm').submit(function(e) {
@@ -69,6 +67,7 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#addTeacherModal').modal('hide');
+                    form[0].reset();
                     showAlert(response.message);
                     loadTeachers($('#searchInput').val(), 1);
                 } else {
@@ -156,7 +155,6 @@ $(document).ready(function() {
     const isMobile = $(window).width() < 768;
     const limit = isMobile ? 5 : 7;
         
-    // Show loading state
     if (isMobile) {
         $('#mobileTeachersList').html('<div class="list-group-item text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
     } else {
@@ -176,7 +174,6 @@ $(document).ready(function() {
             if (isMobile) {
                 $('#mobileTeachersList').html(response.mobile_html);
                 
-                // Update mobile pagination
                 const total_pages = Math.ceil(response.total_teachers / 5);
                 let paginationHtml = `
                     <nav aria-label="Page navigation" class="mt-2">
@@ -245,26 +242,22 @@ $(document).ready(function() {
                             </li>
                     </nav>`;
                 
-                // Append pagination to the table
                 $('#teachersTableBody').append(`<tr><td colspan="4">${paginationHtml}</td></tr>`);
             }
         },
         error: function(xhr, status, error) {
             console.error("AJAX Error:", status, error);
-            // Fallback to regular page reload if AJAX fails
             window.location.href = 'dashboard.php?page=' + page + 
                 (search ? '&search=' + encodeURIComponent(search) : '');
         }
     });
 }
 
-// Initial load
 const searchVal = $('#searchInput').val();
 const urlParams = new URLSearchParams(window.location.search);
 const currentPage = urlParams.get('page') || 1;
 loadTeachers(searchVal, currentPage);
 
-// Handle window resize
 let resizeTimer;
 $(window).on('resize', function() {
     clearTimeout(resizeTimer);
@@ -275,7 +268,6 @@ $(window).on('resize', function() {
     }, 200);
 });
 
-// Live search with debounce
 let searchTimer;
 $('#searchInput').on('input', function() {
     clearTimeout(searchTimer);
@@ -285,13 +277,11 @@ $('#searchInput').on('input', function() {
     }, 300);
 });
 
-// Search button click
 $('#searchButton').click(function() {
     const searchVal = $('#searchInput').val();
     loadTeachers(searchVal, 1);
 });
 
-// Handle pagination click
 $(document).on('click', '.page-link', function(e) {
     e.preventDefault();
     const page = $(this).data('page') || $(this).text().trim();

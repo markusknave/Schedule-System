@@ -1,13 +1,11 @@
 <?php
 session_start();
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
     exit();
 }
 
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
@@ -18,14 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $office_id = $_SESSION['office_id'];
     $response = ['success' => false, 'message' => ''];
     
-    // Validate inputs
     if (empty($subject_code) || empty($name)) {
         $response['message'] = "Subject code and name are required";
         echo json_encode($response);
         exit();
     }
 
-    // Check if another subject already exists with the same code or name (excluding current subject)
     $check = $conn->prepare("SELECT id FROM subjects 
                             WHERE (office_id = ? OR office_id IS NULL) 
                             AND (subject_code = ? OR name = ?) 
@@ -52,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Update query
     $stmt = $conn->prepare("UPDATE subjects SET subject_code=?, name=? WHERE id=?");
     if (!$stmt) {
         $response['message'] = "Database error: " . $conn->error;

@@ -2,33 +2,28 @@
 session_start();
 @include '../../components/links.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
     exit();
 }
 
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 $error = '';
 $success = '';
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $content = trim($_POST['content'] ?? '');
     
     $office_id = $_SESSION['office_id'];
     
-    // Validate inputs
     if (empty($title) || empty($content)) {
         $error = 'All fields are required!';
     } elseif (!isset($_FILES['image']) || $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE) {
         $error = 'Please select an image for the announcement!';
     } else {
-        // Handle file upload
         $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/myschedule/uploads/announcements/";
         if (!file_exists($target_dir)) {
             mkdir($target_dir, 0777, true);
@@ -38,16 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $filename = uniqid() . '.' . $file_extension;
         $target_file = $target_dir . $filename;
         
-        // Check if image file is an actual image
         $check = getimagesize($_FILES['image']['tmp_name']);
         if ($check === false) {
             $error = 'File is not an image.';
-        } elseif ($_FILES['image']['size'] > 25000000) { // 5MB max
+        } elseif ($_FILES['image']['size'] > 25000000) { // 25MB max
             $error = 'Sorry, your file is too large. Max size is 25MB.';
         } elseif (!move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
             $error = 'Sorry, there was an error uploading your file.';
         } else {
-            // Insert into database
             $img_path = "/myschedule/uploads/announcements/" . $filename;
             $stmt = $conn->prepare("INSERT INTO announcements (office_id, title, img, content, created_at) VALUES (?, ?, ?, ?, NOW())");
             $stmt->bind_param("isss", $office_id, $title, $img_path, $content);
@@ -178,7 +171,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         
     $(document).ready(function() {
-        // Show image preview when file is selected
         $('#image').change(function() {
             const file = this.files[0];
             if (file) {
@@ -191,11 +183,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
         
-        // Form validation
         $('form').submit(function() {
             let valid = true;
             
-            // Check required fields
             $('.required-field').each(function() {
                 const fieldId = $(this).attr('for');
                 const $field = $('#' + fieldId);
@@ -208,7 +198,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             });
             
-            // Check if image is selected
             if ($('#image').val() === '') {
                 valid = false;
                 $('#image').addClass('is-invalid');
@@ -245,22 +234,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     });
 
-    // Form validation including TinyMCE content check
     $('form').submit(function(e) {
         let valid = true;
         
-        // Check required fields
         $('.required-field').each(function() {
             const fieldId = $(this).attr('for');
             const $field = $('#' + fieldId);
             
             if (fieldId === 'content') {
-                // Get content from TinyMCE
                 const content = tinymce.get('content').getContent({format: 'text'});
                 if (!content.trim()) {
                     valid = false;
                     $field.addClass('is-invalid');
-                    // Focus on the editor
                     tinymce.get('content').focus();
                 } else {
                     $field.removeClass('is-invalid');
@@ -273,7 +258,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
         
-        // Check if image is selected
         if ($('#image').val() === '') {
             valid = false;
             $('#image').addClass('is-invalid');
@@ -287,7 +271,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     });
 
-    // Image preview code remains the same
     $('#image').change(function() {
         const file = this.files[0];
         if (file) {

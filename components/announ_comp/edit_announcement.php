@@ -2,13 +2,11 @@
 session_start();
 @include '../../components/links.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
     exit();
 }
 
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
@@ -16,10 +14,8 @@ $error = '';
 $success = '';
 $announcement = [];
 
-// Get announcement ID from URL
 $announcement_id = $_GET['id'] ?? 0;
 
-// Fetch announcement data
 if ($announcement_id) {
     $stmt = $conn->prepare("SELECT * FROM announcements WHERE id = ? AND office_id = ?");
     $stmt->bind_param("ii", $announcement_id, $_SESSION['office_id']);
@@ -33,20 +29,17 @@ if ($announcement_id) {
     }
 }
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $content = trim($_POST['content'] ?? '');
     $current_image = $announcement['img'] ?? '';
     
-    // Validate inputs
     if (empty($title) || empty($content)) {
         $error = 'All fields are required!';
     } else {
         $image_changed = isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE;
         
         if ($image_changed) {
-            // Handle file upload
             $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/myschedule/uploads/announcements/";
             if (!file_exists($target_dir)) {
                 mkdir($target_dir, 0777, true);
@@ -56,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $filename = uniqid() . '.' . $file_extension;
             $target_file = $target_dir . $filename;
             
-            // Check if image file is an actual image
             $check = getimagesize($_FILES['image']['tmp_name']);
             if ($check === false) {
                 $error = 'File is not an image.';
@@ -66,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Sorry, there was an error uploading your file.';
             } else {
                 $img_path = "/myschedule/uploads/announcements/" . $filename;
-                // Delete old image if it exists
                 if ($current_image && file_exists($_SERVER['DOCUMENT_ROOT'] . $current_image)) {
                     unlink($_SERVER['DOCUMENT_ROOT'] . $current_image);
                 }
@@ -76,13 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if (!$error) {
-            // Update database
             $stmt = $conn->prepare("UPDATE announcements SET title = ?, img = ?, content = ? WHERE id = ? AND office_id = ?");
             $stmt->bind_param("sssii", $title, $img_path, $content, $announcement_id, $_SESSION['office_id']);
             
             if ($stmt->execute()) {
                 $success = 'Announcement updated successfully!';
-                // Refresh announcement data
                 $stmt = $conn->prepare("SELECT * FROM announcements WHERE id = ? AND office_id = ?");
                 $stmt->bind_param("ii", $announcement_id, $_SESSION['office_id']);
                 $stmt->execute();
@@ -220,7 +209,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script>
     $(document).ready(function() {
-        // Initialize TinyMCE
         tinymce.init({
             selector: '#content',
             height: 300,
@@ -242,7 +230,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
 
-        // Show image preview when file is selected
         $('#image').change(function() {
             const file = this.files[0];
             if (file) {
@@ -255,22 +242,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
         
-        // Form validation including TinyMCE content check
         $('form').submit(function(e) {
             let valid = true;
             
-            // Check required fields
             $('.required-field').each(function() {
                 const fieldId = $(this).attr('for');
                 const $field = $('#' + fieldId);
                 
                 if (fieldId === 'content') {
-                    // Get content from TinyMCE
                     const content = tinymce.get('content').getContent({format: 'text'});
                     if (!content.trim()) {
                         valid = false;
                         $field.addClass('is-invalid');
-                        // Focus on the editor
                         tinymce.get('content').focus();
                     } else {
                         $field.removeClass('is-invalid');

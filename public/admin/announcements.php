@@ -2,17 +2,13 @@
 session_start();
 @include '../../components/links.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/components/login.html");
     exit();
 }
-
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-// Fetch all announcements for this office
 $office_id = $_SESSION['office_id'];
 $announcements_query = $conn->query("
     SELECT * FROM announcements 
@@ -113,6 +109,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             background-color: rgba(56, 56, 56, 0.9);
             color: white;
         }
+
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -121,7 +118,6 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
         <?php include '../../components/header.php'; ?>
         <?php include '../../components/sidebar.php'; ?>
         
-        <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">
                 <div class="container-fluid">
@@ -142,7 +138,6 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                         </div>
                     <?php else: ?>
                         <div id="announcementsCarousel" class="carousel slide" data-bs-ride="carousel">
-                            <!-- Indicators -->
                             <div class="carousel-indicators">
                                 <?php foreach ($announcements as $index => $announcement): ?>
                                     <button type="button" data-bs-target="#announcementsCarousel" 
@@ -152,7 +147,6 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                 <?php endforeach; ?>
                             </div>
                             
-                            <!-- Slides -->
                             <div class="carousel-inner">
                                 <?php foreach ($announcements as $index => $announcement): ?>
                                     <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
@@ -183,18 +177,16 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                 <?php endforeach; ?>
                             </div>
                             
-                            <!-- Controls -->
-                            <button class="carousel-control-prev" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="prev">
+                            <button class="carousel-control-prev bg-transparent" style="border: none; background-color: transparent;" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden"></span>
                             </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="next">
+                            <button class="carousel-control-next bg-transparent" style="border: none; background-color: transparent;" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="next">
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden"></span>
                             </button>
                         </div>
                         
-                        <!-- Content for each announcement (hidden until active) -->
                         <?php foreach ($announcements as $index => $announcement): ?>
                             <div class="announcement-content-container" id="content-<?= $index ?>" style="display: <?= $index === 0 ? 'block' : 'none' ?>;">
                                 <div class="announcement-content" id="scroll-content-<?= $index ?>">
@@ -207,7 +199,6 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             </section>
         </div>
         
-        <!-- Add Announcement Button -->
         <a href="/myschedule/components/announ_comp/create_announcement.php" 
             class="btn btn-primary btn-lg "
             style="position: fixed; bottom: 2.5rem; right: 2.5rem; z-index: 1000; height: 2.5rem; border-radius: 50%; font-size: 24px;">

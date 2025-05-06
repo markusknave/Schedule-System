@@ -2,32 +2,26 @@
 session_start();
 @include '../../components/links.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
     exit();
 }
 
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-// Pagination settings
 $limit = isset($_GET['mobile']) ? 5 : 7;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
-// Base query conditions
 $where_clause = "WHERE s.office_id = {$_SESSION['office_id']} AND s.deleted_at IS NULL";
 
-// Add search conditions if search term exists
 if (!empty($search)) {
     $search = $conn->real_escape_string($search);
     $where_clause .= " AND (name LIKE '%$search%' OR subject_code LIKE '%$search%')";
 }
 
-// Get total number of subjects (with search if applicable)
 $total_result = $conn->query("
     SELECT COUNT(*) AS total 
     FROM subjects s
@@ -37,7 +31,6 @@ $total_subjects = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_subjects / $limit);
 
 
-// Fetch subjects with limit for pagination (and search if applicable)
 $subjects_query = $conn->query("
     SELECT 
         s.id,
@@ -66,12 +59,24 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
     <link rel="stylesheet" href="/myschedule/assets/css/subject.css">
 </head>
 <style>
-        th {
-    min-width: 300px !important;
-    text-align: center !important;
+    #messageContainer {
+        position: fixed;
+        top: 70px;
+        right: 20px;
+        z-index: 9999;
+        width: 300px;
+    }
+    
+    .alert {
+        transition: opacity 0.5s ease-out;
+    }
+    
+    th {
+        min-width: 300px !important;
+        text-align: center !important;
     }
 
-    tr{
+    tr {
         min-width: 300px !important;
         text-align: center !important;
     }
@@ -81,7 +86,6 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
     <div class="wrapper">
         <?php include '../../components/header.php'; ?>
         <?php include '../../components/sidebar.php'; ?>
-        <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">
                 <div class="container-fluid">
@@ -96,7 +100,6 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
             
             <section class="content">
                 <div class="container-fluid">
-                    <!-- Action Buttons -->
                     <div class="row mb-3">
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between">
@@ -237,7 +240,6 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                         </div>
                     </div>
 
-                    <!-- Add Subject Modal -->
                     <div class="modal fade" id="addSubjectModal" tabindex="-1" role="dialog" aria-labelledby="addSubjectModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -266,7 +268,6 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                         </div>
                     </div>
 
-                    <!-- Edit Subject Modal -->
                     <div class="modal fade" id="editSubjectModal" tabindex="-1" role="dialog" aria-labelledby="editSubjectModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -296,7 +297,6 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                         </div>
                     </div>
 
-                    <!-- Delete Confirmation Modal -->
                     <div class="modal fade" id="deleteSubjectModal" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">

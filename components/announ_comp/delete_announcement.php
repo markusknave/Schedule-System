@@ -8,7 +8,6 @@ if (!isset($_SESSION['office_id'])) {
     exit();
 }
 
-// Handle both GET and POST requests
 $announcement_id = $_REQUEST['id'] ?? ($_POST['announcement_id'] ?? null);
 $office_id = $_SESSION['office_id'];
 $permanent = $_REQUEST['permanent'] ?? false;
@@ -19,7 +18,6 @@ if (!$announcement_id) {
     exit();
 }
 
-// First, get the announcement details before deleting
 $query = $conn->prepare("SELECT img FROM announcements WHERE id = ? AND office_id = ?");
 $query->bind_param("ii", $announcement_id, $office_id);
 $query->execute();
@@ -28,11 +26,9 @@ $announcement = $result->fetch_assoc();
 $query->close();
 
 if ($permanent) {
-    // Permanent delete - delete record and image
     $delete_stmt = $conn->prepare("DELETE FROM announcements WHERE id = ? AND office_id = ?");
     $delete_stmt->bind_param("ii", $announcement_id, $office_id);
     if ($delete_stmt->execute()) {
-        // Delete the associated image file if it exists
         if (!empty($announcement['img'])) {
             $image_path = $_SERVER['DOCUMENT_ROOT'] . parse_url($announcement['img'], PHP_URL_PATH);
             if (file_exists($image_path)) {
@@ -44,7 +40,6 @@ if ($permanent) {
         $_SESSION['error'] = "Error deleting announcement: " . $delete_stmt->error;
     }
 } else {
-    // Soft delete - just update deleted_at
     $delete_stmt = $conn->prepare("UPDATE announcements SET deleted_at = NOW() WHERE id = ? AND office_id = ?");
     $delete_stmt->bind_param("ii", $announcement_id, $office_id);
     

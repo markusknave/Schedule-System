@@ -2,13 +2,11 @@
 session_start();
 @include '../../components/links.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
     exit();
 }
 
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
@@ -16,10 +14,8 @@ $error = '';
 $success = '';
 $announcement = [];
 
-// Get announcement ID from URL
 $announcement_id = $_GET['id'] ?? 0;
 
-// Fetch announcement data
 if ($announcement_id) {
     $stmt = $conn->prepare("SELECT * FROM announcements WHERE id = ? AND office_id = ?");
     $stmt->bind_param("ii", $announcement_id, $_SESSION['office_id']);

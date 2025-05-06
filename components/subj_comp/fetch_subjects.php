@@ -41,7 +41,6 @@ $query = $conn->query("
 ");
 $subjects = $query->fetch_all(MYSQLI_ASSOC);
 
-// Prepare response array
 $response = [
     'mobile_html' => '',
     'desktop_html' => '',
@@ -104,11 +103,9 @@ if (empty($subjects)) {
     }
 }
 
-// Pagination HTML
 $start = max(1, $page - 2);
 $end = min($total_pages, $page + 2);
 
-// Mobile pagination
 $response['mobile_pagination'] = '<div class="list-group-item">
     <nav><ul class="pagination justify-content-center mt-3">';
 for ($i = $start; $i <= $end; $i++) {
@@ -118,7 +115,6 @@ for ($i = $start; $i <= $end; $i++) {
 }
 $response['mobile_pagination'] .= '</ul></nav></div>';
 
-// Desktop pagination
 $response['desktop_pagination'] = '<tr><td colspan="4">
     <nav><ul class="pagination justify-content-center mt-3">';
 for ($i = $start; $i <= $end; $i++) {
@@ -128,7 +124,6 @@ for ($i = $start; $i <= $end; $i++) {
 }
 $response['desktop_pagination'] .= '</ul></nav></td></tr>';
 
-// Return JSON response
 header('Content-Type: application/json');
 echo json_encode($response);
 exit();

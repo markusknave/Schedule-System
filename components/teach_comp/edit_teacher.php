@@ -14,6 +14,7 @@ $response = ['success' => false, 'message' => ''];
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $teacher_id = $_POST['teacher_id'] ?? null;
         $firstname = strtoupper($_POST['firstname'] ?? '');
         $middlename = strtoupper($_POST['middlename'] ?? '');
         $lastname = strtoupper($_POST['lastname'] ?? '');
@@ -22,7 +23,6 @@ try {
         $unit = strtoupper($_POST['unit'] ?? '');   
         $office_id = $_SESSION['office_id'];
 
-        // Verify teacher belongs to this office
         $check = $conn->prepare("SELECT t.id, t.user_id FROM teachers t WHERE t.id = ? AND t.office_id = ?");
         $check->bind_param("ii", $teacher_id, $office_id);
         $check->execute();
@@ -35,11 +35,9 @@ try {
         $teacher = $result->fetch_assoc();
         $user_id = $teacher['user_id'];
 
-        // Start transaction
         $conn->begin_transaction();
 
         try {
-            // Update user information in users table
             $user_stmt = $conn->prepare("UPDATE users SET 
                 firstname=?, middlename=?, lastname=?, extension=?, email=?
                 WHERE id=?");
@@ -50,7 +48,6 @@ try {
             }
             $user_stmt->close();
 
-            // Update unit in teachers table
             $teacher_stmt = $conn->prepare("UPDATE teachers SET 
                 unit=? 
                 WHERE id=?");
@@ -61,7 +58,6 @@ try {
             }
             $teacher_stmt->close();
 
-            // Commit transaction
             $conn->commit();
 
             $response = [
@@ -78,4 +74,5 @@ try {
 }
 
 echo json_encode($response);
+exit();
 ?>

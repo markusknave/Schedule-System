@@ -2,25 +2,20 @@
 session_start();
 @include '../../components/links.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
     exit();
 }
 
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-// Get the type of archive to display (default to announcements)
 $type = isset($_GET['type']) ? $_GET['type'] : 'announcements';
 
-// Pagination settings
-$limit = 5; // Items per page
+$limit = 5;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// Fetch archived data based on type
 $office_id = $_SESSION['office_id'];
 $total_items = 0;
 $archived_data = [];
@@ -174,7 +169,6 @@ $total_pages = ceil($total_items / $limit);
 
             <section class="content">
                 <div class="container-fluid">
-                    <!-- Archive Navigation -->
                     <div class="archive-nav">
                         <ul class="nav nav-pills">
                             <li class="nav-item">
@@ -200,7 +194,6 @@ $total_pages = ceil($total_items / $limit);
                         </ul>
                     </div>
 
-                    <!-- Archive Content -->
                     <?php if (empty($archived_data)): ?>
                         <div class="alert alert-info">
                             <h5><i class="icon fas fa-info"></i> No archived items found!</h5>
@@ -262,7 +255,6 @@ $total_pages = ceil($total_items / $limit);
                                 <?php endforeach; ?>
                             </div>
                             
-                            <!-- Pagination -->
                             <?php if ($total_pages > 1): ?>
                                 <div class="card-footer">
                                     <nav aria-label="Page navigation">
@@ -297,7 +289,6 @@ $total_pages = ceil($total_items / $limit);
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
     <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

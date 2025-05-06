@@ -1,33 +1,26 @@
 $(document).ready(function() {
-    // Variables for auto-scroll control
     let autoScrollEnabled = true;
     let scrollInterval;
-    const scrollSpeed = 30; // pixels per second
-    const pauseBetweenSlides = 3000; // 3 seconds
+    const scrollSpeed = 30;
+    const pauseBetweenSlides = 3000;
     
-    // Initialize carousel without autoplay
     const carousel = new bootstrap.Carousel('#announcementsCarousel', {
         interval: false,
         ride: false
     });
     
-    // Function to start auto-scrolling for current content
     function startAutoScroll() {
         const activeIndex = $('.carousel-item.active').index();
         const contentElement = $(`#scroll-content-${activeIndex}`);
         const containerHeight = contentElement.parent().height();
         const contentHeight = contentElement[0].scrollHeight;
         
-        // Reset scroll position
         contentElement.scrollTop(0);
         
-        // Clear any existing interval
         clearInterval(scrollInterval);
         
-        // Calculate total scroll time (in ms)
         const scrollTime = ((contentHeight - containerHeight) / scrollSpeed) * 2500;
         
-        // Start scrolling
         if (contentHeight > containerHeight) {
             const startTime = Date.now();
             
@@ -40,7 +33,6 @@ $(document).ready(function() {
                 
                 contentElement.scrollTop(scrollPosition);
                 
-                // When we reach the bottom, pause then go to next slide
                 if (progress >= 1) {
                     clearInterval(scrollInterval);
                     setTimeout(() => {
@@ -51,7 +43,6 @@ $(document).ready(function() {
                 }
             }, 16); // ~60fps
         } else {
-            // Content fits without scrolling, just pause then move to next
             setTimeout(() => {
                 if (autoScrollEnabled) {
                     carousel.next();
@@ -60,7 +51,6 @@ $(document).ready(function() {
         }
     }
     
-    // Toggle auto-scroll
     window.toggleAutoScroll = function() {
         autoScrollEnabled = !autoScrollEnabled;
         $('.pause-btn i').toggleClass('fa-pause fa-play');
@@ -72,9 +62,7 @@ $(document).ready(function() {
         }
     };
     
-    // Start auto-scroll when slide changes
     $('#announcementsCarousel').on('slid.bs.carousel', function() {
-        // Show the corresponding content
         const activeIndex = $('.carousel-item.active').index();
         $('.announcement-content-container').hide();
         $(`#content-${activeIndex}`).show();

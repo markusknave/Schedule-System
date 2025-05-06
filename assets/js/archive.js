@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    // Restore button click
     $(document).on('click', '.restore-btn', function() {
         currentType = $(this).data('type');
         currentId = $(this).data('id');
@@ -10,7 +9,6 @@ $(document).ready(function() {
         $('#confirmModal').modal('show');
     });
     
-    // Delete button click
     $(document).on('click', '.delete-btn', function() {
         currentType = $(this).data('type');
         currentId = $(this).data('id');
@@ -21,7 +19,6 @@ $(document).ready(function() {
         $('#confirmModal').modal('show');
     });
     
-    // Confirm action
     $('#confirmAction').click(function() {
         $('#confirmModal').modal('hide');
         

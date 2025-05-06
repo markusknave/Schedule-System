@@ -13,27 +13,27 @@ try {
             throw new Exception('Unauthorized');
         }
 
-        $room_id = $_POST['room_id'] ?? null;
+        $section_id = $_POST['section_id'] ?? null;
         $office_id = $_SESSION['office_id'];
 
-        $check = $conn->prepare("SELECT id FROM rooms WHERE id = ? AND office_id = ?");
-        $check->bind_param("ii", $room_id, $office_id);
+        $check = $conn->prepare("SELECT id FROM sections WHERE id = ? AND office_id = ?");
+        $check->bind_param("ii", $section_id, $office_id);
         $check->execute();
         
         if (!$check->get_result()->num_rows) {
-            throw new Exception('Room not found or access denied');
+            throw new Exception('Section not found or access denied');
         }
 
-        $stmt = $conn->prepare("UPDATE rooms SET deleted_at = NOW() WHERE id = ?");
-        $stmt->bind_param("i", $room_id);
+        $stmt = $conn->prepare("UPDATE sections SET deleted_at = NOW() WHERE id = ?");
+        $stmt->bind_param("i", $section_id);
 
         if ($stmt->execute()) {
             $response = [
                 'success' => true,
-                'message' => 'Room deleted successfully!'
+                'message' => 'Section deleted successfully!'
             ];
         } else {
-            throw new Exception("Error deleting room: " . $stmt->error);
+            throw new Exception("Error deleting section: " . $stmt->error);
         }
 
         $stmt->close();
