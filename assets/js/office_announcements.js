@@ -1,8 +1,8 @@
 $(document).ready(function() {
     let autoScrollEnabled = true;
     let scrollInterval;
-    const scrollSpeed = 30; 
-    const pauseBetweenSlides = 3000; 
+    const scrollSpeed = 30;
+    const pauseBetweenSlides = 3000;
     
     const carousel = new bootstrap.Carousel('#announcementsCarousel', {
         interval: false,
@@ -77,6 +77,6 @@ $(document).ready(function() {
 
 function confirmDelete(id) {
     if (confirm('Are you sure you want to delete this announcement?')) {
-        window.location.href = '/myschedule/components/announ_comp/delete_announcement.php?id=' + id;
+        window.location.href = '/myschedule/components/office_announ/delete_announcement.php?id=' + id;
     }
 }

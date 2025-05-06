@@ -71,7 +71,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
 <?php ?>
     <div class="wrapper">
         <?php include '../../components/header.php'; ?>
-        <?php include '../../components/sidebar.php'; ?>
+        <?php include '../../components/office_sidebar.php'; ?>
         <div class="content-wrapper">
             <section class="content-header">
                 <div class="container-fluid">

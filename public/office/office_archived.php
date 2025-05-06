@@ -153,7 +153,7 @@ $total_pages = ceil($total_items / $limit);
 <?php ?>
     <div class="wrapper">
         <?php include '../../components/header.php'; ?>
-        <?php include '../../components/sidebar.php'; ?>
+        <?php include '../../components/office_sidebar.php'; ?>
         
         <!-- Content Wrapper -->
         <div class="content-wrapper">

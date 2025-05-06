@@ -5,7 +5,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 header('Content-Type: application/json');
 
-// Initialize response array
 $response = [
     'success' => false,
     'message' => '',
@@ -17,7 +16,7 @@ $response = [
 ];
 
 try {
-    $limit = 5;
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : (isset($_GET['mobile']) && $_GET['mobile'] == 'true' ? 5 : 7);
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $offset = ($page - 1) * $limit;
     $search = isset($_GET['search']) ? trim($_GET['search']) : "";
@@ -35,7 +34,6 @@ try {
         $where_clause .= " AND (u.firstname LIKE '%$search%' OR u.lastname LIKE '%$search%' OR u.email LIKE '%$search%' OR t.unit LIKE '%$search%')";
     }
 
-    // Get total count
     $total_query = "SELECT COUNT(*) AS total 
                 FROM teachers t
                 JOIN users u ON t.user_id = u.id
@@ -50,7 +48,6 @@ try {
     $total_teachers = isset($total_row['total']) ? (int)$total_row['total'] : 0;
     $total_pages = ceil($total_teachers / $limit);
 
-    // Get teacher data with user details
     $query = "SELECT t.id, t.unit, t.created_at, 
             u.firstname, u.middlename, u.lastname, u.extension, u.email
             FROM teachers t

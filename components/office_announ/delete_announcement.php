@@ -14,7 +14,7 @@ $permanent = $_REQUEST['permanent'] ?? false;
 
 if (!$announcement_id) {
     $_SESSION['error'] = "No announcement ID provided";
-    header("Location: /myschedule/public/admin/announcements.php");
+    header("Location: /myschedule/public/office/office_announcements.php");
     exit();
 }
 
@@ -53,7 +53,6 @@ if ($permanent) {
 $delete_stmt->close();
 $conn->close();
 
-// Redirect back to approriate page
-header("Location: /myschedule/public/admin/announcements.php");
+header("Location: /myschedule/public/office/office_announcements.php");
 exit();
 ?>

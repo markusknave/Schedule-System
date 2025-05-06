@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $success = 'Announcement created successfully!';
                 $title = $content = '';
 
-                header('Location: ../../public/admin/announcements.php');
+                header('Location: ../../public/office/office_announcements.php');
                 exit();
             } else {
                 $error = 'Error saving announcement: ' . $conn->error;
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php ?>
     <div class="wrapper">
     <?php include '../../components/header.php'; ?>
-    <?php include '../../components/sidebar.php'; ?>
+    <?php include '../../components/office_sidebar.php'; ?>
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="../../public/admin/announcements.php">Announcements</a></li>
+                                <li class="breadcrumb-item"><a href="../../public/office/office_announcements.php">Announcements</a></li>
                                 <li class="breadcrumb-item active">Create</li>
                             </ol>
                         </div>
@@ -157,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     
                                     <div class="card-footer">
                                         <button type="submit" class="btn btn-primary">Publish Announcement</button>
-                                        <a href="/myschedule/public/admin/announcements.php" class="btn btn-default float-right">Cancel</a>
+                                        <a href="/myschedule/public/office/office_announcements.php" class="btn btn-default float-right">Cancel</a>
                                     </div>
                                 </form>
                             </div>
@@ -198,7 +198,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             });
             
-            // Check if image is selected
             if ($('#image').val() === '') {
                 valid = false;
                 $('#image').addClass('is-invalid');

@@ -2,15 +2,15 @@
 session_start();
 @include '../../components/links.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: /myschedule/components/login.html");
+if (!isset($_SESSION['office_id'])) {
+    header("Location: /myschedule/login.html");
     exit();
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-$office_condition = isAdmin() ? "" : "WHERE s.office_id = $office_id";
+$office_id = $_SESSION['office_id'];
 
 $rooms_query = $conn->query("SELECT id, name FROM rooms WHERE office_id = $office_id AND deleted_at IS NULL");
 $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
@@ -28,7 +28,7 @@ $rooms = array_merge($rooms, $all_rooms);
 $rooms = array_unique($rooms, SORT_REGULAR);
 
 $schedules_query = $conn->query("
-     SELECT 
+    SELECT 
         s.id,
         s.day,
         s.start_time,
@@ -56,7 +56,7 @@ $schedules_query = $conn->query("
     LEFT JOIN users u ON t.user_id = u.id
     LEFT JOIN rooms r ON s.room_id = r.id
     LEFT JOIN subjects sub ON s.subject_id = sub.id
-    $office_condition
+    WHERE s.office_id = $office_id
     AND s.deleted_at IS NULL
     ORDER BY 
         CASE WHEN r.name IS NULL THEN 1 ELSE 0 END,
@@ -197,7 +197,7 @@ foreach ($schedules as $schedule) {
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead class="table-dark">
-                                <tr class="text-center">
+                                <tr>
                                     <th>Time</th>
                                     <?php 
                                     $room_columns = [];

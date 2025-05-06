@@ -14,23 +14,23 @@ $response = ['success' => false, 'message' => ''];
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $name = strtoupper(trim($_POST['name'] ?? ''));
+        $name = strtoupper(trim($_POST['section_name'] ?? ''));
         $office_id = $_SESSION['office_id'];
 
         if (empty($name)) {
-            throw new Exception('Room name is required');
+            throw new Exception('Section name is required');
         }
 
-        $stmt = $conn->prepare("INSERT INTO rooms (name, office_id, created_at) VALUES (?, ?, NOW())");
+        $stmt = $conn->prepare("INSERT INTO sections (section_name, office_id, created_at) VALUES (?, ?, NOW())");
         $stmt->bind_param("si", $name, $office_id);
         
         if ($stmt->execute()) {
             $response = [
                 'success' => true,
-                'message' => 'Room added successfully!'
+                'message' => 'Section added successfully!'
             ];
         } else {
-            throw new Exception("Error adding room: " . $stmt->error);
+            throw new Exception("Error adding section: " . $stmt->error);
         }
         $stmt->close();
     }

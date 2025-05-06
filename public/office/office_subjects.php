@@ -59,24 +59,12 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
     <link rel="stylesheet" href="/myschedule/assets/css/subject.css">
 </head>
 <style>
-    #messageContainer {
-        position: fixed;
-        top: 70px;
-        right: 20px;
-        z-index: 9999;
-        width: 300px;
-    }
-    
-    .alert {
-        transition: opacity 0.5s ease-out;
-    }
-    
-    th {
-        min-width: 300px !important;
-        text-align: center !important;
+        th {
+    min-width: 300px !important;
+    text-align: center !important;
     }
 
-    tr {
+    tr{
         min-width: 300px !important;
         text-align: center !important;
     }

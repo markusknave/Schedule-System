@@ -18,7 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $office_id = $_SESSION['office_id'];
 
     try {
-        // First check if teacher exists and belongs to this office
         $teacher_data = $conn->prepare("SELECT * FROM teachers WHERE id = ? AND office_id = ?");
         $teacher_data->bind_param("ii", $teacher_id, $office_id);
         $teacher_data->execute();
@@ -28,12 +27,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             throw new Exception("Teacher not found or you don't have permission");
         }
 
-        // Soft delete the teacher
         $delete_stmt = $conn->prepare("UPDATE teachers SET deleted_at = NOW() WHERE id = ?");
         $delete_stmt->bind_param("i", $teacher_id);
         
         if ($delete_stmt->execute()) {
             $response['success'] = true;
+            $response['message'] = "Teacher archived successfully!";
         } else {
             throw new Exception("Error archiving teacher: " . $delete_stmt->error);
         }
@@ -41,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $delete_stmt->close();
     } catch (Exception $e) {
         $response['message'] = $e->getMessage();
+        
     }
     
     $conn->close();

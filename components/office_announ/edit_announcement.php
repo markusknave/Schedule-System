@@ -24,7 +24,7 @@ if ($announcement_id) {
     $announcement = $result->fetch_assoc();
     
     if (!$announcement) {
-        header("Location: announcements.php");
+        header("Location: ../../public/office/office_announcements.php");
         exit();
     }
 }
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $check = getimagesize($_FILES['image']['tmp_name']);
             if ($check === false) {
                 $error = 'File is not an image.';
-            } elseif ($_FILES['image']['size'] > 25000000) { // 25MB max
+            } elseif ($_FILES['image']['size'] > 25000000) {
                 $error = 'Sorry, your file is too large. Max size is 25MB.';
             } elseif (!move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
                 $error = 'Sorry, there was an error uploading your file.';
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $result = $stmt->get_result();
                 $announcement = $result->fetch_assoc();
 
-                header('Location: ../../public/admin/announcements.php');
+                header('Location: ../../public/office/office_announcements.php');
                 exit();
             } else {
                 $error = 'Error updating announcement: ' . $conn->error;
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php ?>
     <div class="wrapper">
     <?php include '../../components/header.php'; ?>
-    <?php include '../../components/sidebar.php'; ?>
+    <?php include '../../components/office_sidebar.php'; ?>
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="../../public/admin/announcements.php">Announcements</a></li>
+                                <li class="breadcrumb-item"><a href="../../public/office/office_announcements.php">Announcements</a></li>
                                 <li class="breadcrumb-item active">Edit</li>
                             </ol>
                         </div>
@@ -196,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     
                                     <div class="card-footer">
                                         <button type="submit" class="btn btn-primary">Update Announcement</button>
-                                        <a href="/myschedule/public/admin/announcements.php" class="btn btn-default float-right">Cancel</a>
+                                        <a href="/myschedule/public/office/office_announcements.php" class="btn btn-default float-right">Cancel</a>
                                     </div>
                                 </form>
                             </div>

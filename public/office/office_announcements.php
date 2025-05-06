@@ -109,14 +109,13 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             background-color: rgba(56, 56, 56, 0.9);
             color: white;
         }
-
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <?php ?>
     <div class="wrapper">
         <?php include '../../components/header.php'; ?>
-        <?php include '../../components/sidebar.php'; ?>
+        <?php include '../../components/office_sidebar.php'; ?>
         
         <div class="content-wrapper">
             <section class="content-header">
@@ -152,7 +151,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                     <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
                                         style="background-image: url('<?= htmlspecialchars($announcement['img']) ?>')">
                                         <div class="edit-btn-container">
-                                        <form action="/myschedule/components/announ_comp/edit_announcement.php" method="GET" style="display: inline;">
+                                        <form action="/myschedule/components/office_announ/edit_announcement.php" method="GET" style="display: inline;">
                                                 <input type="hidden" name="id" value="<?= $announcement['id'] ?>">
                                                 <button type="submit" class="edit-btn">
                                                     <i class="fas fa-edit"></i> Edit
@@ -177,11 +176,11 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                 <?php endforeach; ?>
                             </div>
                             
-                            <button class="carousel-control-prev bg-transparent" style="border: none; background-color: transparent;" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="prev">
+                            <button class="carousel-control-prev bg-transparent" style="border: none; background-color: transparent;"" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden"></span>
                             </button>
-                            <button class="carousel-control-next bg-transparent" style="border: none; background-color: transparent;" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="next">
+                            <button class="carousel-control-next bg-transparent" style="border: none; background-color: transparent;"" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="next">
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden"></span>
                             </button>
@@ -199,7 +198,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             </section>
         </div>
         
-        <a href="/myschedule/components/announ_comp/create_announcement.php" 
+        <a href="/myschedule/components/office_announ/create_announcement.php" 
             class="btn btn-primary btn-lg "
             style="position: fixed; bottom: 2.5rem; right: 2.5rem; z-index: 1000; height: 2.5rem; border-radius: 50%; font-size: 24px;">
                 <i class="fas fa-plus"></i>

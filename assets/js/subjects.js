@@ -1,14 +1,11 @@
 $(document).ready(function() {
-    // Show success/error messages
     $('.alert').delay(3000).fadeOut('slow');
 
-    // Initialize all modals properly
     $('.modal').modal({
         show: false,
         backdrop: 'static'
     });
 
-    // Edit Subject Button Click
     $(document).on('click', '.edit-subject', function() {
         const subjectId = $(this).data('id');
         const subjectCode = $(this).data('code');
@@ -20,25 +17,34 @@ $(document).ready(function() {
         $('#editSubjectModal').modal('show');
     });
 
-    // Delete Subject Button Click
     $(document).on('click', '.delete-subject', function() {
         const subjectId = $(this).data('id');
         $('#deleteSubjectId').val(subjectId);
         $('#deleteSubjectModal').modal('show');
     });
 
-    // View Subject Button Click
     $(document).on('click', '.view-subject', function() {
         const subjectId = $(this).data('id');
         window.location.href = '/myschedule/components/subj_comp/subject_details.php?id=' + subjectId;
     });
 
-    // Add Subject Button Click
     $('#addSubjectButton').click(function() {
         $('#addSubjectModal').modal('show');
     });
 
-    // Form Submissions (Add, Edit, Delete)
+    function showAlert(message, type = 'success') {
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `;
+        $('#messageContainer').html(alertHtml);
+        $('.alert').delay(3000).fadeOut('slow');
+    }
+
     function handleFormSubmission(form, callback) {
         form.on('submit', function(e) {
             e.preventDefault();
@@ -48,29 +54,37 @@ $(document).ready(function() {
                 url: form.attr('action'),
                 method: form.attr('method'),
                 data: formData,
+                dataType: 'json',
                 success: function(response) {
+                    if (response.success) {
+                        form[0].reset();
+                        form.closest('.modal').modal('hide');
+                        showAlert(response.message);
+                        const searchVal = $('#searchInput').val();
+                        const currentPage = $('.page-item.active .page-link').data('page') || 1;
+                        loadSubjects(searchVal, currentPage);
+                    } else {
+                        showAlert(response.message, 'danger');
+                    }
                     if (typeof callback === 'function') {
                         callback(response);
                     }
-                    location.reload();
                 },
                 error: function(xhr, status, error) {
-                    alert('Error: ' + error);
+                    showAlert('Error: ' + error, 'danger');
                 }
             });
         });
     }
 
-    // Initialize form handlers
     handleFormSubmission($('#addSubjectForm'));
     handleFormSubmission($('#editSubjectForm'));
     handleFormSubmission($('#deleteSubjectForm'));
 
-    // Dynamic search functionality
     function loadSubjects(search = "", page = 1) {
         const isMobile = $(window).width() < 768;
+        const limit = isMobile ? 5 : 7;
         
-        // Show loading state
         if (isMobile) {
             $('#mobileSubjectsList').html('<div class="list-group-item text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
         } else {
@@ -84,6 +98,7 @@ $(document).ready(function() {
             data: { 
                 search: search, 
                 page: page,
+                limit: limit,
                 mobile: isMobile
             },
             success: function(response) {
@@ -143,7 +158,7 @@ $(document).ready(function() {
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
-                                ${Array.from({length: Math.min(5, total_pages)}, (_, i) => {
+                                ${Array.from({length: Math.min(7, total_pages)}, (_, i) => {
                                     const pageNum = Math.max(1, Math.min(page - 2, total_pages - 4)) + i;
                                     return `
                                         <li class="page-item ${page === pageNum ? 'active' : ''}">
@@ -160,11 +175,9 @@ $(document).ready(function() {
                         </nav>
                     `;
                     
-                    // Append pagination to the table
                     $('#subjectsTableBody').append(`<tr><td colspan="4">${desktopPagination}</td></tr>`);
                 }
                 
-                    // Update URL without reloading
                 const queryParams = new URLSearchParams();
                 if (page > 1) queryParams.set('page', page);
                 if (search) queryParams.set('search', search);
@@ -174,14 +187,12 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error("AJAX Error:", status, error);
-                // Fallback to regular page reload if AJAX fails
                 window.location.href = 'subjects.php?page=' + page + 
                     (search ? '&search=' + encodeURIComponent(search) : '');
             }
         });
     }
 
-    // Handle window resize to switch between mobile and desktop views
     let resizeTimer;
     $(window).on('resize', function() {
         clearTimeout(resizeTimer);
@@ -192,12 +203,10 @@ $(document).ready(function() {
         }, 200);
     });
 
-    // Initial load based on current view
     const searchVal = $('#searchInput').val();
     const currentPage = $('#current-page').val() || 1;
     loadSubjects(searchVal, currentPage);
 
-    // Live search with debounce
     let searchTimer;
     $('#searchInput').on('input', function() {
         clearTimeout(searchTimer);
@@ -207,13 +216,11 @@ $(document).ready(function() {
         }, 300);
     });
 
-    // Search button click
     $('#searchButton').click(function() {
         const searchVal = $('#searchInput').val();
         loadSubjects(searchVal, 1);
     });
 
-    // Handle pagination click
     $(document).on('click', '.page-link', function(e) {
         e.preventDefault();
         const page = $(this).data('page') || $(this).text().trim();

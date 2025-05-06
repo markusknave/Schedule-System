@@ -2,33 +2,27 @@
 session_start();
 @include '../../components/links.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
     exit();
 }
 
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-// Pagination settings
-$limit = 5; // Teachers per page
+$limit = isset($_GET['mobile']) ? 5 : 7;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
-// Base query conditions
 $office_id = $_SESSION['office_id'];
 $where_clause = "WHERE t.office_id = $office_id AND t.deleted_at IS NULL AND u.deleted_at IS NULL";
 
-// Add search conditions if search term exists
 if (!empty($search)) {
     $search = $conn->real_escape_string($search);
     $where_clause .= " AND (u.firstname LIKE '%$search%' OR u.lastname LIKE '%$search%' OR u.email LIKE '%$search%' OR t.unit LIKE '%$search%')";
 }
 
-// Get total number of teachers (with search if applicable)
 $total_query = "SELECT COUNT(*) AS total 
                 FROM teachers t
                 JOIN users u ON t.user_id = u.id
@@ -37,7 +31,6 @@ $total_result = $conn->query($total_query);
 $total_teachers = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_teachers / $limit);
 
-// Fetch teachers with limit for pagination (and search if applicable)
 $query = "SELECT t.id, t.unit, t.created_at, 
         u.firstname, u.middlename, u.lastname, u.extension, u.email
         FROM teachers t
@@ -57,6 +50,17 @@ $shown_count = $result->num_rows;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Teachers Management</title>
     <link rel="stylesheet" href="/myschedule/assets/css/teacher.css">
+    <style>
+        th {
+        min-width: 300px !important;
+        text-align: center !important;
+        }
+
+        tr{
+            min-width: 300px !important;
+            text-align: center !important;
+        }
+    </style>
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -64,7 +68,6 @@ $shown_count = $result->num_rows;
         <?php include '../../components/header.php'; ?>
         <?php include '../../components/sidebar.php'; ?>
 
-        <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">
                 <div class="container-fluid">
@@ -72,13 +75,13 @@ $shown_count = $result->num_rows;
                         <div class="col-sm-6">
                             <h1>Teachers Management</h1>
                         </div>
+                        <div class="col-sm-6" id="messageContainer"></div>
                     </div>
                 </div>
             </section>
             
             <section class="content">
                 <div class="container-fluid">
-                    <!-- Action Buttons -->
                     <div class="row mb-3">
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between">
@@ -148,7 +151,6 @@ $shown_count = $result->num_rows;
                                     </span>
                                 </div>
                                 
-                                <!-- Mobile Pagination -->
                                 <nav aria-label="Page navigation" class="mt-2">
                                     <ul class="pagination pagination-sm justify-content-center">
                                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
@@ -176,7 +178,7 @@ $shown_count = $result->num_rows;
                         </div>
                     </div>
 
-                    <div class="d-none d-md-block"> <!-- Desktop view -->
+                    <div class="d-none d-md-block overflow-hidden"> <!-- Desktop view -->
                         <div class="card">
                             <div class="card-body p-0">
                                 <div class="table-responsive">
@@ -191,7 +193,6 @@ $shown_count = $result->num_rows;
                                         </thead>
                                         <tbody id="teachersTableBody">
                                             <?php 
-                                            // Reset result pointer
                                             $result->data_seek(0);
                                             if ($result->num_rows == 0): ?>
                                                 <tr>
@@ -228,7 +229,6 @@ $shown_count = $result->num_rows;
                         </div>
                     </div>
 
-                    <!-- Add Teacher Modal -->
                     <div class="modal fade" id="addTeacherModal" tabindex="-1" role="dialog" aria-labelledby="addTeacherModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -273,10 +273,9 @@ $shown_count = $result->num_rows;
                         </div>
                     </div>
 
-                    <!-- Edit Teacher Modal -->
                     <div class="modal fade" id="editTeacherModal" tabindex="-1" role="dialog" 
-                        aria-labelledby="editTeacherModalLabel" aria-hidden="true"
-                        data-bs-backdrop="true" data-bs-keyboard="true">
+                            aria-labelledby="editTeacherModalLabel" aria-hidden="true"
+                            data-bs-backdrop="true" data-bs-keyboard="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -321,7 +320,6 @@ $shown_count = $result->num_rows;
                         </div>
                     </div>
 
-                    <!-- Delete Confirmation Modal -->
                     <div class="modal fade" id="deleteTeacherModal" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
