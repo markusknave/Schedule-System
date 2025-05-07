@@ -54,6 +54,6 @@ $delete_stmt->close();
 $conn->close();
 
 // Redirect back to approriate page
-header("Location: /myschedule/public/admin/announcements.php");
+header("Location: /myschedule/public/office/announcements.php");
 exit();
 ?>
