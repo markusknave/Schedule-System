@@ -12,4 +12,12 @@ $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
+function isAdmin() {
+    return isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true;
+}
+
+function getOfficeId() {
+    return isAdmin() ? null : (isset($_SESSION['office_id']) ? $_SESSION['office_id'] : null);
+}
 ?>
