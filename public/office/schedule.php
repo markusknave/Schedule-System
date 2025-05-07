@@ -50,12 +50,16 @@ $schedules_query = $conn->query("
             WHEN u.id IS NULL OR u.deleted_at IS NOT NULL THEN 'TBA'
             ELSE CONCAT(LEFT(u.firstname, 1), '. ', u.lastname)
         END AS teacher_name,
-        COALESCE(t.unit, '') AS unit
+        CASE
+            WHEN sec.id IS NULL OR sec.deleted_at IS NOT NULL THEN 'TBA'
+            ELSE sec.section_name
+        END AS section_name
     FROM schedules s
     LEFT JOIN teachers t ON s.teach_id = t.id
     LEFT JOIN users u ON t.user_id = u.id
     LEFT JOIN rooms r ON s.room_id = r.id
     LEFT JOIN subjects sub ON s.subject_id = sub.id
+    LEFT JOIN sections sec ON s.section_id = sec.id
     WHERE s.office_id = $office_id
     AND s.deleted_at IS NULL
     ORDER BY 
@@ -122,7 +126,7 @@ foreach ($schedules as $schedule) {
             'time' => date('h:i A', strtotime($schedule['start_time'])) . ' - ' . date('h:i A', strtotime($schedule['end_time'])),
             'subject' => $schedule['subject_code'],
             'teacher' => $schedule['teacher_name'],
-            'unit' => $schedule['unit'],
+            'section' => $schedule['section_name'],
             'has_conflict' => isset($conflicts[$schedule['room_id'] . '-' . $schedule['day'] . '-' . $schedule['start_time'] . '-' . $schedule['end_time']])
         ];
     }
@@ -142,11 +146,16 @@ foreach ($schedules as $schedule) {
         <?php include '../../components/header.php'; ?>
         <?php include '../../components/sidebar.php'; ?>
         <div class="content-wrapper">
-            <section class="content-header">
+        <section class="content-header">
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
                             <h1>Room Schedules</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="../../components/sched_comp/add_schedule.php" class="btn btn-primary float-right">
+                                <i class="fas fa-plus"></i> Add Schedule
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -193,55 +202,55 @@ foreach ($schedules as $schedule) {
                         <div class="alert alert-info">
                             No rooms or schedules found for your office.
                         </div>
-                        <?php else: ?>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Time</th>
-                                    <?php 
-                                    $room_columns = [];
-                                    foreach ($rooms as $room) {
-                                        if ($room['name'] !== 'TBA') {
-                                            $room_columns[$room['name']] = $room['id'];
-                                        }
-                                    }
-                                    
-                                    $has_tba = false;
-                                    foreach ($schedules as $schedule) {
-                                        if ($schedule['room_name'] === 'TBA') {
-                                            $has_tba = true;
-                                            break;
-                                        }
-                                    }
-                                    
-                                    if ($has_tba) {
-                                        $room_columns['TBA'] = 'TBA';
-                                    }
-                                    
-                                    foreach ($room_columns as $room_name => $room_id): 
-                                        $days = [];
-                                        foreach ($schedules as $schedule) {
-                                            if (($room_id === 'TBA' && $schedule['room_name'] === 'TBA') || 
-                                                ($schedule['room_id'] == $room_id)) {
-                                                if (!in_array($schedule['day'], $days)) {
-                                                    $days[] = $schedule['day'];
-                                                }
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Time</th>
+                                        <?php 
+                                        $room_columns = [];
+                                        foreach ($rooms as $room) {
+                                            if ($room['name'] !== 'TBA') {
+                                                $room_columns[$room['name']] = $room['id'];
                                             }
                                         }
                                         
-                                        $day_abbreviations = array_map(function($day) {
-                                            return substr($day, 0, 3);
-                                        }, $days);
-                                    ?>
-                                        <th>
-                                            <?php echo htmlspecialchars($room_name); ?><br>
-                                            <small><?php echo implode(' ', $day_abbreviations); ?></small>
-                                        </th>
-                                    <?php endforeach; ?>
-                                </tr>
-                            </thead>
-                            <tbody>
+                                        $has_tba = false;
+                                        foreach ($schedules as $schedule) {
+                                            if ($schedule['room_name'] === 'TBA') {
+                                                $has_tba = true;
+                                                break;
+                                            }
+                                        }
+                                        
+                                        if ($has_tba) {
+                                            $room_columns['TBA'] = 'TBA';
+                                        }
+                                        
+                                        foreach ($room_columns as $room_name => $room_id): 
+                                            $days = [];
+                                            foreach ($schedules as $schedule) {
+                                                if (($room_id === 'TBA' && $schedule['room_name'] === 'TBA') || 
+                                                    ($schedule['room_id'] == $room_id)) {
+                                                    if (!in_array($schedule['day'], $days)) {
+                                                        $days[] = $schedule['day'];
+                                                    }
+                                                }
+                                            }
+                                            
+                                            $day_abbreviations = array_map(function($day) {
+                                                return substr($day, 0, 3);
+                                            }, $days);
+                                        ?>
+                                            <th>
+                                                <?php echo htmlspecialchars($room_name); ?><br>
+                                                <small><?php echo implode(' ', $day_abbreviations); ?></small>
+                                            </th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 <?php 
                                 $time_slots = [
                                     '07:30:00' => '7:30 - 9:00',
@@ -254,9 +263,9 @@ foreach ($schedules as $schedule) {
                                 ];
                                 
                                 foreach ($time_slots as $start_time => $time_range): 
-                                    list($start, $end) = explode(' - ', $time_range);
-                                    $start_time_obj = DateTime::createFromFormat('H:i', $start);
-                                    $end_time_obj = DateTime::createFromFormat('H:i', $end);
+                                    list($slot_start, $slot_end) = explode(' - ', $time_range);
+                                    $slot_start_time = DateTime::createFromFormat('H:i', $slot_start);
+                                    $slot_end_time = DateTime::createFromFormat('H:i', $slot_end);
                                 ?>
                                     <tr class="text-center">
                                         <td class="align-middle"><?php echo $time_range; ?></td>
@@ -267,32 +276,54 @@ foreach ($schedules as $schedule) {
                                                 foreach ($schedules as $schedule) {
                                                     if (($room_id === 'TBA' && $schedule['room_name'] === 'TBA') || 
                                                         ($schedule['room_id'] == $room_id)) {
+                                                        
                                                         $schedule_start = DateTime::createFromFormat('H:i:s', $schedule['start_time']);
                                                         $schedule_end = DateTime::createFromFormat('H:i:s', $schedule['end_time']);
                                                         
-                                                        if ($schedule_start >= $start_time_obj && $schedule_end <= $end_time_obj) {
+                                                        // Check if schedule overlaps with this time slot
+                                                        if (($schedule_start < $slot_end_time) && ($schedule_end > $slot_start_time)) {
                                                             $conflict_key = $schedule['room_id'] . '-' . $schedule['day'] . '-' . $schedule['start_time'] . '-' . $schedule['end_time'];
                                                             $has_conflict = isset($conflicts[$conflict_key]);
                                                             
+                                                            // Calculate the percentage of overlap to determine how much to show
+                                                            $overlap_start = max($schedule_start, $slot_start_time);
+                                                            $overlap_end = min($schedule_end, $slot_end_time);
+                                                            $overlap_duration = $overlap_start->diff($overlap_end);
+                                                            
                                                             $found_schedules[] = [
+                                                                'id' => $schedule['id'],
                                                                 'subject_code' => $schedule['subject_code'],
-                                                                'unit' => $schedule['unit'],
+                                                                'section_name' => $schedule['section_name'],
                                                                 'teacher_name' => $schedule['teacher_name'],
-                                                                'has_conflict' => $has_conflict
+                                                                'has_conflict' => $has_conflict,
+                                                                'overlap_percent' => ($overlap_duration->h * 60 + $overlap_duration->i) / 
+                                                                                    ($slot_start_time->diff($slot_end_time)->h * 60 + $slot_start_time->diff($slot_end_time)->i) * 100
                                                             ];
                                                         }
                                                     }
                                                 }
                                                 
+                                                // Sort by overlap percentage (most overlapping first)
+                                                usort($found_schedules, function($a, $b) {
+                                                    return $b['overlap_percent'] <=> $a['overlap_percent'];
+                                                });
+                                                
                                                 if (!empty($found_schedules)): 
                                                     foreach ($found_schedules as $schedule): 
                                                 ?>
-                                                    <div class="<?php echo $schedule['has_conflict'] ? 'text-danger' : ''; ?>">
+                                                    <div class="<?php echo $schedule['has_conflict'] ? 'text-danger' : ''; ?>" 
+                                                        style="margin-bottom: 5px; border-left: 3px solid <?php echo $schedule['has_conflict'] ? '#dc3545' : '#28a745'; ?>; padding-left: 5px;">
                                                         <?php echo htmlspecialchars($schedule['subject_code']); ?><br>
-                                                        <?php if (!empty($schedule['unit'])): ?>
-                                                            <small><?php echo htmlspecialchars($schedule['unit']); ?></small><br>
-                                                        <?php endif; ?>
+                                                        <small><?php echo htmlspecialchars($schedule['section_name']); ?></small><br>
                                                         <small><?php echo htmlspecialchars($schedule['teacher_name']); ?></small>
+                                                        <div class="btn-group btn-group-sm d-block mt-2">
+                                                            <a href="../../components/sched_comp/edit_schedule.php?id=<?php echo $schedule['id']; ?>" class="btn btn-info btn-xs">
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </a>
+                                                            <a href="../../components/sched_comp/delete_schedule.php?id=<?php echo $schedule['id']; ?>" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this schedule?');">
+                                                                <i class="fas fa-trash"></i> Delete
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 <?php 
                                                     endforeach; 
@@ -309,6 +340,6 @@ foreach ($schedules as $schedule) {
             </div>
         </section>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>

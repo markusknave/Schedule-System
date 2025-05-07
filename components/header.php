@@ -1,8 +1,13 @@
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <ul class="navbar-nav">
+<ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+            <?php if (basename($_SERVER['PHP_SELF']) == 'disp_announ_sched.php'): ?>
+                <a class="nav-link" href="/myschedule/public/office/announcements.php"><i class="fas fa-arrow-left"></i></a>
+            <?php else: ?>
+                <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+            <?php endif; ?>
+        </li>
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">

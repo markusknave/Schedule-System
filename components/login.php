@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['office_id'] = $id;
             $_SESSION['office_name'] = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
             $_SESSION['role'] = 'office';
-            header("Location: /myschedule/public/office/office_dashboard.php");
+            header("Location: /myschedule/public/office/dashboard.php");
             exit();
         } else {
             redirectWithError();
@@ -85,4 +85,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 $conn->close();
+exit();
 ?>

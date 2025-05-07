@@ -184,10 +184,6 @@ $total_pages = ceil($total_items / $limit);
                                    href="?type=rooms">Rooms</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link <?= $type === 'schedules' ? 'active' : '' ?>" 
-                                   href="?type=schedules">Schedules</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link <?= $type === 'subjects' ? 'active' : '' ?>" 
                                 href="?type=subjects">Subjects</a>
                             </li>

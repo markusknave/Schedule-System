@@ -115,7 +115,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
 <?php ?>
     <div class="wrapper">
         <?php include '../../components/header.php'; ?>
-        <?php include '../../components/office_sidebar.php'; ?>
+        <?php include '../../components/sidebar.php'; ?>
         
         <div class="content-wrapper">
             <section class="content-header">
@@ -151,15 +151,23 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                     <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
                                         style="background-image: url('<?= htmlspecialchars($announcement['img']) ?>')">
                                         <div class="edit-btn-container">
-                                        <form action="/myschedule/components/office_announ/edit_announcement.php" method="GET" style="display: inline;">
+                                            <form action="/myschedule/components/announ_comp/edit_announcement.php" method="GET" style="display: inline;">
                                                 <input type="hidden" name="id" value="<?= $announcement['id'] ?>">
                                                 <button type="submit" class="edit-btn">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </button>
                                             </form>
+
                                             <button class="del-btn ml-1" onclick="confirmDelete(<?= $announcement['id'] ?>)">
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
+
+                                            <form action="/myschedule/public/office/disp_announ_sched.php" method="GET" style="display: inline;">
+                                            <input type="hidden" name="id" value="<?= $announcement['id'] ?>">
+                                                <button type="submit" class="ml-1 edit-btn">
+                                                    <i class="fas fa-calendar-alt"></i> View Schedule
+                                                </button>
+                                            </form>
                                         </div>
                                         <div class="carousel-caption">
                                             <h2 class="carousel-title"><?= htmlspecialchars($announcement['title']) ?></h2>
@@ -198,7 +206,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             </section>
         </div>
         
-        <a href="/myschedule/components/office_announ/create_announcement.php" 
+        <a href="/myschedule/components/announ_comp/create_announcement.php" 
             class="btn btn-primary btn-lg "
             style="position: fixed; bottom: 2.5rem; right: 2.5rem; z-index: 1000; height: 2.5rem; border-radius: 50%; font-size: 24px;">
                 <i class="fas fa-plus"></i>
