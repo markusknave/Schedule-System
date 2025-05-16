@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.html");
     exit();
 }
 

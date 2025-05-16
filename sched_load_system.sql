@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `announcements` (
   PRIMARY KEY (`id`),
   KEY `FK_announcements_offices` (`office_id`),
   CONSTRAINT `FK_announcements_offices` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `schedules` (
   CONSTRAINT `FK_schedules_teachers` FOREIGN KEY (`teach_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE,
   CONSTRAINT `schedules_ibfk_2` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`id`) ON DELETE CASCADE,
   CONSTRAINT `schedules_ibfk_3` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Data exporting was unselected.
 
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `sections` (
   UNIQUE KEY `Index 3` (`section_name`),
   KEY `FK__offices` (`office_id`),
   CONSTRAINT `FK__offices` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 

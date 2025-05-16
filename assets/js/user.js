@@ -5,6 +5,24 @@ $(document).ready(function() {
         show: false,
     });
 
+    function toggleScrollbar(container) {
+    // if content is taller than container → scrolling needed
+    if (container.scrollHeight > container.clientHeight) {
+        container.classList.add('needs-scroll');
+    } else {
+        container.classList.remove('needs-scroll');
+    }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.overflow-container').forEach(el => {
+        // initial check
+        toggleScrollbar(el);
+        // re-check on window resize in case layout changes
+        window.addEventListener('resize', () => toggleScrollbar(el));
+    });
+    });
+
     function showAlert(message, type = 'success') {
         $('#messageContainer').html(`
             <div class="alert alert-${type} alert-dismissible fade show float-right">

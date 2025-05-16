@@ -50,15 +50,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: /myschedule/public/teachers/teach_dashboard.php");
                     exit();
                 } else {
-                    redirectWithError(); // Teacher account not properly linked
+                    redirectWithError();
                 }
             }
         } else {
-            redirectWithError(); // Wrong password
+            redirectWithError();
         }
     }
 
-    // Check in offices table if not found in users
     $stmt = $conn->prepare("SELECT id, name, password FROM offices WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -78,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             redirectWithError();
         }
     } else {
-        redirectWithError(); // Not found in any user table
+        redirectWithError();
     }
 
     $stmt->close();

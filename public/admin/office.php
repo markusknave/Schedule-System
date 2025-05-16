@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.html");
     exit();
 }
 
@@ -161,7 +161,7 @@ $shown_count = $result->num_rows;
                     <div class="d-none d-md-block overflow-hidden"> <!-- Desktop view -->
                         <div class="card">
                             <div class="card-body p-0">
-                                <div class="table-responsive">
+                                <div class="table-responsive overflow-container">
                                     <table class="table table-striped table-hover">
                                         <thead class="thead-dark">
                                             <tr>

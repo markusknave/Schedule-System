@@ -1,12 +1,30 @@
 $(document).ready(function() {
+    let currentType, currentId, currentAction;
+    
+    const showModal = (title, message) => {
+        $('#modalTitle').text(title);
+        $('#modalBody').html(message);
+        $('#confirmModal').modal('show');
+    };
+    
+    const handleApiResponse = (data) => {
+        if (data.success) {
+            // Refresh the page to show updated data
+            location.reload();
+        } else {
+            showModal('Operation Failed', data.message || 'An error occurred');
+            if (data.errors) {
+                console.error('Validation errors:', data.errors);
+            }
+        }
+    };
+    
     $(document).on('click', '.restore-btn', function() {
         currentType = $(this).data('type');
         currentId = $(this).data('id');
         currentAction = 'restore';
         
-        $('#modalTitle').text('Confirm Restoration');
-        $('#modalBody').html(`Are you sure you want to restore this ${currentType}?`);
-        $('#confirmModal').modal('show');
+        showModal('Confirm Restoration', `Are you sure you want to restore this ${currentType}?`);
     });
     
     $(document).on('click', '.delete-btn', function() {
@@ -14,40 +32,41 @@ $(document).ready(function() {
         currentId = $(this).data('id');
         currentAction = 'delete';
         
-        $('#modalTitle').text('Confirm Permanent Deletion');
-        $('#modalBody').html(`Are you sure you want to permanently delete this ${currentType}? This action cannot be undone.`);
-        $('#confirmModal').modal('show');
+        showModal('Confirm Permanent Deletion', 
+            `Are you sure you want to permanently delete this ${currentType}?<br><br>
+             <strong>This action cannot be undone.</strong>`);
     });
     
     $('#confirmAction').click(function() {
         $('#confirmModal').modal('hide');
         
-        let url = '';
-        if (currentAction === 'restore') {
-            url = '/myschedule/components/del_comp/restore_item.php';
-        } else if (currentAction === 'delete') {
-            url = '/myschedule/components/del_comp/delete_item_permanently.php';
-        }
+        const endpoint = currentAction === 'restore' 
+            ? '/myschedule/components/del_comp/restore_item.php' 
+            : '/myschedule/components/del_comp/delete_item_permanently.php';
         
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: {
-                id: currentId,
-                type: currentType,
-                permanent: true
-            },
-            success: function(response) {
-                response = JSON.parse(response);
-                if (response.success) {
-                    location.reload();
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
+        const formData = new FormData();
+        formData.append('id', currentId);
+        formData.append('type', currentType);
+        
+        fetch(endpoint, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
             }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Network response was not ok');
+                });
+            }
+            return response.json();
+        })
+        .then(handleApiResponse)
+        .catch(error => {
+            console.error('Error:', error);
+            showModal('Error', error.message || 'An unexpected error occurred');
         });
     });
-});    
+});

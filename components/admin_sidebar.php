@@ -21,6 +21,12 @@
                         <p>Office Management</p>
                     </a>
                 </li>
+                    <li class="nav-item">
+                    <a href="/myschedule/public/admin/ad_archive.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'ad_archive.php' ? 'active' : '' ?>">
+                    <i class="nav-icon fa fa-archive"></i>
+                        <p>Archived</p>
+                    </a>
+                </li>
                 
             </ul>
             <div style="position: absolute; bottom: 0;" class="nav-item overflow-hidden">
