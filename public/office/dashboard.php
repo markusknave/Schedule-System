@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
@@ -48,7 +48,7 @@ $shown_count = $result->num_rows;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Teachers Management</title>
+    <title>Teachers Management</title>
     <link rel="stylesheet" href="/myschedule/assets/css/teacher.css">
     <style>
         th {
@@ -216,7 +216,7 @@ $shown_count = $result->num_rows;
                                                                 <i class="fas fa-edit"></i> Edit
                                                             </button>
                                                             <button class="btn btn-sm btn-danger delete-teacher" data-id="<?= $row['id'] ?>">
-                                                                <i class="fas fa-trash"></i> Delete
+                                                                <i class="fas fa-trash"></i> Archive
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -329,11 +329,11 @@ $shown_count = $result->num_rows;
                                 <form id="deleteTeacherForm" action="/myschedule/components/teach_comp/delete_teacher.php" method="POST">
                                     <input type="hidden" id="deleteTeacherId" name="teacher_id">
                                     <div class="modal-body">
-                                        <p>Are you sure you want to delete this teacher? This action cannot be undone.</p>
+                                        <p>Are you sure you want to archive this teacher? This action cannot be undone.</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-danger">Delete Teacher</button>
+                                        <button type="submit" class="btn btn-danger">Archive Teacher</button>
                                     </div>
                                 </form>
                             </div>

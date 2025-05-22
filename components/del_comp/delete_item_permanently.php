@@ -13,12 +13,10 @@ $response = [
 ];
 
 try {
-    // Authentication check
     if (!isset($_SESSION['user_id']) && !isset($_SESSION['office_id'])) {
         throw new Exception("Authentication required", 401);
     }
 
-    // Role-based access control
     $isAdmin = ($_SESSION['role'] === 'admin');
     $officeId = $_SESSION['office_id'] ?? null;
 
@@ -26,12 +24,10 @@ try {
         throw new Exception("Unauthorized access", 403);
     }
 
-    // Method validation
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
         throw new Exception("Method not allowed", 405);
     }
 
-    // Input validation
     $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
     $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
     
@@ -40,13 +36,12 @@ try {
         throw new Exception("Invalid parameters", 400);
     }
 
-    $validTypes = ['teachers', 'rooms', 'announcements', 'schedules', 'subjects', 'offices'];
+    $validTypes = ['teachers', 'rooms', 'announcements', 'schedules', 'subjects', 'offices', 'sections'];
     if (empty($type) || !in_array($type, $validTypes)) {
         $response['errors']['type'] = "Invalid type";
         throw new Exception("Invalid parameters", 400);
     }
 
-    // Ownership verification for non-admins
     if (!$isAdmin) {
         $checkSql = "SELECT id FROM $type WHERE id = ? AND office_id = ?";
         $checkStmt = $conn->prepare($checkSql);
@@ -60,7 +55,6 @@ try {
         $checkStmt->close();
     }
 
-    // Handle special cases (like announcements with images)
     $extraData = null;
     if ($type === 'announcements') {
         $query = $conn->prepare("SELECT img FROM announcements WHERE id = ?");
@@ -71,13 +65,11 @@ try {
         $query->close();
     }
 
-    // Perform deletion
     $sql = "DELETE FROM $type WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
-        // Handle any post-deletion actions
         if ($type === 'announcements' && !empty($extraData['img'])) {
             $image_path = $_SERVER['DOCUMENT_ROOT'] . parse_url($extraData['img'], PHP_URL_PATH);
             if (file_exists($image_path)) {
@@ -98,7 +90,6 @@ try {
     $response['message'] = $e->getMessage();
 }
 
-// Ensure no output before this
 while (ob_get_level()) {
     ob_end_clean();
 }

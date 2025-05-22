@@ -1,55 +1,14 @@
 $(document).ready(function() {
     let autoScrollEnabled = true;
     let scrollInterval;
-    const scrollSpeed = 30; 
-    const pauseBetweenSlides = 3000; 
-    
+    const scrollSpeed = 30;
+    const pauseBetweenSlides = 10000;
+
     const carousel = new bootstrap.Carousel('#announcementsCarousel', {
-        interval: false,
-        ride: false
+        interval: pauseBetweenSlides,
+        ride: 'carousel'
     });
-    
-    function startAutoScroll() {
-        const activeIndex = $('.carousel-item.active').index();
-        const contentElement = $(`#scroll-content-${activeIndex}`);
-        const containerHeight = contentElement.parent().height();
-        const contentHeight = contentElement[0].scrollHeight;
-        
-        contentElement.scrollTop(0);
-        
-        clearInterval(scrollInterval);
-        
-        const scrollTime = ((contentHeight - containerHeight) / scrollSpeed) * 2500;
-        
-        if (contentHeight > containerHeight) {
-            const startTime = Date.now();
-            
-            scrollInterval = setInterval(() => {
-                if (!autoScrollEnabled) return;
-                
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / scrollTime, 1);
-                const scrollPosition = progress * (contentHeight - containerHeight);
-                
-                contentElement.scrollTop(scrollPosition);
-                
-                if (progress >= 1) {
-                    clearInterval(scrollInterval);
-                    setTimeout(() => {
-                        if (autoScrollEnabled) {
-                            carousel.next();
-                        }
-                    }, pauseBetweenSlides);
-                }
-            }, 16); // ~60fps
-        } else {
-            setTimeout(() => {
-                if (autoScrollEnabled) {
-                    carousel.next();
-                }
-            }, pauseBetweenSlides + 2000);
-        }
-    }
+
     
     window.toggleAutoScroll = function() {
         autoScrollEnabled = !autoScrollEnabled;
@@ -62,17 +21,22 @@ $(document).ready(function() {
         }
     };
     
+    window.toggleAutoScroll = function() {
+        autoScrollEnabled = !autoScrollEnabled;
+        $('.pause-btn i').toggleClass('fa-pause fa-play');
+        
+        if (autoScrollEnabled) {
+            carousel.cycle();
+        } else {
+            carousel.pause();
+        }
+    };
+
     $('#announcementsCarousel').on('slid.bs.carousel', function() {
         const activeIndex = $('.carousel-item.active').index();
         $('.announcement-content-container').hide();
         $(`#content-${activeIndex}`).show();
-        
-        if (autoScrollEnabled) {
-            startAutoScroll();
-        }
     });
-    
-    startAutoScroll();
 });
 
 function confirmDelete(id) {

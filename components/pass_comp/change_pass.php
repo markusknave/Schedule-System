@@ -4,8 +4,8 @@ header('Content-Type: application/json');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-if (isset($_SESSION['role'])) {
-    if (!isset($_SESSION['user_id'])) {
+if (isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['role'])) {
         echo json_encode(['success' => false, 'message' => 'Unauthorized access (no user ID)']);
         exit;
     }

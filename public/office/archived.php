@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
@@ -89,6 +89,21 @@ switch ($type) {
             
             $query = "SELECT s.*, o.name AS deleted_by 
                     FROM subjects s 
+                    JOIN offices o ON s.office_id = o.id 
+                    WHERE s.office_id = $office_id 
+                    AND s.deleted_at IS NOT NULL
+                    ORDER BY s.deleted_at DESC 
+                    LIMIT $limit OFFSET $offset";
+            $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+            break;
+
+            case 'sections':
+            $query = "SELECT COUNT(*) AS total FROM sections WHERE office_id = $office_id AND deleted_at IS NOT NULL";
+            $total_result = $conn->query($query);
+            $total_items = $total_result->fetch_assoc()['total'];
+            
+            $query = "SELECT s.*, o.name AS deleted_by 
+                    FROM sections s 
                     JOIN offices o ON s.office_id = o.id 
                     WHERE s.office_id = $office_id 
                     AND s.deleted_at IS NOT NULL
@@ -187,6 +202,10 @@ $total_pages = ceil($total_items / $limit);
                                 <a class="nav-link <?= $type === 'subjects' ? 'active' : '' ?>" 
                                 href="?type=subjects">Subjects</a>
                             </li>
+                                <li class="nav-item">
+                                <a class="nav-link <?= $type === 'sections' ? 'active' : '' ?>" 
+                                href="?type=sections">Sections</a>
+                            </li>
                         </ul>
                     </div>
 
@@ -218,6 +237,9 @@ $total_pages = ceil($total_items / $limit);
                                                         break;
                                                     case 'subjects':
                                                         echo htmlspecialchars($item['subject_code'] . ' - ' . $item['name']);
+                                                        break;
+                                                    case 'sections':
+                                                        echo htmlspecialchars($item['section_name']);
                                                         break;
                                                 }
                                                 ?>

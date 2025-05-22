@@ -15,20 +15,17 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 </div>
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">
             <?php if (basename($_SERVER['PHP_SELF']) == 'disp_announ_sched.php'): ?>
-                <a class="nav-link" href="/myschedule/public/office/announcements.php"><i class="fas fa-arrow-left"></i></a>
+                <a class="nav-link" href="/myschedule/public/office/schedule.php"><i class="fas fa-arrow-left"></i></a>
             <?php else: ?>
                 <a class="nav-link" href="#" data-widget="pushmenu" role="button" onclick="return false;"><i class="fas fa-bars"></i></a>
             <?php endif; ?>
         </li>
     </ul>
 
-    <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-        <!-- User Info Display -->
         <li class="nav-item d-flex align-items-center">
             <span class="nav-link">
                 Logged in as, 
@@ -46,7 +43,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
             </span>
         </li>
         
-        <!-- Dropdown Menu -->
         <li class="nav-item dropdown">
             <a href="#"class="nav-link dropdown-toggle" id="navbarDropdown" role="button" 
             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -61,7 +57,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
     </ul>
 </nav>
 
-<!-- Change Password Modal -->
 <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -112,7 +107,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
     </div>
 </div>
 
-<!-- Confirm Change Password Modal -->
 <div class="modal fade" id="confirmChangePasswordModal" tabindex="-1" role="dialog" aria-labelledby="confirmChangePasswordLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">

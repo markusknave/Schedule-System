@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
@@ -138,7 +138,7 @@ foreach ($schedules as $schedule) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Room Schedules</title>
+    <title>Room Schedules</title>
     <link rel="stylesheet" href="/myschedule/assets/css/schedule.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -153,7 +153,10 @@ foreach ($schedules as $schedule) {
                             <h1>Room Schedules</h1>
                         </div>
                         <div class="col-sm-6">
-                            <a href="../../components/sched_comp/add_schedule.php" class="btn btn-primary float-right">
+                            <a href="../../public/office/disp_announ_sched.php" class="btn btn-info float-right">
+                                <i class="fas fa-eye"></i> View Schedule
+                            </a>
+                            <a href="../../components/sched_comp/add_schedule.php" class="btn btn-primary float-right mr-2">
                                 <i class="fas fa-plus"></i> Add Schedule
                             </a>
                         </div>
@@ -280,12 +283,10 @@ foreach ($schedules as $schedule) {
                                                         $schedule_start = DateTime::createFromFormat('H:i:s', $schedule['start_time']);
                                                         $schedule_end = DateTime::createFromFormat('H:i:s', $schedule['end_time']);
                                                         
-                                                        // Check if schedule overlaps with this time slot
                                                         if (($schedule_start < $slot_end_time) && ($schedule_end > $slot_start_time)) {
                                                             $conflict_key = $schedule['room_id'] . '-' . $schedule['day'] . '-' . $schedule['start_time'] . '-' . $schedule['end_time'];
                                                             $has_conflict = isset($conflicts[$conflict_key]);
                                                             
-                                                            // Calculate the percentage of overlap to determine how much to show
                                                             $overlap_start = max($schedule_start, $slot_start_time);
                                                             $overlap_end = min($schedule_end, $slot_end_time);
                                                             $overlap_duration = $overlap_start->diff($overlap_end);
@@ -303,7 +304,6 @@ foreach ($schedules as $schedule) {
                                                     }
                                                 }
                                                 
-                                                // Sort by overlap percentage (most overlapping first)
                                                 usort($found_schedules, function($a, $b) {
                                                     return $b['overlap_percent'] <=> $a['overlap_percent'];
                                                 });
@@ -320,9 +320,9 @@ foreach ($schedules as $schedule) {
                                                             <a href="../../components/sched_comp/edit_schedule.php?id=<?php echo $schedule['id']; ?>" class="btn btn-info btn-xs">
                                                                 <i class="fas fa-edit"></i> Edit
                                                             </a>
-                                                            <a href="../../components/sched_comp/delete_schedule.php?id=<?php echo $schedule['id']; ?>" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete this schedule?');">
-                                                                <i class="fas fa-trash"></i> Delete
-                                                            </a>
+                                                            <button class="btn btn-danger btn-xs delete-schedule" data-id="<?php echo $schedule['id']; ?>">
+                                                                <i class="fas fa-trash"></i> Archive
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 <?php 
@@ -339,7 +339,62 @@ foreach ($schedules as $schedule) {
                 <?php endif; ?>
             </div>
         </section>
+                <div class="modal fade" id="deleteScheduleModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="deleteScheduleForm" action="/myschedule/components/sched_comp/delete_schedule.php" method="POST">
+                    <input type="hidden" id="deleteScheduleId" name="id">
+                    <div class="modal-body">
+                        <p>Are you sure you want to archive this schedule? This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Archive Schedule</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+    </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+$(document).ready(function() {
+    $(document).on('click', '.delete-schedule', function() {
+        const scheduleId = $(this).data('id');
+        $('#deleteScheduleId').val(scheduleId);
+        $('#deleteScheduleModal').modal('show');
+    });
+
+    $('#deleteScheduleForm').on('submit', function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + response.message);
+                }
+                $('#deleteScheduleModal').modal('hide');
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    });
+});
+</script>
     </body>
     </html>

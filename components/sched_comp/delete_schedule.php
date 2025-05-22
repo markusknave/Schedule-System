@@ -2,31 +2,49 @@
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 
-if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
-    exit();
+header('Content-Type: application/json');
+$response = ['success' => false, 'message' => ''];
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method.');
+    }
+
+    if (!isset($_SESSION['office_id'])) {
+        throw new Exception('Unauthorized access.');
+    }
+
+    $schedule_id = $_POST['id'] ?? 0;
+    $office_id = $_SESSION['office_id'];
+
+    if (!is_numeric($schedule_id)) {
+        throw new Exception('Invalid schedule ID.');
+    }
+
+    $check_stmt = $conn->prepare("SELECT id FROM schedules WHERE id = ? AND office_id = ?");
+    $check_stmt->bind_param("ii", $schedule_id, $office_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+
+    if ($check_result->num_rows === 0) {
+        throw new Exception("Schedule not found or access denied.");
+    }
+
+    $delete_stmt = $conn->prepare("DELETE FROM schedules WHERE id = ?");
+    $delete_stmt->bind_param("i", $schedule_id);
+
+    if ($delete_stmt->execute()) {
+        $response['success'] = true;
+        $response['message'] = 'Schedule archived successfully!';
+    } else {
+        throw new Exception("Error deleting schedule: " . $conn->error);
+    }
+
+    $delete_stmt->close();
+} catch (Exception $e) {
+    $response['message'] = $e->getMessage();
 }
 
-$office_id = $_SESSION['office_id'];
-$schedule_id = $_GET['id'] ?? 0;
-
-// Check if the schedule exists and belongs to the office
-$check_query = $conn->query("SELECT id FROM schedules WHERE id = $schedule_id AND office_id = $office_id");
-if ($check_query->num_rows === 0) {
-    $_SESSION['error_message'] = "Schedule not found or you don't have permission to delete it.";
-    header("Location: schedule.php");
-    exit();
-}
-
-// Perform the hard delete
-$delete_query = $conn->query("DELETE FROM schedules WHERE id = $schedule_id");
-
-if ($delete_query) {
-    $_SESSION['success_message'] = "Schedule deleted successfully!";
-} else {
-    $_SESSION['error_message'] = "Error deleting schedule: " . $conn->error;
-}
-
-header("Location: /myschedule/public/office/schedule.php");
+echo json_encode($response);
 exit();
 ?>

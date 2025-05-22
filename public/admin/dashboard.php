@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
@@ -179,7 +179,7 @@ $shown_count = $result->num_rows;
                     <div class="d-none d-md-block overflow-hidden"> <!-- Desktop view -->
                         <div class="card">
                             <div class="card-body p-0">
-                                <div class="table-responsive overflow-container">
+                                <div class="table-responsive ">
                                     <table class="table table-striped table-hover">
                                         <thead class="thead-dark">
                                             <tr>
@@ -260,6 +260,10 @@ $shown_count = $result->num_rows;
                                         <div class="form-group">
                                             <label for="editEmail">Email</label>
                                             <input type="email" class="form-control" id="editEmail" name="email" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editPassword">New Password (leave blank to keep current)</label>
+                                            <input type="password" class="form-control" id="editPassword" name="password">
                                         </div>
                                         <div class="form-group">
                                             <label for="editUnit">Unit</label>

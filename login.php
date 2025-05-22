@@ -28,6 +28,13 @@
                 opacity: 0;
             }
         }
+        
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -37,6 +44,13 @@
             <h1 class="text-white h3">Account Login</h1>
         </div>
         <form class="mt-4" action="./components/login.php" method="POST">
+            <div id="errorMessage" class="error-message">
+                <?php 
+                if (isset($_GET['error']) && $_GET['error'] == '1') {
+                    echo 'Invalid email or password!';
+                }
+                ?>
+            </div>
             <div class="input-group uf-input-group input-group-lg mb-3">
                 <span class="input-group-text fa fa-user" style="color: #000ed3;"></span>
                 <input type="text" class="form-control" name="email" placeholder="Email address" required>
@@ -50,7 +64,7 @@
             </div>
             <div class="mt-4 text-center">
                 <span class="text-white">Don't have an account?</span>
-                <a href="register.html" class="text-white text-decoration-underline" id="registerLink">Sign Up</a>
+                <a href="register.php" class="text-white text-decoration-underline" id="registerLink">Sign Up</a>
             </div>
         </form>
     </div>
@@ -60,7 +74,7 @@
             event.preventDefault(); 
             document.getElementById("loginForm").classList.add("fade-out");
             setTimeout(() => {
-                window.location.href = "register.html"; 
+                window.location.href = "register.php"; 
             }, 500);
         });
     </script>

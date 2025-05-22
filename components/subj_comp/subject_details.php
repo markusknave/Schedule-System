@@ -2,20 +2,16 @@
 session_start();
 @include '../../components/links.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-// Get subject ID from URL
 $subject_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Get subject details
 $subject_query = $conn->prepare("SELECT subject_code, name FROM subjects WHERE id = ?");
 $subject_query->bind_param("i", $subject_id);
 $subject_query->execute();
@@ -23,11 +19,10 @@ $subject_result = $subject_query->get_result();
 $subject = $subject_result->fetch_assoc();
 
 if (!$subject) {
-    header("Location: /myschedule/public/admin/subjects.php");
+    header("Location: /myschedule/public/office/subjects.php");
     exit();
 }
 
-// Get all teachers teaching this subject (corrected query)
 $teachers_query = $conn->prepare("
     SELECT 
         t.id,
@@ -80,7 +75,7 @@ $teachers = $teachers_query->get_result()->fetch_all(MYSQLI_ASSOC);
                             <h1>Subject: <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['name']); ?></h1>
                         </div>
                         <div class="col-sm-6">
-                            <a href="/myschedule/public/admin/subjects.php" class="btn btn-default float-right">
+                            <a href="/myschedule/public/office/subjects.php" class="btn btn-default float-right">
                                 <i class="fas fa-arrow-left"></i> Back to Subjects
                             </a>
                         </div>

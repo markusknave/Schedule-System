@@ -96,7 +96,7 @@ if (empty($subjects)) {
                     <i class="fas fa-edit"></i> Edit
                 </button>
                 <button class="btn btn-sm btn-danger delete-subject" data-id="'.$subject['id'].'">
-                    <i class="fas fa-trash"></i> Delete
+                    <i class="fas fa-trash"></i> Archive
                 </button>
             </td>
         </tr>';

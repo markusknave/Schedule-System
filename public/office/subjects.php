@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
@@ -55,7 +55,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Subject Management</title>
+    <title>Subject Management</title>
     <link rel="stylesheet" href="/myschedule/assets/css/subject.css">
 </head>
 <style>
@@ -215,7 +215,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                                                 <i class="fas fa-edit"></i> Edit
                                                             </button>
                                                             <button class="btn btn-sm btn-danger delete-subject" data-id="<?= $subject['id'] ?>">
-                                                                <i class="fas fa-trash"></i> Delete
+                                                                <i class="fas fa-trash"></i> Archive
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -237,6 +237,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
+                                <div class="col-sm-6" id="messageContainer"></div>
                                 <form id="addSubjectForm" action="/myschedule/components/subj_comp/add_subject.php" method="POST">
                                     <div class="modal-body">
                                         <div class="form-group">
@@ -265,6 +266,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
+                                <div class="col-sm-6" id="messageContainer"></div>
                                 <form id="editSubjectForm" action="/myschedule/components/subj_comp/edit_subject.php" method="POST">
                                     <input type="hidden" id="editSubjectId" name="subject_id">
                                     <div class="modal-body">
@@ -291,14 +293,15 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                 <div class="modal-header">
                                     <h5 class="modal-title">Confirm Deletion</h5>
                                 </div>
+                                <div class="col-sm-6" id="messageContainer"></div>
                                 <form id="deleteSubjectForm" action="/myschedule/components/subj_comp/del_subject.php" method="POST">
                                     <input type="hidden" id="deleteSubjectId" name="subject_id">
                                     <div class="modal-body">
-                                        <p>Are you sure you want to delete this subject? This action cannot be undone.</p>
+                                        <p>Are you sure you want to archive this subject? This action cannot be undone.</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-danger">Delete Subject</button>
+                                        <button type="submit" class="btn btn-danger">Archive Subject</button>
                                     </div>
                                 </form>
                             </div>

@@ -1,7 +1,7 @@
 <!-- Sidebar -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
     <div class="container overflow-hidden">
-        <a href="#" class="brand-link">
+        <a href="/myschedule/public/admin/dashboard.php" class="brand-link">
             <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
             <span class="brand-text font-weight-light">LNU Teacher's Board</span>
         </a>
@@ -39,5 +39,6 @@
                         </li>
                     </ul>
                 </div>
+                </nav>
             </div>
         </aside>

@@ -114,7 +114,7 @@ try {
                         <i class="fas fa-edit"></i> Edit
                     </button>
                     <button class="btn btn-sm btn-danger delete-teacher" data-id="'.$teacher['id'].'">
-                        <i class="fas fa-trash"></i> Delete
+                        <i class="fas fa-trash"></i> Archive
                     </button>
                 </td>
             </tr>';

@@ -2,6 +2,12 @@
 session_start();
 header('Content-Type: application/json');
 
+if (!isset($_SESSION['office_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    header("Location: /myschedule/login.php");
+    exit();
+}
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 

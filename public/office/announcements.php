@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
@@ -21,14 +21,62 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
-
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcements</title>
 
     <style>
+        .announcement-content-container {
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 1rem;
+            max-height: 75vh;
+            overflow: hidden;
+            position: relative;
+        }
+        .announcement-content {
+            white-space: normal;
+            overflow-y: auto;
+            max-height: 125vh;
+        }
+        
+        .carousel-controls {
+            position: absolute;
+            top: 16.5px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .pause-btn {
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            
+        }
+        
+        .carousel-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .carousel-date {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            z-index: 9998;
+            border: none;
+        }
         .carousel-item {
-            height: 50vh;
+            height: 30vh;
             min-height: 300px;
             background-size: cover;
             background-position: center;
@@ -44,49 +92,6 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             padding: 20px;
             color: white;
             position: absolute;
-        }
-        
-        .announcement-content-container {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            margin-top: 20px;
-            max-height: 300px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .announcement-content {
-            white-space: pre-line;
-            overflow-y: auto;
-            max-height: 300px;
-        }
-        
-        .carousel-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
-        }
-        
-        .pause-btn {
-            background-color: rgba(0,0,0,0.5);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-        }
-        
-        .carousel-title {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .carousel-date {
-            font-size: 1.2rem;
-            color: rgba(255,255,255,0.8);
         }
         .edit-btn-container {
         position: absolute;
@@ -136,16 +141,8 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                             There are currently no announcements to display.
                         </div>
                     <?php else: ?>
-                        <div id="announcementsCarousel" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-indicators">
-                                <?php foreach ($announcements as $index => $announcement): ?>
-                                    <button type="button" data-bs-target="#announcementsCarousel" 
-                                        data-bs-slide-to="<?= $index ?>" 
-                                        <?= $index === 0 ? 'class="active" aria-current="true"' : '' ?> 
-                                        aria-label="Slide <?= $index + 1 ?>"></button>
-                                <?php endforeach; ?>
-                            </div>
-                            
+                        <div id="announcementsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="10000">
+                        
                             <div class="carousel-inner">
                                 <?php foreach ($announcements as $index => $announcement): ?>
                                     <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
@@ -159,7 +156,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                             </form>
 
                                             <button class="del-btn ml-1" onclick="confirmDelete(<?= $announcement['id'] ?>)">
-                                                <i class="fas fa-trash"></i> Delete
+                                                <i class="fas fa-trash"></i> Archive
                                             </button>
 
                                             <form action="/myschedule/public/office/disp_announ_sched.php" method="GET" style="display: inline;">
@@ -184,13 +181,11 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                 <?php endforeach; ?>
                             </div>
                             
-                            <button class="carousel-control-prev bg-transparent" style="border: none; background-color: transparent;"" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="prev">
+                            <button class="carousel-control-prev bg-transparent" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden"></span>
                             </button>
-                            <button class="carousel-control-next bg-transparent" style="border: none; background-color: transparent;"" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="next">
+                            <button class="carousel-control-next bg-transparent" type="button" data-bs-target="#announcementsCarousel" data-bs-slide="next">
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden"></span>
                             </button>
                         </div>
                         

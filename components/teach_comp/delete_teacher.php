@@ -10,6 +10,7 @@ $response = ['success' => false, 'message' => ''];
 if (!isset($_SESSION['office_id'])) {
     $response['message'] = 'Unauthorized';
     echo json_encode($response);
+    header("Location: /myschedule/login.php");
     exit();
 }
 
