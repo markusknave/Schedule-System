@@ -106,9 +106,6 @@ $teachers = $teachers_query->get_result()->fetch_all(MYSQLI_ASSOC);
                                                 <div class="mb-2">
                                                     <strong>Office:</strong> <?php echo htmlspecialchars($teacher['office_name']); ?>
                                                 </div>
-                                                <a href="/myschedule/public/admin/teacher_details.php?id=<?php echo $teacher['id']; ?>" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-user"></i> View Teacher
-                                                </a>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>

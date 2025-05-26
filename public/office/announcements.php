@@ -46,7 +46,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             position: absolute;
             top: 16.5px;
             right: 20px;
-            z-index: 9999;
+            z-index: 11;
         }
         
         .pause-btn {
@@ -72,7 +72,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
 
         .carousel-control-prev,
         .carousel-control-next {
-            z-index: 9998;
+            z-index: 9;
             border: none;
         }
         .carousel-item {
@@ -92,6 +92,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             padding: 20px;
             color: white;
             position: absolute;
+            z-index: 8;
         }
         .edit-btn-container {
         position: absolute;

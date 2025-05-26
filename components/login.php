@@ -15,7 +15,7 @@ function redirectWithError() {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = $_POST['passwords'];
 
     $stmt = $conn->prepare("SELECT id, firstname, lastname, password, role FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);

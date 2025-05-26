@@ -3,7 +3,7 @@
     <div class="container overflow-hidden">
         <a href="/myschedule/public/office/dashboard.php" class="brand-link">
             <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
-            <span class="brand-text font-weight-light">LNU Admin's Board</span>
+            <span class="brand-text font-weight-light">LNU Office's Board</span>
         </a>
     </div>
     <div class="sidebar">

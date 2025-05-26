@@ -8,9 +8,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$name_error = '';
-$email_error = '';
-$password_error = '';
+$errors = []; // Array to hold all errors
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = trim($_POST['name']);
@@ -18,35 +16,40 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     
-    // Check existing office name
+    // Validate Office Name
     $stmt = $conn->prepare("SELECT id FROM offices WHERE name = ?");
     $stmt->bind_param("s", $name);
     $stmt->execute();
     $stmt->store_result();
     if ($stmt->num_rows > 0) {
-        $name_error = "Office name already exists!";
+        $errors[] = "Office name already exists!";
     }
     $stmt->close();
     
-    // Check existing email
+    // Validate Email Format
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Invalid email format!";
+    }
+    
+    // Check Email Existence
     $stmt = $conn->prepare("SELECT id FROM offices WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
     if ($stmt->num_rows > 0) {
-        $email_error = "Email already registered!";
+        $errors[] = "Email already registered!";
     }
     $stmt->close();
     
-    // Validate password
+    // Validate Password
     if (!preg_match('/^(?=.*[A-Z])(?=.*\d).{5,}$/', $password)) {
-        $password_error = "Password must be at least 5 characters long, contain 1 capital letter and 1 number.";
+        $errors[] = "Password must be at least 5 characters long, contain 1 capital letter and 1 number.";
     } elseif ($password !== $confirm_password) {
-        $password_error = "Passwords do not match!";
+        $errors[] = "Passwords do not match!";
     }
     
-    // If no errors, insert into database
-    if (empty($name_error) && empty($email_error) && empty($password_error)) {
+    // Proceed if no errors
+    if (empty($errors)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO offices (name, email, password) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $name, $email, $hashed_password);
@@ -61,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 ?>
+
 
 <!doctype html>
 <html lang="en">
@@ -94,11 +98,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         .error-message {
-            color: #ff0000;
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 15px;
             font-size: 14px;
-            font-weight: bold;
-            display: inline;
-            margin-bottom: 10px; 
         }
     </style>
 </head>
@@ -108,36 +111,38 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <img src="./assets/img/favicon.png" alt="" width="200" height="200">
         <h1 class="h2" style="color: #ffffff;">Office Registration</h1>
     </div>
-    <form class="mt-4" action="register.php" method="POST">
-        <?php if (!empty($name_error)) : ?>
-            <small class="error-message"><?php echo $name_error ?></small>
-        <?php endif; ?>
-        <div class="input-group uf-input-group input-group-lg mb-3">
+    <form class="mt-4" action="register.php" method="POST" onsubmit="return validatePassword()">
+        <div id="errorMessage" class="error-message">
+            <?php 
+            if (!empty($errors)) {
+                foreach ($errors as $error) {
+                    echo htmlspecialchars($error) . '<br>';
+                }
+            }
+            ?>
+        </div>
+  <div class="input-group uf-input-group mb-3">
             <span class="input-group-text fa fa-user" style="color: #000ed3;"></span>
             <input type="text" class="form-control" name="name" placeholder="Office name" required 
                 value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : '' ?>">
         </div>
 
-        <?php if (!empty($email_error)) : ?>
-            <small class="error-message"><?php echo $email_error ?></small>
-        <?php endif; ?>
-        <div class="input-group uf-input-group input-group-lg mb-3">
+        <div class="input-group uf-input-group mb-3">
             <span class="input-group-text fa fa-envelope" style="color: #000ed3;"></span>
             <input type="email" class="form-control" name="email" placeholder="Email address" required
                 value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
         </div>
 
-            <div class="input-group uf-input-group input-group-lg mb-3">
-                <span class="input-group-text fa fa-lock" style="color: #000ed3;"></span>
-                <input type="password" id="password" class="form-control" name="password" placeholder="Password" required oninput="clearError('passwordError')">
-            </div>
-            <small id="passwordError" class="error-message"></small> 
-            
-            <div class="input-group uf-input-group input-group-lg mb-3">
-                <span class="input-group-text fa fa-lock" style="color: #000ed3;"></span>
-                <input type="password" id="confirm_password" class="form-control" name="confirm_password" placeholder="Confirm Password" required oninput="clearError('confirmPasswordError')">
-            </div>
-            <small id="confirmPasswordError" class="error-message"></small>
+        <div class="input-group uf-input-group mb-3">
+            <span class="input-group-text fa fa-lock" style="color: #000ed3;"></span>
+            <input type="password" id="password" class="form-control" name="password" placeholder="Password" required>
+        </div>
+        
+        <div class="input-group uf-input-group mb-3">
+            <span class="input-group-text fa fa-lock" style="color: #000ed3;"></span>
+            <input type="password" id="confirm_password" class="form-control" name="confirm_password" placeholder="Confirm Password" required>
+        </div>
+
 
             <div class="d-grid mb-4">
                 <button type="submit" class="btn uf-btn-primary btn-lg">Sign Up</button>
@@ -182,6 +187,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         function clearError(id) {
             document.getElementById(id).innerHTML = "";
         }
+
+        document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => {
+            document.getElementById('errorMessage').innerHTML = '';
+        });
+    });
     </script>
 </body>
 </html>

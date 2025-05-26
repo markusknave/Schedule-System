@@ -10,12 +10,11 @@ if (!isset($_SESSION['user_id'])) {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-$limit = isset($_GET['mobile']) ? 5 : 10; // Changed from 7 to 10
+$limit = isset($_GET['mobile']) ? 5 : 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
-// Modified query to get all teachers (users with role 'teacher')
 $where_clause = "WHERE u.role = 'teacher' AND u.deleted_at IS NULL";
 $join_clause = "LEFT JOIN teachers t ON u.id = t.user_id";
 

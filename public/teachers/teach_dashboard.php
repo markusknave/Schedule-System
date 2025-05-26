@@ -12,6 +12,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$user_id = $_SESSION['user_id'];
+
 $stmt = $conn->prepare("SELECT id FROM teachers WHERE user_id = ? AND deleted_at IS NULL");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -36,6 +38,7 @@ if ($teacher) {
     $schedules = $result->fetch_all(MYSQLI_ASSOC);
 }else{
     $schedules = [];
+    die("Error: Teacher not found.");
 }
 ?>
 
@@ -86,6 +89,7 @@ if ($teacher) {
                         </div>
                         <div class="col-sm-6">
                             <div class="float-right">
+                                <span class="mr-2">Update Current Status:</span>
                                 <select id="statusSelect" class="form-control">
                                     <option value="A" <?= $_SESSION['status'] === 'A' ? 'selected' : '' ?>>Available</option>
                                     <option value="OL" <?= $_SESSION['status'] === 'OL' ? 'selected' : '' ?>>On-Leave</option>

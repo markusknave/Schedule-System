@@ -14,7 +14,6 @@ let tempPasswordData = {};
 
 $(document).ready(function() {
 
-    // Toggle password visibility
     $('.toggle-password').click(function() {
         const targetSelector = $(this).data('target');
         const $input = $(targetSelector);

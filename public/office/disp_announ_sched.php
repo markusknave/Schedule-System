@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila');
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
@@ -118,6 +119,7 @@ foreach ($schedules as $schedule) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="60">
     <title>Announcements & Schedules</title>
     <style>
         .carousel-item {

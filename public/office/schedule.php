@@ -159,6 +159,9 @@ foreach ($schedules as $schedule) {
                             <a href="../../components/sched_comp/add_schedule.php" class="btn btn-primary float-right mr-2">
                                 <i class="fas fa-plus"></i> Add Schedule
                             </a>
+                            <a href="../../components/sched_comp/export_schedule.php" class="btn btn-secondary float-right mr-2">
+                                <i class="fas fa-file-export"></i> Export to CSV
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -207,7 +210,7 @@ foreach ($schedules as $schedule) {
                         </div>
                     <?php else: ?>
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
+                            <table class="table table-bordered">
                                 <thead class="table-dark">
                                     <tr>
                                         <th>Time</th>

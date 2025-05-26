@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="./assets/img/favicon.png">
+    <script src="/myschedule/assets/js/jquery.min.js"></script>
     <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/all.min.css">
     <link rel="stylesheet" href="./assets/css/uf-style.css">
@@ -51,13 +52,16 @@
                 }
                 ?>
             </div>
-            <div class="input-group uf-input-group input-group-lg mb-3">
+            <div class="input-group uf-input-group mb-3">
                 <span class="input-group-text fa fa-user" style="color: #000ed3;"></span>
                 <input type="text" class="form-control" name="email" placeholder="Email address" required>
             </div>
-            <div class="input-group uf-input-group input-group-lg mb-3">
+            <div class="input-group uf-input-group mb-3">
                 <span class="input-group-text fa fa-lock" style="color: #000ed3;"></span>
-                <input type="password" class="form-control" name="password" placeholder="Password" required>
+                <input type="password" class="form-control" name="passwords" placeholder="Password" id="password" required>
+                <button class="btn btn-light toggle-password" type="button" data-target="#password">
+                    <i class="fas fa-eye" style="color: #000ed3;"></i>
+                </button>
             </div>
             <div class="d-grid mb-4">
                 <button type="submit" class="btn uf-btn-primary btn-lg">Login</button>
@@ -76,6 +80,15 @@
             setTimeout(() => {
                 window.location.href = "register.php"; 
             }, 500);
+        });
+
+        $(document).ready(function() {
+            $('.toggle-password').click(function() {
+                var input = $(this).data('target');
+                var type = $(input).attr('type') === 'password' ? 'text' : 'password';
+                $(input).attr('type', type);
+                $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+            });
         });
     </script>
 </body>

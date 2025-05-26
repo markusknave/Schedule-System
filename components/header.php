@@ -1,5 +1,4 @@
 <?php
-@include '/myschedule/components/links.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 ?>
@@ -13,6 +12,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
             z-index: 1060;
             min-width: 200px;">
 </div>
+
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <ul class="navbar-nav">
@@ -49,7 +49,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
                 <i class="fas fa-cog"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#changePasswordModal" onclick="">
                     <i class="fas fa-key mr-2"></i> Change Password
                 </a>
             </div>

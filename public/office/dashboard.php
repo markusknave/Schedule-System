@@ -87,7 +87,9 @@ $shown_count = $result->num_rows;
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <button class="btn btn-primary" id="addTeacherButton">
-                                        <i class="fas fa-plus"></i> Add New Teacher
+                                        <i class="fas fa-plus"></i>
+                                        <span class="d-none d-sm-inline"> Add New Teacher</span>
+                                        <span class="d-inline d-sm-none"> Add</span>
                                     </button>
                                 </div>
                                 <div>

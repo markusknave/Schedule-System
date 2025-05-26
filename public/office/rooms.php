@@ -111,9 +111,6 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                                     <button class="btn btn-primary" id="addRoomButton">
                                         <i class="fas fa-plus"></i> Add New Room
                                     </button>
-                                    <button class="btn btn-secondary ml-2" id="exportToCsv">
-                                        <i class="fas fa-file-export"></i> Export to CSV
-                                    </button>
                                 </div>
                                 <div>
                                     <form class="d-flex" style="width: 300px">
