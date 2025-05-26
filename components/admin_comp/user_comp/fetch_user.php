@@ -16,7 +16,7 @@ $response = [
 ];
 
 try {
-    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : (isset($_GET['mobile']) && $_GET['mobile'] == 'true' ? 5 : 10); // Changed to 10
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : (isset($_GET['mobile']) && $_GET['mobile'] == 'true' ? 5 : 10);
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $offset = ($page - 1) * $limit;
     $search = isset($_GET['search']) ? trim($_GET['search']) : "";
@@ -26,8 +26,8 @@ try {
         throw new Exception("Session expired. Please login again.");
     }
 
-    // Modified query to get all teachers (users with role 'teacher')
-    $where_clause = "WHERE u.role = 'teacher' AND u.deleted_at IS NULL";
+    // Modified query to get all active teachers (users with role 'teacher' and not deleted in either table)
+    $where_clause = "WHERE u.role = 'teacher' AND u.deleted_at IS NULL AND t.deleted_at IS NULL";
     $join_clause = "LEFT JOIN teachers t ON u.id = t.user_id";
     
     if (!empty($search)) {
@@ -63,6 +63,7 @@ try {
         throw new Exception("Database error: " . $conn->error);
     }
 
+    // Rest of the code remains the same...
     $teachers = $result->fetch_all(MYSQLI_ASSOC);
 
     if (!empty($teachers)) {
@@ -117,7 +118,7 @@ try {
                         <i class="fas fa-edit"></i> Edit
                     </button>
                     <button class="btn btn-sm btn-danger delete-teacher" data-id="'.$teacher_id.'">
-                        <i class="fas fa-trash"></i> Delete
+                        <i class="fas fa-trash"></i> Archive
                     </button>
                 </td>
             </tr>';

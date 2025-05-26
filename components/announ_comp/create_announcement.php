@@ -1,6 +1,5 @@
 <?php
 session_start();
-@include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
@@ -66,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Announcement</title>
+     <?php include '../../components/links.php'; ?>
     <script src="/myschedule/assets/tinymce/js/tinymce/tinymce.min.js"></script>
 
     <style>
@@ -168,61 +168,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <script>
-        
-    $(document).ready(function() {
-        $('#image').change(function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#imagePreview').attr('src', e.target.result).show();
-                    $('.custom-file-label').text(file.name);
-                }
-                reader.readAsDataURL(file);
+<script>
+$(document).ready(function() {
+    $('#image').change(function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#imagePreview').attr('src', e.target.result).show();
+                $('.custom-file-label').text(file.name);
             }
-        });
-        
-        $('form').submit(function() {
-            let valid = true;
-            
-            $('.required-field').each(function() {
-                const fieldId = $(this).attr('for');
-                const $field = $('#' + fieldId);
-                
-                if ($field.val().trim() === '') {
-                    valid = false;
-                    $field.addClass('is-invalid');
-                } else {
-                    $field.removeClass('is-invalid');
-                }
-            });
-            
-            // Check if image is selected
-            if ($('#image').val() === '') {
-                valid = false;
-                $('#image').addClass('is-invalid');
-            } else {
-                $('#image').removeClass('is-invalid');
-            }
-            
-            if (!valid) {
-                return false;
-            }
-        });
+            reader.readAsDataURL(file);
+        }
     });
 
-
-    $(document).ready(function() {
     tinymce.init({
         selector: '#content',
+        license_key: 'gpl',
         height: 300,
         menubar: false,
-        plugins: [
-            'advlist autolink lists link image charmap print preview anchor',
-            'searchreplace visualblocks code fullscreen',
-            'insertdatetime media table paste code help wordcount'
-        ],
         toolbar: 'undo redo | formatselect | ' +
         'bold italic underline strikethrough | forecolor backcolor | ' +
         'alignleft aligncenter alignright alignjustify | ' +
@@ -271,19 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return false;
         }
     });
-
-    $('#image').change(function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                $('#imagePreview').attr('src', e.target.result).show();
-                $('.custom-file-label').text(file.name);
-            }
-            reader.readAsDataURL(file);
-        }
-    });
 });
-    </script>
+</script>
 </body>
 </html>

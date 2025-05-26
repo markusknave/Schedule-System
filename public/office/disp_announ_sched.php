@@ -1,19 +1,18 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila');
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-// Get current day
-$current_day = date('l'); // e.g. "Monday", "Tuesday", etc.
+$current_day = date('l');
 
-// Get announcements
 $office_id = $_SESSION['office_id'];
 $announcements_query = $conn->query("
     SELECT * FROM announcements 
@@ -23,7 +22,6 @@ $announcements_query = $conn->query("
 ");
 $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
 
-// Get schedules for current day
 $schedules_query = $conn->query("
     SELECT 
         s.id,
@@ -45,8 +43,12 @@ $schedules_query = $conn->query("
         CASE 
             WHEN t.id IS NULL OR t.deleted_at IS NOT NULL THEN 'TBA'
             WHEN u.id IS NULL OR u.deleted_at IS NOT NULL THEN 'TBA'
-            ELSE CONCAT(LEFT(u.firstname, 1), '. ', u.lastname)
+            ELSE CONCAT(LEFT(u.firstname, 1), '. ', u.lastname) 
         END AS teacher_name,
+        CASE
+            WHEN u.status_id IS NULL THEN 'UN'
+            ELSE rl.name
+        END AS teacher_status,
         CASE
             WHEN sec.id IS NULL OR sec.deleted_at IS NOT NULL THEN 'TBA'
             ELSE sec.section_name
@@ -54,6 +56,7 @@ $schedules_query = $conn->query("
     FROM schedules s
     LEFT JOIN teachers t ON s.teach_id = t.id
     LEFT JOIN users u ON t.user_id = u.id
+    LEFT JOIN roles rl ON u.status_id = rl.id 
     LEFT JOIN rooms r ON s.room_id = r.id
     LEFT JOIN subjects sub ON s.subject_id = sub.id
     LEFT JOIN sections sec ON s.section_id = sec.id
@@ -67,21 +70,46 @@ $schedules_query = $conn->query("
 ");
 $schedules = $schedules_query->fetch_all(MYSQLI_ASSOC);
 
-// Group schedules by room
 $room_schedules = [];
+$statusLabels = [
+    'A' => ['label' => 'Available', 'color' => 'green'],
+    'OL' => ['label' => 'On-Travel', 'color' => 'orange'],
+    'B' => ['label' => 'Busy', 'color' => 'red'],
+    'UN' => ['label' => 'Unavailable', 'color' => 'gray'],
+];
+
 foreach ($schedules as $schedule) {
-    $room_id = ($schedule['room_name'] === 'TBA') ? 'TBA' : $schedule['room_id'];
+    if (preg_match('/\((.*?)\)$/', $schedule['teacher_name'], $matches)) {
+        $code = $matches[1];
+        if (isset($statusLabels[$code])) {
+            $label = $statusLabels[$code]['label'];
+            $color = $statusLabels[$code]['color'];
+
+            $schedule['teacher'] = preg_replace(
+                '/\((.*?)\)$/',
+                '<span style="color: ' . $color . '">(' . $label . ')</span>',
+                $schedule['teacher_name']
+            );
+        }
+    }
+
+ $room_id = ($schedule['room_name'] === 'TBA') ? 'TBA' : $schedule['room_id'];
     if (!isset($room_schedules[$room_id])) {
         $room_schedules[$room_id] = [
             'room_name' => $schedule['room_name'],
             'schedules' => []
         ];
     }
+    
+    $statusCode = $schedule['teacher_status'] ?? 'UN';
+    $statusInfo = $statusLabels[$statusCode] ?? $statusLabels['UN'];
+    
     $room_schedules[$room_id]['schedules'][] = [
         'time' => date('h:i A', strtotime($schedule['start_time'])) . ' - ' . date('h:i A', strtotime($schedule['end_time'])),
         'subject' => $schedule['subject_code'],
         'teacher' => $schedule['teacher_name'],
-        'section' => $schedule['section_name']
+        'section' => $schedule['section_name'],
+        'status' => $statusInfo
     ];
 }
 ?>
@@ -91,6 +119,7 @@ foreach ($schedules as $schedule) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="60">
     <title>Announcements & Schedules</title>
     <style>
         .carousel-item {
@@ -120,12 +149,6 @@ foreach ($schedules as $schedule) {
             max-height: 300px;
             overflow: hidden;
             position: relative;
-        }
-        
-        .announcement-content {
-            white-space: pre-line;
-            overflow-y: auto;
-            max-height: 300px;
         }
         
         .carousel-controls {
@@ -201,6 +224,14 @@ foreach ($schedules as $schedule) {
         .schedule-table tr:last-child td {
             border-bottom: none;
         }
+        .schedule-table .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body class="hold-transition layout-top-nav">
@@ -210,17 +241,8 @@ foreach ($schedules as $schedule) {
         <div class="content-wrapper" style="margin-left: 0;">
             <section class="content">
                 <div class="container-fluid">
-                    <!-- Announcements Carousel -->
                     <?php if (!empty($announcements)): ?>
                         <div id="announcementsCarousel" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-indicators">
-                                <?php foreach ($announcements as $index => $announcement): ?>
-                                    <button type="button" data-bs-target="#announcementsCarousel" 
-                                        data-bs-slide-to="<?= $index ?>" 
-                                        <?= $index === 0 ? 'class="active" aria-current="true"' : '' ?> 
-                                        aria-label="Slide <?= $index + 1 ?>"></button>
-                                <?php endforeach; ?>
-                            </div>
                             
                             <div class="carousel-inner">
                                 <?php foreach ($announcements as $index => $announcement): ?>
@@ -238,7 +260,6 @@ foreach ($schedules as $schedule) {
                         </div>
                     <?php endif; ?>
                     
-                    <!-- Room Schedules -->
                     <div class="schedule-container">
                         <h2 class="schedule-header">Today's Schedules (<?= $current_day ?>)</h2>
                         
@@ -260,6 +281,7 @@ foreach ($schedules as $schedule) {
                                                     <th>Subject</th>
                                                     <th>Teacher</th>
                                                     <th>Section</th>
+                                                    <th>Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -269,6 +291,11 @@ foreach ($schedules as $schedule) {
                                                         <td><?= htmlspecialchars($schedule['subject']) ?></td>
                                                         <td><?= htmlspecialchars($schedule['teacher']) ?></td>
                                                         <td><?= htmlspecialchars($schedule['section']) ?></td>
+                                                        <td>
+                                                            <span class="badge" style="background-color: <?= $schedule['status']['color'] ?>; color: white; padding: 3px 8px; border-radius: 4px;">
+                                                                <?= $schedule['status']['label'] ?>
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 <?php endforeach; ?>
                                             </tbody>
@@ -283,30 +310,13 @@ foreach ($schedules as $schedule) {
         </div>
     </div>
     
-    <script src="../../assets/js/announcements.js"></script>
     <script>
-        // Override the default settings for the carousel
-        $(document).ready(function() {
-            // Change the pause between slides to 10 seconds (10000ms)
-            const pauseBetweenSlides = 10000;
+    $(document).ready(function() {
+        const carousel = new bootstrap.Carousel('#announcementsCarousel', {
+            interval: 100000,
+            ride: 'carousel'
+        });
             
-            // Initialize carousel with auto-rotate disabled (we'll handle it manually)
-            const carousel = new bootstrap.Carousel('#announcementsCarousel', {
-                interval: false,
-                ride: false
-            });
-            
-            // Function to automatically move to next slide
-            function startAutoRotation() {
-                setInterval(() => {
-                    carousel.next();
-                }, pauseBetweenSlides);
-            }
-            
-            // Start the auto rotation
-            startAutoRotation();
-            
-            // Update content container when slide changes
             $('#announcementsCarousel').on('slid.bs.carousel', function() {
                 const activeIndex = $('.carousel-item.active').index();
                 $('.announcement-content-container').hide();
@@ -314,5 +324,7 @@ foreach ($schedules as $schedule) {
             });
         });
     </script>
+    <script src="../../assets/js/announcements.js"></script>
+
 </body>
 </html>

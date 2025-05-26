@@ -1,6 +1,5 @@
 <?php
 session_start();
-@include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
     header("Location: /myschedule/login.html");
@@ -97,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Announcement</title>
+    <?php include '../../components/links.php'; ?>
     <script src="/myschedule/assets/tinymce/js/tinymce/tinymce.min.js"></script>
 
     <style>
@@ -211,13 +211,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $(document).ready(function() {
         tinymce.init({
             selector: '#content',
+            license_key: 'gpl',
             height: 300,
             menubar: false,
-            plugins: [
-                'advlist autolink lists link image charmap print preview anchor',
-                'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste code help wordcount'
-            ],
             toolbar: 'undo redo | formatselect | ' +
             'bold italic underline strikethrough | forecolor backcolor | ' +
             'alignleft aligncenter alignright alignjustify | ' +

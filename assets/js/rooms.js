@@ -6,10 +6,6 @@ $(document).ready(function() {
         backdrop: 'static'
     });
 
-    $('#exportToCsv').click(function() {
-        window.location.href = phpVars.baseUrl + 'export_rooms.php';
-    });
-
     function showAlert(message, type = 'success') {
         $('#messageContainer').html(`
             <div class="alert alert-${type} alert-dismissible fade show float-right">

@@ -3,19 +3,18 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-$limit = isset($_GET['mobile']) ? 5 : 10; // Changed from 7 to 10
+$limit = isset($_GET['mobile']) ? 5 : 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
-// Modified query to get all teachers (users with role 'teacher')
 $where_clause = "WHERE u.role = 'teacher' AND u.deleted_at IS NULL";
 $join_clause = "LEFT JOIN teachers t ON u.id = t.user_id";
 
@@ -179,7 +178,7 @@ $shown_count = $result->num_rows;
                     <div class="d-none d-md-block overflow-hidden"> <!-- Desktop view -->
                         <div class="card">
                             <div class="card-body p-0">
-                                <div class="table-responsive">
+                                <div class="table-responsive ">
                                     <table class="table table-striped table-hover">
                                         <thead class="thead-dark">
                                             <tr>
@@ -260,6 +259,10 @@ $shown_count = $result->num_rows;
                                         <div class="form-group">
                                             <label for="editEmail">Email</label>
                                             <input type="email" class="form-control" id="editEmail" name="email" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editPassword">New Password (leave blank to keep current)</label>
+                                            <input type="password" class="form-control" id="editPassword" name="password">
                                         </div>
                                         <div class="form-group">
                                             <label for="editUnit">Unit</label>

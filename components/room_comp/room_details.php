@@ -2,20 +2,16 @@
 session_start();
 @include '../../components/links.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
-// Include database connection
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
-// Get room ID from URL
 $room_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Get room details
 $room_query = $conn->prepare("SELECT name FROM rooms WHERE id = ?");
 $room_query->bind_param("i", $room_id);
 $room_query->execute();
@@ -23,11 +19,10 @@ $room_result = $room_query->get_result();
 $room = $room_result->fetch_assoc();
 
 if (!$room) {
-    header("Location: /myschedule/public/admin/rooms.php");
+    header("Location: /myschedule/public/office/rooms.php");
     exit();
 }
 
-// Get all schedules for this room
 $schedules_query = $conn->prepare("
     SELECT 
         s.id,
@@ -72,7 +67,7 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
                             <h1>Room: <?php echo htmlspecialchars($room['name']); ?></h1>
                         </div>
                         <div class="col-sm-6">
-                            <a href="/myschedule/public/admin/rooms.php" class="btn btn-default float-right">
+                            <a href="/myschedule/public/office/rooms.php" class="btn btn-default float-right">
                                 <i class="fas fa-arrow-left"></i> Back to Rooms
                             </a>
                         </div>

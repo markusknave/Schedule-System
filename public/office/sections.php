@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
@@ -53,7 +53,7 @@ $sections = $sections_query->fetch_all(MYSQLI_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Section Management</title>
+    <title>Section Management</title>
 
 </head>
 <style>
@@ -224,7 +224,7 @@ $sections = $sections_query->fetch_all(MYSQLI_ASSOC);
                                                                 <i class="fas fa-edit"></i> Edit
                                                             </button>
                                                             <button class="btn btn-sm btn-danger delete-section" data-id="<?= $section['id'] ?>">
-                                                                <i class="fas fa-trash"></i> Delete
+                                                                <i class="fas fa-trash"></i> Archive
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -295,11 +295,11 @@ $sections = $sections_query->fetch_all(MYSQLI_ASSOC);
                                 <form id="deleteSectionForm" action="/myschedule/components/sec_comp/delete_section.php" method="POST">
                                     <input type="hidden" id="deleteSectionId" name="section_id">
                                     <div class="modal-body">
-                                        <p>Are you sure you want to delete this section? This action cannot be undone.</p>
+                                        <p>Are you sure you want to archive this section? This action cannot be undone.</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-danger">Delete Section</button>
+                                        <button type="submit" class="btn btn-danger">Archive Section</button>
                                     </div>
                                 </form>
                             </div>
