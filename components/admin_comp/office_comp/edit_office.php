@@ -4,6 +4,7 @@ header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+        header("Location: /myschedule/login.php");
     exit();
 }
 

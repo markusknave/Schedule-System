@@ -2,7 +2,7 @@
 session_start();
 @include '../../components/links.php';
 
-if (!isset($_SESSION['office_id'])) {
+if (!isset($_SESSION['user_id'])) {
     header("Location: /myschedule/login.php");
     exit();
 }
@@ -16,28 +16,26 @@ $limit = 5;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-$office_id = $_SESSION['office_id'];
 $total_items = 0;
 $archived_data = [];
 
 switch ($type) {
     case 'announcements':
-        $query = "SELECT COUNT(*) AS total FROM announcements WHERE office_id = $office_id AND deleted_at IS NOT NULL";
+        $query = "SELECT COUNT(*) AS total FROM announcements WHERE deleted_at IS NOT NULL";
         $total_result = $conn->query($query);
         $total_items = $total_result->fetch_assoc()['total'];
         
         $query = "SELECT a.*, o.name AS deleted_by 
                 FROM announcements a 
                 JOIN offices o ON a.office_id = o.id 
-                WHERE a.office_id = $office_id 
-                AND a.deleted_at IS NOT NULL
+                WHERE a.deleted_at IS NOT NULL
                 ORDER BY a.deleted_at DESC 
                 LIMIT $limit OFFSET $offset";
         $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
         break;
         
     case 'teachers':
-        $query = "SELECT COUNT(*) AS total FROM teachers WHERE office_id = $office_id AND deleted_at IS NOT NULL";
+        $query = "SELECT COUNT(*) AS total FROM teachers WHERE deleted_at IS NOT NULL";
         $total_result = $conn->query($query);
         $total_items = $total_result->fetch_assoc()['total'];
         
@@ -45,72 +43,67 @@ switch ($type) {
                 FROM teachers t 
                 JOIN users u ON t.user_id = u.id
                 JOIN offices o ON t.office_id = o.id 
-                WHERE t.office_id = $office_id 
-                AND t.deleted_at IS NOT NULL
+                WHERE t.deleted_at IS NOT NULL
                 ORDER BY t.deleted_at DESC 
                 LIMIT $limit OFFSET $offset";
         $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
         break;
         
     case 'rooms':
-        $query = "SELECT COUNT(*) AS total FROM rooms WHERE office_id = $office_id AND deleted_at IS NOT NULL";
+        $query = "SELECT COUNT(*) AS total FROM rooms WHERE deleted_at IS NOT NULL";
         $total_result = $conn->query($query);
         $total_items = $total_result->fetch_assoc()['total'];
         
         $query = "SELECT r.*, o.name AS deleted_by 
                 FROM rooms r 
                 JOIN offices o ON r.office_id = o.id 
-                WHERE r.office_id = $office_id 
-                AND r.deleted_at IS NOT NULL
+                WHERE r.deleted_at IS NOT NULL
                 ORDER BY r.deleted_at DESC 
                 LIMIT $limit OFFSET $offset";
         $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
         break;
         
     case 'schedules':
-        $query = "SELECT COUNT(*) AS total FROM schedules WHERE office_id = $office_id AND deleted_at IS NOT NULL";
+        $query = "SELECT COUNT(*) AS total FROM schedules WHERE deleted_at IS NOT NULL";
         $total_result = $conn->query($query);
         $total_items = $total_result->fetch_assoc()['total'];
         
         $query = "SELECT s.*, o.name AS deleted_by 
                 FROM schedules s 
                 JOIN offices o ON s.office_id = o.id 
-                WHERE s.office_id = $office_id 
-                AND s.deleted_at IS NOT NULL
+                WHERE s.deleted_at IS NOT NULL
                 ORDER BY s.deleted_at DESC 
                 LIMIT $limit OFFSET $offset";
         $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
         break;
 
-        case 'subjects':
-            $query = "SELECT COUNT(*) AS total FROM subjects WHERE office_id = $office_id AND deleted_at IS NOT NULL";
-            $total_result = $conn->query($query);
-            $total_items = $total_result->fetch_assoc()['total'];
-            
-            $query = "SELECT s.*, o.name AS deleted_by 
-                    FROM subjects s 
-                    JOIN offices o ON s.office_id = o.id 
-                    WHERE s.office_id = $office_id 
-                    AND s.deleted_at IS NOT NULL
-                    ORDER BY s.deleted_at DESC 
-                    LIMIT $limit OFFSET $offset";
-            $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
-            break;
-
-            case 'sections':
-            $query = "SELECT COUNT(*) AS total FROM sections WHERE office_id = $office_id AND deleted_at IS NOT NULL";
-            $total_result = $conn->query($query);
-            $total_items = $total_result->fetch_assoc()['total'];
-            
-            $query = "SELECT s.*, o.name AS deleted_by 
-                    FROM sections s 
-                    JOIN offices o ON s.office_id = o.id 
-                    WHERE s.office_id = $office_id 
-                    AND s.deleted_at IS NOT NULL
-                    ORDER BY s.deleted_at DESC 
-                    LIMIT $limit OFFSET $offset";
-            $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
-            break;
+    case 'subjects':
+        $query = "SELECT COUNT(*) AS total FROM subjects WHERE deleted_at IS NOT NULL";
+        $total_result = $conn->query($query);
+        $total_items = $total_result->fetch_assoc()['total'];
+        
+        $query = "SELECT s.*, o.name AS deleted_by 
+                FROM subjects s 
+                JOIN offices o ON s.office_id = o.id 
+                WHERE s.deleted_at IS NOT NULL
+                ORDER BY s.deleted_at DESC 
+                LIMIT $limit OFFSET $offset";
+        $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+        break;
+        
+    case 'offices':
+        $query = "SELECT COUNT(*) AS total FROM offices WHERE deleted_at IS NOT NULL";
+        $total_result = $conn->query($query);
+        $total_items = $total_result->fetch_assoc()['total'];
+        
+        $query = "SELECT o.*, 
+                 (SELECT name FROM offices WHERE id = o.deleted_at) AS deleted_by
+                 FROM offices o 
+                 WHERE o.deleted_at IS NOT NULL
+                 ORDER BY o.deleted_at DESC 
+                 LIMIT $limit OFFSET $offset";
+        $archived_data = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+        break;
 }
 
 $total_pages = ceil($total_items / $limit);
@@ -121,7 +114,7 @@ $total_pages = ceil($total_items / $limit);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archived Items</title>
+    <title>Admin Archived Items</title>
 
     <style>
         .archive-nav {
@@ -165,10 +158,9 @@ $total_pages = ceil($total_items / $limit);
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<?php ?>
     <div class="wrapper">
         <?php include '../../components/header.php'; ?>
-        <?php include '../../components/sidebar.php'; ?>
+        <?php include '../../components/admin_sidebar.php'; ?>
         
         <!-- Content Wrapper -->
         <div class="content-wrapper">
@@ -176,7 +168,7 @@ $total_pages = ceil($total_items / $limit);
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1>Archived Items</h1>
+                            <h1>Admin Archived Items</h1>
                         </div>
                     </div>
                 </div>
@@ -199,12 +191,16 @@ $total_pages = ceil($total_items / $limit);
                                    href="?type=rooms">Rooms</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link <?= $type === 'subjects' ? 'active' : '' ?>" 
-                                href="?type=subjects">Subjects</a>
+                                <a class="nav-link <?= $type === 'schedules' ? 'active' : '' ?>" 
+                                   href="?type=schedules">Schedules</a>
                             </li>
-                                <li class="nav-item">
-                                <a class="nav-link <?= $type === 'sections' ? 'active' : '' ?>" 
-                                href="?type=sections">Sections</a>
+                            <li class="nav-item">
+                                <a class="nav-link <?= $type === 'subjects' ? 'active' : '' ?>" 
+                                   href="?type=subjects">Subjects</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link <?= $type === 'offices' ? 'active' : '' ?>" 
+                                   href="?type=offices">Offices</a>
                             </li>
                         </ul>
                     </div>
@@ -238,14 +234,14 @@ $total_pages = ceil($total_items / $limit);
                                                     case 'subjects':
                                                         echo htmlspecialchars($item['subject_code'] . ' - ' . $item['name']);
                                                         break;
-                                                    case 'sections':
-                                                        echo htmlspecialchars($item['section_name']);
+                                                    case 'offices':
+                                                        echo htmlspecialchars($item['name']);
                                                         break;
                                                 }
                                                 ?>
                                             </div>
                                             <div class="archive-item-meta">
-                                                Deleted by: <?= htmlspecialchars($item['deleted_by']) ?> | 
+                                                Deleted by: <?= htmlspecialchars($item['deleted_by'] ?? 'System') ?> | 
                                                 <?= date('M j, Y g:i A', strtotime($item['deleted_at'])) ?>
                                             </div>
                                         </div>

@@ -9,15 +9,14 @@ if ($conn->connect_error) {
 }
 
 function redirectWithError() {
-    echo "<script>alert('Invalid email or password!'); window.location='/myschedule/login.html';</script>";
+    header("Location: /myschedule/login.php?error=1");
     exit();
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = $_POST['passwords'];
 
-    // Check in users table first (admin or teacher)
     $stmt = $conn->prepare("SELECT id, firstname, lastname, password, role FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -37,28 +36,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: /myschedule/public/admin/dashboard.php");
                 exit();
             } elseif ($role === 'teacher') {
-                // get corresponding teacher id
-                $teacher_stmt = $conn->prepare("SELECT id FROM teachers WHERE user_id = ?");
+                $teacher_stmt = $conn->prepare("
+                    SELECT t.id, r.name AS status 
+                    FROM teachers t
+                    JOIN users u ON t.user_id = u.id
+                    LEFT JOIN roles r ON u.status_id = r.id
+                    WHERE t.user_id = ?
+                ");
                 $teacher_stmt->bind_param("i", $id);
                 $teacher_stmt->execute();
                 $teacher_stmt->store_result();
 
                 if ($teacher_stmt->num_rows > 0) {
-                    $teacher_stmt->bind_result($teacher_id);
+                    $teacher_stmt->bind_result($teacher_id, $status);
                     $teacher_stmt->fetch();
                     $_SESSION['teacher_id'] = $teacher_id;
+                    $_SESSION['status'] = $status ?? 'A';
                     header("Location: /myschedule/public/teachers/teach_dashboard.php");
                     exit();
                 } else {
-                    redirectWithError(); // Teacher account not properly linked
+                    redirectWithError();
                 }
             }
         } else {
-            redirectWithError(); // Wrong password
+            redirectWithError();
         }
     }
 
-    // Check in offices table if not found in users
     $stmt = $conn->prepare("SELECT id, name, password FROM offices WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -78,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             redirectWithError();
         }
     } else {
-        redirectWithError(); // Not found in any user table
+        redirectWithError();
     }
 
     $stmt->close();

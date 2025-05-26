@@ -5,17 +5,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
 $office_id = $_SESSION['office_id'];
 
-// Fetch available rooms
 $rooms_query = $conn->query("SELECT id, name FROM rooms WHERE office_id = $office_id AND deleted_at IS NULL");
 $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
 
-// Fetch available teachers
 $teachers_query = $conn->query("
     SELECT t.id, u.firstname, u.lastname 
     FROM teachers t
@@ -24,13 +22,17 @@ $teachers_query = $conn->query("
 ");
 $teachers = $teachers_query->fetch_all(MYSQLI_ASSOC);
 
-// Fetch available subjects
 $subjects_query = $conn->query("SELECT id, subject_code FROM subjects WHERE office_id = $office_id AND deleted_at IS NULL");
 $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
 
-// Fetch available sections
 $sections_query = $conn->query("SELECT id, section_name FROM sections WHERE office_id = $office_id AND deleted_at IS NULL");
 $sections = $sections_query->fetch_all(MYSQLI_ASSOC);
+
+$form_data = $_SESSION['form_data'] ?? [];
+$error = $_SESSION['error'] ?? null;
+$conflict_fields = $_SESSION['conflict_fields'] ?? [];
+
+unset($_SESSION['form_data'], $_SESSION['error'], $_SESSION['conflict_fields']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $day = $_POST['day'];
@@ -41,13 +43,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $subject_id = $_POST['subject_id'];
     $section_id = $_POST['section_id'];
     
-    // Insert the new schedule
-    $stmt = $conn->prepare("
+    $conflictQuery = "SELECT s.*, r.name AS room_name, sec.section_name, sub.subject_code, u.firstname, u.lastname 
+                    FROM schedules s
+                    LEFT JOIN rooms r ON s.room_id = r.id
+                    LEFT JOIN sections sec ON s.section_id = sec.id
+                    LEFT JOIN subjects sub ON s.subject_id = sub.id
+                    LEFT JOIN teachers t ON s.teach_id = t.id
+                    LEFT JOIN users u ON t.user_id = u.id
+                    WHERE s.office_id = ? AND s.deleted_at IS NULL AND (";
+
+    $params = [$office_id];
+    $types = 'i';
+    $conditions = [];
+
+    if ($room_id !== NULL) {
+        $conditions[] = "(s.room_id = ? AND s.day = ? AND s.start_time < ? AND s.end_time > ?)";
+        $types .= 'isss';
+        array_push($params, $room_id, $day, $end_time, $start_time);
+    }
+
+    $conditions[] = "(s.section_id = ? AND s.day = ? AND s.start_time < ? AND s.end_time > ?)";
+    $types .= 'isss';
+    array_push($params, $section_id, $day, $end_time, $start_time);
+
+    $conditions[] = "(s.teach_id = ? AND s.day = ? AND s.start_time < ? AND s.end_time > ?)";
+    $types .= 'isss';
+    array_push($params, $teach_id, $day, $end_time, $start_time);
+
+    $conflictQuery .= implode(' OR ', $conditions) . ")";
+
+    $stmt_check = $conn->prepare($conflictQuery);
+    $stmt_check->bind_param($types, ...$params);
+    $stmt_check->execute();
+    $conflicting_schedules = $stmt_check->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    if (!empty($conflicting_schedules)) {
+        $error_messages = [];
+        $conflict_fields = ['day' => false, 'start_time' => false, 'end_time' => false, 'room' => false, 'section' => false, 'teacher' => false];
+
+        foreach ($conflicting_schedules as $conflict) {
+            if ($room_id !== NULL && $conflict['room_id'] == $room_id) {
+                $conflict_fields['room'] = true;
+            }
+            if ($conflict['section_id'] == $section_id) {
+                $conflict_fields['section'] = true;
+            }
+            if ($conflict['teach_id'] == $teach_id) {
+                $conflict_fields['teacher'] = true;
+            }
+            $conflict_fields['day'] = $conflict_fields['start_time'] = $conflict_fields['end_time'] = true;
+
+            $room_name = $conflict['room_name'] ?? 'TBA';
+            $error_messages[] = "Conflict with: {$room_name}, {$conflict['day']} ({$conflict['start_time']}-{$conflict['end_time']}), Section {$conflict['section_name']}, {$conflict['subject_code']} by {$conflict['firstname']} {$conflict['lastname']}";
+        }
+
+        $_SESSION['error'] = implode("<br>", $error_messages);
+        $_SESSION['conflict_fields'] = $conflict_fields;
+        $_SESSION['form_data'] = $_POST;
+        header("Location: add_schedule.php");
+        exit();
+    } else {
+        $stmt = $conn->prepare("
         INSERT INTO schedules (office_id, day, start_time, end_time, room_id, teach_id, subject_id, section_id, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
-    ");
-    $stmt->bind_param("isssiiii", $office_id, $day, $start_time, $end_time, $room_id, $teach_id, $subject_id, $section_id);
-    
+        ");
+        $stmt->bind_param("isssiiii", $office_id, $day, $start_time, $end_time, $room_id, $teach_id, $subject_id, $section_id);
+    }
+        
     if ($stmt->execute()) {
         $_SESSION['success_message'] = "Schedule added successfully!";
         header("Location: /myschedule/public/office/schedule.php");
@@ -79,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <h1>Add Schedule</h1>
                         </div>
                         <div class="col-sm-6">
-                            <a href="/myschedule/public/office/schedule.php" class="btn btn-secondary float-right">
+                            <a href="../../public/office/schedule.php" class="btn btn-secondary float-right">
                                 <i class="fas fa-arrow-left"></i> Back to Schedules
                             </a>
                         </div>
@@ -108,6 +170,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <option value="Wednesday">Wednesday</option>
                                         <option value="Thursday">Thursday</option>
                                         <option value="Friday">Friday</option>
+                                        <option value="Saturday">Saturday</option>
+                                        <option value="Sunday">Sunday</option>
                                     </select>
                                 </div>
 

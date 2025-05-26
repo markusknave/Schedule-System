@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/components/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
@@ -53,7 +53,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Room Management</title>
+    <title>Room Management</title>
     <link rel="stylesheet" href="/myschedule/assets/css/room.css">
 </head>
 <style >
@@ -110,9 +110,6 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                                 <div>
                                     <button class="btn btn-primary" id="addRoomButton">
                                         <i class="fas fa-plus"></i> Add New Room
-                                    </button>
-                                    <button class="btn btn-secondary ml-2" id="exportToCsv">
-                                        <i class="fas fa-file-export"></i> Export to CSV
                                     </button>
                                 </div>
                                 <div>
@@ -228,7 +225,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                                                                 <i class="fas fa-edit"></i> Edit
                                                             </button>
                                                             <button class="btn btn-sm btn-danger delete-room" data-id="<?= $room['id'] ?>">
-                                                                <i class="fas fa-trash"></i> Delete
+                                                                <i class="fas fa-trash"></i> Archive
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -299,11 +296,11 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                 <form id="deleteRoomForm" action="/myschedule/components/room_comp/delete_room.php" method="POST">
                     <input type="hidden" id="deleteRoomId" name="room_id">
                     <div class="modal-body">
-                        <p>Are you sure you want to delete this room? This action cannot be undone.</p>
+                        <p>Are you sure you want to archive this room? This action cannot be undone.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Delete Room</button>
+                        <button type="submit" class="btn btn-danger">Archive Room</button>
                     </div>
                 </form>
             </div>

@@ -3,7 +3,7 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: /myschedule/login.php");
     exit();
 }
 
@@ -19,7 +19,7 @@ $section_result = $section_query->get_result();
 $section = $section_result->fetch_assoc();
 
 if (!$section) {
-    header("Location: /myschedule/public/admin/sections.php");
+    header("Location: /myschedule/public/office/sections.php");
     exit();
 }
 
@@ -68,7 +68,7 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
                             <h1>Section: <?php echo htmlspecialchars($section['section_name']); ?></h1>
                         </div>
                         <div class="col-sm-6">
-                            <a href="/myschedule/public/admin/sections.php" class="btn btn-default float-right">
+                            <a href="/myschedule/public/office/sections.php" class="btn btn-default float-right">
                                 <i class="fas fa-arrow-left"></i> Back to Sections
                             </a>
                         </div>

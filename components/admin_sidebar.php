@@ -1,7 +1,7 @@
 <!-- Sidebar -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(5, 29, 160);">
     <div class="container overflow-hidden">
-        <a href="#" class="brand-link">
+        <a href="/myschedule/public/admin/dashboard.php" class="brand-link">
             <img src="/myschedule/assets/img/favicon.png" width="35" height="35" alt="" class="ml-2">
             <span class="brand-text font-weight-light">LNU Teacher's Board</span>
         </a>
@@ -21,6 +21,12 @@
                         <p>Office Management</p>
                     </a>
                 </li>
+                    <li class="nav-item">
+                    <a href="/myschedule/public/admin/ad_archive.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'ad_archive.php' ? 'active' : '' ?>">
+                    <i class="nav-icon fa fa-archive"></i>
+                        <p>Archived</p>
+                    </a>
+                </li>
                 
             </ul>
             <div style="position: absolute; bottom: 0;" class="nav-item overflow-hidden">
@@ -33,5 +39,6 @@
                         </li>
                     </ul>
                 </div>
+                </nav>
             </div>
         </aside>

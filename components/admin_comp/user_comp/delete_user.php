@@ -14,16 +14,21 @@ if (!isset($_SESSION['user_id'])) {
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $teacher_id = $_POST['teacher_id'];
-    $office_id = $_SESSION['office_id'];
 
     try {
-        $teacher_data = $conn->prepare("SELECT * FROM teachers WHERE id = ? AND office_id = ?");
-        $teacher_data->bind_param("ii", $teacher_id, $office_id);
+        // First check if the teacher exists
+        $teacher_data = $conn->prepare("SELECT * FROM teachers WHERE id = ?");
+        $teacher_data->bind_param("i", $teacher_id);
         $teacher_data->execute();
         $teacher = $teacher_data->get_result()->fetch_assoc();
         
         if (!$teacher) {
-            throw new Exception("Teacher not found or you don't have permission");
+            throw new Exception("Teacher not found");
+        }
+
+        // Check if user is admin or from the same office
+        if ($_SESSION['role'] !== 'admin' && isset($_SESSION['office_id']) && $teacher['office_id'] != $_SESSION['office_id']) {
+            throw new Exception("You don't have permission to delete this teacher");
         }
 
         $delete_stmt = $conn->prepare("UPDATE teachers SET deleted_at = NOW() WHERE id = ?");
@@ -39,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $delete_stmt->close();
     } catch (Exception $e) {
         $response['message'] = $e->getMessage();
-        
     }
     
     $conn->close();
