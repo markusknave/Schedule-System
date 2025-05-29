@@ -95,3 +95,69 @@ $(document).ready(function() {
 
     $('.dropdown-toggle').dropdown();
 });
+
+$('#uploadImageBtn').click(function() {
+    const formData = new FormData();
+    const fileInput = document.getElementById('profileImage');
+    const $btn = $(this);
+    
+    if (fileInput.files.length === 0) {
+        showNotification('Please select an image.', 'warning');
+        return;
+    }
+
+    formData.append('profileImage', fileInput.files[0]);
+
+    $btn.prop('disabled', true)
+       .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...');
+
+    $.ajax({
+        url: '/myschedule/components/upload_image.php',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.success) {
+                showNotification('Image uploaded successfully!', 'success');
+                $('#addImageModal').modal('hide');
+                location.reload();
+            } else {
+                showNotification(response.error || 'Upload failed', 'danger');
+            }
+        },
+        error: function(xhr) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                showNotification('Error: ' + (response.error || 'Upload failed'), 'danger');
+            } catch (e) {
+                showNotification('An unexpected error occurred. Please try again.', 'danger');
+            }
+        },
+        complete: function() {
+            $btn.prop('disabled', false).text('Upload');
+            $('#imageUploadForm')[0].reset();
+        }
+    });
+});
+
+$('#addImageModal').on('hidden.bs.modal', function() {
+    $('#imageUploadForm')[0].reset();
+});
+
+document.getElementById('profileImage').addEventListener('change', function(event) {
+    const preview = document.getElementById('imagePreview');
+    const file = event.target.files[0];
+
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.src = '#';
+        preview.style.display = 'none';
+    }
+});
