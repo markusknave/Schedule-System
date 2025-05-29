@@ -17,13 +17,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['passwords'];
 
-    $stmt = $conn->prepare("SELECT id, firstname, lastname, password, role FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, firstname, lastname, password, role, img FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $fname, $lname, $hashed_password, $role);
+        $stmt->bind_result($id, $fname, $lname, $hashed_password, $role, $img);
         $stmt->fetch();
 
         if (password_verify($password, $hashed_password)) {
@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_name'] = htmlspecialchars("$fname $lname", ENT_QUOTES, 'UTF-8');
             $_SESSION['role'] = $role;
             $_SESSION['is_admin'] = true;  
+            $_SESSION['img_filename'] = $img;
 
             if ($role === 'admin') {
                 header("Location: /myschedule/public/admin/dashboard.php");
@@ -63,19 +64,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    $stmt = $conn->prepare("SELECT id, name, password FROM offices WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, name, password, img FROM offices WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $name, $hashed_password);
+        $stmt->bind_result($id, $name, $hashed_password, $img);
         $stmt->fetch();
 
         if (password_verify($password, $hashed_password)) {
             $_SESSION['office_id'] = $id;
             $_SESSION['office_name'] = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
             $_SESSION['role'] = 'office';
+            $_SESSION['img_filename'] = $img;
             header("Location: /myschedule/public/office/dashboard.php");
             exit();
         } else {
