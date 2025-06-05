@@ -300,23 +300,31 @@ $(document).on('click', '.page-link', function(e) {
     loadTeachers(searchVal, page);
 });
 
-    let selectedStatus = null;
-    let selectedUserId = null;
+let selectedStatus = null;
 
+    function showAlert(message, type = 'danger') {
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `;
+        $('#messageContainer').html(alertHtml);
+        
+        setTimeout(() => {
+            $('.alert').alert('close');
+        }, 3000);
+    }
+    
     $('#adminStatusSelect').change(function() {
         selectedStatus = $(this).val();
-        selectedUserId = $('.edit-teacher.active').data('id');
         
-        if (!selectedUserId) {
-            alert('Please select a teacher first');
-            $(this).val('');
-            return;
-        }
-
         if (selectedStatus === 'OL' || selectedStatus === 'OT') {
             $('#adminDateModal').modal('show');
         } else {
-            updateTeacherStatus(selectedStatus);
+            updateStatus(selectedStatus);
         }
     });
 
@@ -325,26 +333,20 @@ $(document).on('click', '.page-link', function(e) {
         const endDate = $('#adminEndDate').val();
         
         if (!startDate || !endDate) {
-            alert('Please fill both dates');
+            showAlert('Please fill both dates');
             return;
         }
         
         if (new Date(startDate) > new Date(endDate)) {
-            alert('End date must be after start date');
+            showAlert('End date must be after start date');
             return;
         }
         
-        updateTeacherStatus(selectedStatus, startDate, endDate);
+        updateStatus(selectedStatus, startDate, endDate);
         $('#adminDateModal').modal('hide');
     });
 
-    $('.edit-teacher').click(function() {
-        $('.edit-teacher').removeClass('active');
-        $(this).addClass('active');
-        selectedUserId = $(this).data('id');
-    });
-
-    function updateTeacherStatus(status, startDate = null, endDate = null) {
+    function updateStatus(status, startDate = null, endDate = null) {
         $.ajax({
             url: '../../components/prof_comp/update_status.php',
             method: 'POST',
@@ -352,19 +354,17 @@ $(document).on('click', '.page-link', function(e) {
             data: { 
                 status: status,
                 start_date: startDate,
-                end_date: endDate,
-                for_user_id: selectedUserId
+                end_date: endDate
             },
             success: function(response) {
                 if (response.success) {
-                    alert('Status updated successfully!');
                     location.reload();
                 } else {
-                    alert('Error: ' + response.error);
+                    showAlert('Error: ' + response.error);
                 }
             },
-            error: function() {
-                alert('Request failed. Please try again.');
+            error: function(xhr, status, error) {
+                showAlert('Request failed: ' + error);
             }
         });
     }
