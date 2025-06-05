@@ -1,0 +1,115 @@
+        :root {
+            --lnu-blue: #003366;
+            --lnu-gold: #FFCC00;
+            --lnu-light: #f8f9fa;
+        }
+        
+        .lnu-bg {
+            background-color: #f0f2f5;
+        }
+        
+        .lnu-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 2rem;
+        }
+        
+        .lnu-card-header {
+            background: var(--lnu-blue);
+            color: white;
+            padding: 1.5rem;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .lnu-badge {
+            background: var(--lnu-gold);
+            color: var(--lnu-blue);
+            font-weight: bold;
+        }
+        
+        .btn-lnu {
+            background: var(--lnu-blue);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-lnu:hover {
+            background: #002147;
+            color: var(--lnu-gold);
+        }
+        
+        .lnu-divider {
+            height: 4px;
+            background: linear-gradient(90deg, var(--lnu-blue) 50%, var(--lnu-gold) 50%);
+            margin: 1.5rem 0;
+        }
+        
+        .complaint-row:hover {
+            background-color: rgba(0, 51, 102, 0.05);
+            cursor: pointer;
+        }
+        
+        .complaint-detail {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--lnu-blue);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .status-resolved {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .status-review {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .search-container .form-control {
+            padding-right: 40px;
+        }
+        
+        .search-container .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--lnu-blue);
+            border-color: var(--lnu-blue);
+        }
+        
+        .pagination .page-link {
+            color: var(--lnu-blue);
+        }
+        
+        .pagination .page-link:hover {
+            background-color: rgba(0, 51, 102, 0.1);
+            color: var(--lnu-blue);
+        }

@@ -3,10 +3,21 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
 
 $imgUrl = '';
+$imgFound = false;
+
 if (!empty($_SESSION['img_filename'])) {
-    $imgUrl = IMAGE_BASE . UPLOAD_REL_PATH . $_SESSION['img_filename'];
+    $filePath = IMAGE_DIR . $_SESSION['img_filename'];
+    if (file_exists($filePath)) {
+        $imgUrl = IMAGE_BASE . UPLOAD_REL_PATH . $_SESSION['img_filename'];
+        $imgFound = true;
+    }
 } elseif (!empty($_SESSION['img'])) {
-    $imgUrl = IMAGE_BASE . UPLOAD_REL_PATH . basename($_SESSION['img']);
+    $filename = basename($_SESSION['img']);
+    $filePath = IMAGE_DIR . $filename;
+    if (file_exists($filePath)) {
+        $imgUrl = IMAGE_BASE . UPLOAD_REL_PATH . $filename;
+        $imgFound = true;
+    }
 }
 ?>
 <div id="notification" 
@@ -35,11 +46,10 @@ if (!empty($_SESSION['img_filename'])) {
     <ul class="navbar-nav ml-auto">
         <li class="nav-item d-flex align-items-center">
             <div class="d-inline-flex align-items-center">
-                <?php if (!empty($imgUrl)): ?>
+                <?php if ($imgFound): ?>
                     <img src="<?= htmlspecialchars($imgUrl) ?>" 
-                         alt="Profile" 
-                         style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;"
-                         >
+                        alt="Profile" 
+                        style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
                 <?php else: ?>
                     <i class="fa-solid fa-user" style="font-size: 1.25rem;"></i>
                 <?php endif; ?>
@@ -163,7 +173,15 @@ if (!empty($_SESSION['img_filename'])) {
                     </div>
 
                     <div class="form-group">
-                        <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width: 100%; height: auto; border: 1px solid #ccc; padding: 5px;" />
+                        <?php if ($imgFound): ?>
+                            <img id="imagePreview" src="<?= htmlspecialchars($imgUrl) ?>" alt="Current Profile Image" style="max-width: 100%; height: auto; border: 1px solid #ccc; padding: 5px; margin-bottom: 10px;" />
+                        <?php else: ?>
+                            <div style="margin-bottom: 10px; text-align: center;">
+                                <i class="fa-solid fa-user" style="font-size: 3rem; color: #6c757d;"></i>
+                                <p>No profile image</p>
+                            </div>
+                        <?php endif; ?>
+                        <img id="newImagePreview" src="#" alt="New Image Preview" style="display:none; max-width: 100%; height: auto; border: 1px solid #ccc; padding: 5px;" />
                     </div>
                 </form>
             </div>

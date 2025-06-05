@@ -46,6 +46,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="/myschedule/public/office/prof_complaints.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'prof_complaints.php' ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-exclamation-triangle"></i>
+                        <p>Complaints</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="/myschedule/public/office/archived.php" class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'archived.php' ? 'active' : '' ?>">
                         <i class="nav-icon fa fa-archive"></i>
                         <p>Archived</p>

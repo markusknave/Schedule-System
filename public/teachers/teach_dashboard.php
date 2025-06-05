@@ -98,6 +98,14 @@ if ($teacher) {
         .status-label {
             white-space: nowrap;
         }
+
+        #messageContainer {
+        position: fixed;
+        top: 70px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 400px;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -108,6 +116,7 @@ if ($teacher) {
         <!-- Content Wrapper -->
         <div class="content-wrapper">
             <section class="content-header">
+                <div id="messageContainer"></div>
                 <div class="container-fluid">
                     <div class="row mb-2 align-items-center">
                         <div class="col-sm-6">
@@ -215,6 +224,22 @@ if ($teacher) {
     <script>
     $(document).ready(function() {
         let selectedStatus = null;
+
+        function showAlert(message, type = 'danger') {
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `;
+        $('#messageContainer').html(alertHtml);
+        
+        setTimeout(() => {
+            $('.alert').alert('close');
+        }, 3000);
+    }
         
         $('#statusSelect').change(function() {
             selectedStatus = $(this).val();
@@ -231,12 +256,12 @@ if ($teacher) {
             const endDate = $('#endDate').val();
             
             if (!startDate || !endDate) {
-                alert('Please fill both dates');
+                showAlert('Please fill both dates');
                 return;
             }
             
             if (new Date(startDate) > new Date(endDate)) {
-                alert('End date must be after start date');
+                showAlert('End date must be after start date');
                 return;
             }
             
@@ -258,11 +283,11 @@ if ($teacher) {
                     if (response.success) {
                         location.reload();
                     } else {
-                        alert('Error: ' + response.error);
+                        showAlert('Error: ' + response.error);
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Request failed: ' + error);
+                    showAlert('Request failed: ' + error);
                 }
             });
         }

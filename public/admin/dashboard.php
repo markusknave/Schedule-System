@@ -32,9 +32,11 @@ $total_teachers = $total_result->fetch_assoc()['total'];
 $total_pages = ceil($total_teachers / $limit);
 
 $query = "SELECT u.id, u.firstname, u.middlename, u.lastname, u.extension, u.email,
-                 t.id as teacher_id, t.unit, t.created_at
+                 t.id as teacher_id, t.unit, t.created_at,
+                 r.name AS status_code, u.st_leave, u.end_leave
           FROM users u
           $join_clause
+          LEFT JOIN roles r ON u.status_id = r.id
           $where_clause
           ORDER BY u.lastname, u.firstname
           LIMIT $limit OFFSET $offset";

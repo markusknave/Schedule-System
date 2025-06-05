@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
         exit();
     }
 
-    // Use the status code directly (e.g., 'A' instead of 'Available')
     $stmt = $conn->prepare("SELECT id FROM roles WHERE name = ?");
     $stmt->bind_param("s", $newStatusCode);
     $stmt->execute();
@@ -22,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
     $row = $result->fetch_assoc();
 
     if (!$row) {
-        // Provide more detailed error
         error_log("Role not found for status: $newStatusCode");
         echo json_encode(['success' => false, 'error' => "Role not found for status: $newStatusCode"]);
         exit();
