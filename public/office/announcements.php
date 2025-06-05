@@ -27,6 +27,11 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
     <title>Announcements</title>
 
     <style>
+        :root {
+            --lnu-blue: #003366;
+            --lnu-gold: #FFCC00;
+            --lnu-light: #f8f9fa;
+        }
         .announcement-content-container {
             padding: 1rem;
             background-color: #f8f9fa;
@@ -115,6 +120,12 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             background-color: rgba(56, 56, 56, 0.9);
             color: white;
         }
+
+        .lnu-divider {
+            height: 4px;
+            background: linear-gradient(90deg, var(--lnu-blue) 50%, var(--lnu-gold) 50%);
+            margin: 1.5rem 0;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -189,6 +200,8 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             </button>
                         </div>
+
+                        <div class="lnu-divider"></div>
                         
                         <?php foreach ($announcements as $index => $announcement): ?>
                             <div class="announcement-content-container" id="content-<?= $index ?>" style="display: <?= $index === 0 ? 'block' : 'none' ?>;">
