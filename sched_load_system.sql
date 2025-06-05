@@ -35,6 +35,23 @@ CREATE TABLE IF NOT EXISTS `announcements` (
 
 -- Data exporting was unselected.
 
+-- Dumping structure for table sched_load_system.complaints
+CREATE TABLE IF NOT EXISTS `complaints` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `teacher_id` int DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `subject` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `status` enum('pending','resolved') DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK__users` (`teacher_id`) USING BTREE,
+  CONSTRAINT `FK_complaints_teachers` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exporting was unselected.
+
 -- Dumping structure for table sched_load_system.offices
 CREATE TABLE IF NOT EXISTS `offices` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -99,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `schedules` (
   CONSTRAINT `FK_schedules_teachers` FOREIGN KEY (`teach_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE,
   CONSTRAINT `schedules_ibfk_2` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`id`) ON DELETE CASCADE,
   CONSTRAINT `schedules_ibfk_3` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Data exporting was unselected.
 

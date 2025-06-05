@@ -29,7 +29,6 @@ try {
         throw new Exception('Failed to save image.');
     }
 
-    // Use MySQLi connection from config.php
     global $conn;
     
     if ($_SESSION['role'] === 'office') {

@@ -1,0 +1,279 @@
+ :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --border-color: #ddd;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .teacher-bulletin {
+            width: 100%;
+            max-width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+        
+        .header h2 {
+            color: var(--secondary-color);
+            font-weight: 400;
+            font-size: 1.5rem;
+            margin: 10px 0 0 0;
+        }
+        
+        .header-favicon-left {
+            width: 80px;
+            height: 80px;
+        }
+
+        .header-favicon-right {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .carousel-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+            position: relative;
+            max-width: 1600px;
+            margin: 0 auto 30px;
+        }
+        
+        .carousel-inner {
+            padding: 25px;
+        }
+
+        .carousel-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            visibility: hidden;
+        }
+
+        .carousel-item.active {
+            position: relative;
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .profile-info {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            min-width: 300px;
+        }
+        
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 25px;
+            border: 3px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-bg);
+            flex-shrink: 0;
+        }
+        
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-pic .fa-user {
+            font-size: 60px;
+            color: #6c757d;
+        }
+        
+        .teacher-details {
+            flex-grow: 1;
+            min-width: 250px;
+        }
+        
+        .teacher-name {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .teacher-designation {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .teacher-status {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .status-label {
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        
+        .status-value {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .leave-dates {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .schedule-section {
+            margin-top: 20px;
+        }
+        
+        .schedule-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .schedule-table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .schedule-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .schedule-table tr:nth-child(even) {
+            background-color: var(--light-bg);
+        }
+        
+        .schedule-table tr:hover {
+            background-color: #e9f7fe;
+        }
+        
+        .no-schedule {
+            text-align: center;
+            padding: 30px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .no-teachers {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.5rem;
+            color: #666;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .main-header {
+            transition: top 0.5s ease;
+            top: 0;
+        }
+        
+        .header-hidden {
+            top: -100px !important;
+        }
+        
+        .content-wrapper {
+            padding-top: 0 !important;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .header-title {
+                min-width: unset;
+                width: 100%;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .profile-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-pic {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .teacher-name {
+                font-size: 1.7rem;
+            }
+        }

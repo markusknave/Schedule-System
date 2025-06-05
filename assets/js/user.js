@@ -16,9 +16,7 @@ $(document).ready(function() {
 
     document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.overflow-container').forEach(el => {
-        // initial check
         toggleScrollbar(el);
-        // re-check on window resize in case layout changes
         window.addEventListener('resize', () => toggleScrollbar(el));
     });
     });
@@ -301,4 +299,74 @@ $(document).on('click', '.page-link', function(e) {
     const searchVal = $('#searchInput').val();
     loadTeachers(searchVal, page);
 });
+
+    let selectedStatus = null;
+    let selectedUserId = null;
+
+    $('#adminStatusSelect').change(function() {
+        selectedStatus = $(this).val();
+        selectedUserId = $('.edit-teacher.active').data('id');
+        
+        if (!selectedUserId) {
+            alert('Please select a teacher first');
+            $(this).val('');
+            return;
+        }
+
+        if (selectedStatus === 'OL' || selectedStatus === 'OT') {
+            $('#adminDateModal').modal('show');
+        } else {
+            updateTeacherStatus(selectedStatus);
+        }
+    });
+
+    $('#adminSaveDates').click(function() {
+        const startDate = $('#adminStartDate').val();
+        const endDate = $('#adminEndDate').val();
+        
+        if (!startDate || !endDate) {
+            alert('Please fill both dates');
+            return;
+        }
+        
+        if (new Date(startDate) > new Date(endDate)) {
+            alert('End date must be after start date');
+            return;
+        }
+        
+        updateTeacherStatus(selectedStatus, startDate, endDate);
+        $('#adminDateModal').modal('hide');
+    });
+
+    $('.edit-teacher').click(function() {
+        $('.edit-teacher').removeClass('active');
+        $(this).addClass('active');
+        selectedUserId = $(this).data('id');
+    });
+
+    function updateTeacherStatus(status, startDate = null, endDate = null) {
+        $.ajax({
+            url: '../../components/prof_comp/update_status.php',
+            method: 'POST',
+            dataType: 'json',
+            data: { 
+                status: status,
+                start_date: startDate,
+                end_date: endDate,
+                for_user_id: selectedUserId
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('Status updated successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + response.error);
+                }
+            },
+            error: function() {
+                alert('Request failed. Please try again.');
+            }
+        });
+    }
+
 });
