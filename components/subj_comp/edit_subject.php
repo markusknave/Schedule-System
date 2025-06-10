@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 
 if (!isset($_SESSION['office_id'])) {
@@ -60,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         $response['success'] = true;
         $response['message'] = "Subject updated successfully!";
+        log_action('UPDATE', "Updated subject with ID $subject_id, code: $subject_code");
     } else {
         $response['message'] = "Error updating subject: " . $stmt->error;
     }

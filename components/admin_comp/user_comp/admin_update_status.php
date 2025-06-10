@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($updateStmt->execute()) {
         echo json_encode(['success' => true]);
+        log_action('UPDATE', "Updated status for user ID $user_id to $status");
     } else {
         echo json_encode(['success' => false, 'error' => $conn->error]);
     }

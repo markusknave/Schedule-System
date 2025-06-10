@@ -1,4 +1,5 @@
 <?php
+include_once __DIR__ . '/logger.php';
 session_start();
 @include '../../components/links.php';
 
@@ -63,6 +64,14 @@ $query = "SELECT u.id, u.firstname, u.middlename, u.lastname, u.extension, u.ema
 $result = $conn->query($query);
 
 $shown_count = $result->num_rows;
+
+// Handle log clearing (truncate, not delete)
+if (isset($_POST['clear_log']) && isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
+    $log_file = __DIR__ . '/log.txt';
+    file_put_contents($log_file, "");
+    $log_cleared = true;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -391,5 +400,25 @@ $shown_count = $result->num_rows;
             </section>
         </div>
     </div>
+
+    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+    <div class="card mt-5">
+        <div class="card-header"><strong>System Log</strong></div>
+        <div class="card-body">
+            <form method="POST" onsubmit="return confirm('Are you sure you want to clear the log?');">
+                <button type="submit" name="clear_log" class="btn btn-danger mb-3">Clear Log</button>
+            </form>
+            <pre style="max-height:300px;overflow:auto;background:#222;color:#eee;padding:1em;"><?php
+                $log_file = __DIR__ . '/log.txt';
+                if (file_exists($log_file)) {
+                    echo htmlspecialchars(file_get_contents($log_file));
+                } else {
+                    echo 'No log entries yet.';
+                }
+            ?></pre>
+            <?php if (!empty($log_cleared)) echo '<div class="alert alert-success mt-2">Log cleared.</div>'; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </body>
 </html>

@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 header('Content-Type: application/json');
 
@@ -30,6 +31,7 @@ try {
                 'success' => true,
                 'message' => 'Room added successfully!'
             ];
+            log_action('INSERT', "Created room '$name' for office $office_id");
         } else {
             throw new Exception("Error adding room: " . $stmt->error);
         }

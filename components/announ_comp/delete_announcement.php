@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
@@ -36,6 +37,7 @@ if ($permanent) {
             }
         }
         $_SESSION['success'] = "Announcement permanently deleted successfully";
+        log_action('DELETE', "Permanently deleted announcement with ID $announcement_id");
     } else {
         $_SESSION['error'] = "Error deleting announcement: " . $delete_stmt->error;
     }
@@ -45,6 +47,7 @@ if ($permanent) {
     
     if ($delete_stmt->execute()) {
         $_SESSION['success'] = "Announcement archived successfully";
+        log_action('ARCHIVE', "Archived announcement with ID $announcement_id");
     } else {
         $_SESSION['error'] = "Error archiving announcement: " . $delete_stmt->error;
     }

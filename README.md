@@ -23,6 +23,9 @@ A modern web-based scheduling system for educational institutions to efficiently
   - Profile image upload
   - Personal information management
   - Leave management tracking
+- **Default Password Format for Professors**
+  - For newly added professors, the default password is in the format `SURNAMEYYYYDDMM`, where `SURNAME` is the professor's last name in uppercase and `YYYYDDMM` is the date the account was originally created (Year, Day, Month).
+
 
 ### 📅 Schedule Management
 - **Smart Scheduling**
@@ -165,7 +168,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 💬 Support
 
 - **Issues**: [GitHub Issues](issues-link)
+
 - **Contact**: [Development Team](seandavenn@gmail.com)
+
 
 ---
 

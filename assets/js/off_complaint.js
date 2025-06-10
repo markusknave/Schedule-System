@@ -6,16 +6,15 @@ $(document).ready(function() {
         }
     });
 
-    $('.complaint-row').on('click', function() {
+    $(document).on('click', '.view-complaint', function(e) {
+        e.stopPropagation();
         const complaintId = $(this).data('id');
         const detailRow = $(`#detail-${complaintId}`);
-        
         if (detailRow.is(':visible')) {
             detailRow.slideUp();
         } else {
             $('.complaint-detail').slideUp();
             detailRow.slideDown();
-            
             $('html, body').animate({
                 scrollTop: detailRow.offset().top - 100
             }, 500);
