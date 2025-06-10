@@ -167,7 +167,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 💬 Support
 
-- **Issues**: [GitHub Issues](issues-link)
+- **Issues**: [GitHub Issues](https://github.com/markusknave/myschedule/issues)
 
 - **Contact**: [Development Team](seandavenn@gmail.com)
 
