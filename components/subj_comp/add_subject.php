@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 
 if (!isset($_SESSION['office_id'])) {
@@ -56,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         $response['success'] = true;
         $response['message'] = "Subject added successfully!";
+        log_action('INSERT', "Created subject with code $subject_code for office $office_id");
     } else {
         $response['message'] = "Error adding subject: " . $stmt->error;
     }

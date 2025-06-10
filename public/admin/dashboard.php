@@ -1,4 +1,5 @@
 <?php
+include_once __DIR__ . '/logger.php';
 session_start();
 @include '../../components/links.php';
 
@@ -9,6 +10,26 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+
+$admin_user_id = $_SESSION['user_id'];
+
+$stmt_admin = $conn->prepare("
+    SELECT u.st_leave, u.end_leave, r.name AS status_code 
+    FROM users u 
+    LEFT JOIN roles r ON u.status_id = r.id 
+    WHERE u.id = ?
+");
+$stmt_admin->bind_param("i", $admin_user_id);
+$stmt_admin->execute();
+$result_admin = $stmt_admin->get_result();
+$admin_data = $result_admin->fetch_assoc();
+
+$st_leave = $admin_data['st_leave'] ?? null;
+$end_leave = $admin_data['end_leave'] ?? null;
+
+if (!isset($_SESSION['status'])) {
+    $_SESSION['status'] = $admin_data['status_code'] ?? 'UN';
+}
 
 $limit = isset($_GET['mobile']) ? 5 : 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -43,6 +64,14 @@ $query = "SELECT u.id, u.firstname, u.middlename, u.lastname, u.extension, u.ema
 $result = $conn->query($query);
 
 $shown_count = $result->num_rows;
+
+// Handle log clearing (truncate, not delete)
+if (isset($_POST['clear_log']) && isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
+    $log_file = __DIR__ . '/log.txt';
+    file_put_contents($log_file, "");
+    $log_cleared = true;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -62,6 +91,25 @@ $shown_count = $result->num_rows;
             min-width: 300px !important;
             text-align: center !important;
         }
+
+        .status-container {
+            background-color: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+
+        .status-label {
+            font-weight: 500;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+
+        .status-date {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
     </style>
 
 </head>
@@ -73,11 +121,30 @@ $shown_count = $result->num_rows;
         <div class="content-wrapper">
             <section class="content-header">
                 <div class="container-fluid">
-                    <div class="row mb-2">
+                    <div class="row mb-2 align-items-center">
                         <div class="col-sm-6">
                             <h1>Teachers Management</h1>
                         </div>
-                        <div class="col-sm-6" id="messageContainer"></div>
+                        <div class="col-sm-6">
+                            <div class="d-flex flex-column align-items-end">
+                                <div class="d-flex align-items-center status-container">
+                                    <span class="status-label">Update Your Status:</span>
+                                    <select id="adminStatusSelect" class="form-control w-auto"> 
+                                        <option value="A" <?= $_SESSION['status'] === 'A' ? 'selected' : '' ?>>Available</option>
+                                        <option value="OL" <?= $_SESSION['status'] === 'OL' ? 'selected' : '' ?>>On-Leave</option>
+                                        <option value="OT" <?= $_SESSION['status'] === 'OT' ? 'selected' : '' ?>>On-Travel</option>
+                                        <option value="B" <?= $_SESSION['status'] === 'B' ? 'selected' : '' ?>>Busy</option>
+                                        <option value="UN" <?= $_SESSION['status'] === 'UN' ? 'selected' : '' ?>>Unavailable</option>
+                                    </select>
+                                </div>
+                                <?php if (($_SESSION['status'] === 'OL' || $_SESSION['status'] === 'OT') && $st_leave && $end_leave): ?>
+                                    <div class="status-date" style="color: red;">
+                                        <?= $_SESSION['status'] === 'OL' ? 'On-Leave' : 'On-Travel' ?>: 
+                                        <?= date('M d, Y', strtotime($st_leave)) ?> - <?= date('M d, Y', strtotime($end_leave)) ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -299,10 +366,59 @@ $shown_count = $result->num_rows;
                         </div>
                     </div>
 
+                    <div class="modal fade" id="adminDateModal" tabindex="-1" role="dialog" aria-labelledby="adminDateModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="adminDateModalLabel">Set Leave/Travel Dates</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="adminDateForm">
+                                    <div class="form-group">
+                                        <label for="adminStartDate">Start Date</label>
+                                        <input type="date" class="form-control" id="adminStartDate" name="start_date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="adminEndDate">End Date</label>
+                                        <input type="date" class="form-control" id="adminEndDate" name="end_date" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="adminSaveDates">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                     <script src="../../assets/js/user.js"></script>
                 </div>
             </section>
         </div>
     </div>
+
+    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+    <div class="card mt-5">
+        <div class="card-header"><strong>System Log</strong></div>
+        <div class="card-body">
+            <form method="POST" onsubmit="return confirm('Are you sure you want to clear the log?');">
+                <button type="submit" name="clear_log" class="btn btn-danger mb-3">Clear Log</button>
+            </form>
+            <pre style="max-height:300px;overflow:auto;background:#222;color:#eee;padding:1em;"><?php
+                $log_file = __DIR__ . '/log.txt';
+                if (file_exists($log_file)) {
+                    echo htmlspecialchars(file_get_contents($log_file));
+                } else {
+                    echo 'No log entries yet.';
+                }
+            ?></pre>
+            <?php if (!empty($log_cleared)) echo '<div class="alert alert-success mt-2">Log cleared.</div>'; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </body>
 </html>

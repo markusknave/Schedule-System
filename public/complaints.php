@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 @include '../components/links.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
@@ -71,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'subject' => '',
                 'message' => ''
             ];
+            log_action('INSERT', "Complaint submitted for teacher ID $teacher_id, subject: $subject");
         } else {
             $error = "Failed to submit complaint: " . $stmt->error;
         }

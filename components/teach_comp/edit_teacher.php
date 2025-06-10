@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 header('Content-Type: application/json');
 
@@ -65,6 +66,7 @@ try {
                 'success' => true,
                 'message' => 'Teacher updated successfully!'
             ];
+            log_action('UPDATE', "Updated teacher with ID $teacher_id (user ID $user_id)");
         } catch (Exception $e) {
             $conn->rollback();
             throw $e;

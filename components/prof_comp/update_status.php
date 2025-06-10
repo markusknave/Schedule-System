@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 require_once '../../config.php';
 
@@ -66,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
 
     if ($updateStmt->execute()) {
         $_SESSION['status'] = $newStatusCode;
+        log_action('UPDATE', "Updated status for user ID $user_id to $newStatusCode");
         echo json_encode(['success' => true]);
     } else {
         echo json_encode(['success' => false, 'error' => $conn->error]);

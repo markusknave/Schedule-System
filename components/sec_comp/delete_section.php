@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 header('Content-Type: application/json');
 
@@ -32,6 +33,7 @@ try {
                 'success' => true,
                 'message' => 'Section deleted successfully!'
             ];
+            log_action('DELETE', "Deleted section with ID $section_id");
         } else {
             throw new Exception("Error deleting section: " . $stmt->error);
         }
