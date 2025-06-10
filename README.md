@@ -26,6 +26,7 @@ A modern web-based scheduling system for educational institutions to efficiently
 - **Default Password Format for Professors**
   - For newly added professors, the default password is in the format `SURNAMEYYYYDDMM`, where `SURNAME` is the professor's last name in uppercase and `YYYYDDMM` is the date the account was originally created (Year, Day, Month).
 
+
 ### 📅 Schedule Management
 - **Smart Scheduling**
   - Create and manage class schedules
@@ -113,31 +114,6 @@ A modern web-based scheduling system for educational institutions to efficiently
    - Enable mod_rewrite (Apache)
    - Configure virtual host (recommended)
 
-> **Note:** For newly added professors, the default password is set to `SURNAMEYYYYDDMM` (e.g., `SMITH20241206` for a professor named Smith created on December 6, 2024).
-
-## 📁 Project Structure
-
-```
-myschedule/
-├── assets/                 # Static resources
-│   ├── css/               # Stylesheets
-│   ├── js/                # JavaScript files
-│   └── images/            # System images
-├── components/            # Reusable components
-│   ├── header.php        # Header template
-│   ├── footer.php        # Footer template
-│   └── sidebar.php       # Navigation menu
-├── public/               # Public files
-│   └── index.php        # Entry point
-├── uploads/             # User uploads
-│   └── images/         # Profile images
-├── config.php          # Configuration
-├── constants.php       # Constants
-├── login.php          # Authentication
-├── register.php       # Registration
-└── sched_load_system.sql  # Database schema
-```
-
 ## 🔒 Security Features
 
 - **Authentication**
@@ -192,7 +168,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 💬 Support
 
 - **Issues**: [GitHub Issues](issues-link)
-- **Contact**: [Development Team](seandavenn@gmmail.com)
+
+- **Contact**: [Development Team](seandavenn@gmail.com)
+
 
 ---
 
