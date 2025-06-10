@@ -98,8 +98,8 @@ A modern web-based scheduling system for educational institutions to efficiently
    ```php
    // config.php
    $host = "localhost";
-   $username = "your_username";
-   $password = "your_password";
+   $username = "root";
+   $password = "";
    $database = "sched_load_system";
    ```
 
