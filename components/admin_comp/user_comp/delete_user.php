@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 header('Content-Type: application/json');
 
@@ -37,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($delete_stmt->execute()) {
             $response['success'] = true;
             $response['message'] = "Teacher archived successfully!";
+            log_action('DELETE', "Archived teacher with ID $teacher_id");
         } else {
             throw new Exception("Error archiving teacher: " . $delete_stmt->error);
         }

@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 header('Content-Type: application/json');
 
@@ -47,6 +48,7 @@ try {
     if ($stmt->execute()) {
         $response['success'] = true;
         $response['message'] = "Office updated successfully!";
+        log_action('UPDATE', "Updated office with ID $office_id, name: $name");
     } else {
         throw new Exception("Error updating office: " . $stmt->error);
     }

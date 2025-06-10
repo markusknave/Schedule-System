@@ -55,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("sss", $name, $email, $hashed_password);
         
         if ($stmt->execute()) {
+            log_action('INSERT', "Registered new office: $name");
             header("Location: /myschedule/login.php");
             exit();
         } else {

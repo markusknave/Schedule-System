@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 @include '../../components/links.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
@@ -125,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($stmt->execute()) {
             $_SESSION['success_message'] = "Schedule updated successfully!";
+            log_action('UPDATE', "Updated schedule with ID $schedule_id for office $office_id");
             header("Location: /myschedule/public/office/schedule.php");
             exit();
         } else {

@@ -324,7 +324,7 @@ foreach ($schedules as $schedule) {
                                                                 <i class="fas fa-edit"></i> Edit
                                                             </a>
                                                             <button class="btn btn-danger btn-xs delete-schedule" data-id="<?php echo $schedule['id']; ?>">
-                                                                <i class="fas fa-trash"></i> Archive
+                                                                <i class="fas fa-trash"></i> Delete
                                                             </button>
                                                         </div>
                                                     </div>
@@ -354,11 +354,11 @@ foreach ($schedules as $schedule) {
                 <form id="deleteScheduleForm" action="/myschedule/components/sched_comp/delete_schedule.php" method="POST">
                     <input type="hidden" id="deleteScheduleId" name="id">
                     <div class="modal-body">
-                        <p>Are you sure you want to archive this schedule? This action cannot be undone.</p>
+                        <p>Are you sure you want to delete this schedule? This action cannot be undone.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Archive Schedule</button>
+                        <button type="submit" class="btn btn-danger">Delete Schedule</button>
                     </div>
                 </form>
             </div>
@@ -366,7 +366,6 @@ foreach ($schedules as $schedule) {
     </div>
     </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
 $(document).ready(function() {
     $(document).on('click', '.delete-schedule', function() {

@@ -15,10 +15,13 @@ $current_day = date('l');
 $office_id = $_SESSION['office_id'];
 
 $professors_query = $conn->query("
-    SELECT 
+    SELECT
         t.id AS teacher_id,
         u.id AS user_id,
-        CONCAT(u.firstname, ' ', u.lastname) AS full_name,
+        u.firstname,
+        u.lastname,
+        u.extension,
+        CONCAT(u.firstname, ' ', u.lastname, IFNULL(CONCAT(' ', u.extension), '')) AS full_name,
         t.unit AS designation,
         u.img AS profile_img,
         u.st_leave,
@@ -31,6 +34,7 @@ $professors_query = $conn->query("
     WHERE t.office_id = $office_id
     AND t.deleted_at IS NULL
     AND u.deleted_at IS NULL
+    ORDER BY u.lastname, u.firstname
 ");
 $professors = $professors_query->fetch_all(MYSQLI_ASSOC);
 
@@ -63,6 +67,16 @@ $statusLabels = [
     'OL' => ['label' => 'On Leave', 'color' => 'blue'],
     'UN' => ['label' => 'Absent', 'color' => 'gray'],
 ];
+
+$unique_professors = [];
+$seen_ids = [];
+foreach ($professors as $prof) {
+    if (!in_array($prof['teacher_id'], $seen_ids)) {
+        $unique_professors[] = $prof;
+        $seen_ids[] = $prof['teacher_id'];
+    }
+}
+$professors = $unique_professors;
 ?>
 
 <!DOCTYPE html>
@@ -73,6 +87,19 @@ $statusLabels = [
     <meta http-equiv="refresh" content="60">
     <title>Teachers Schedule Bulletin</title>
     <link rel="stylesheet" href="/myschedule/assets/css/announ.css">
+    <style>
+        .custom-carousel-item {
+            display: none;
+        }
+        .custom-carousel-item.active {
+            display: block;
+            animation: fadeIn 1s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
 </head>
 <body class="hold-transition layout-top-nav">
     <div class="wrapper">
@@ -98,9 +125,10 @@ $statusLabels = [
                             </div>
                         <?php else: ?>
                             <div class="carousel-container">
-                                <div id="professorCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="10000">
+                                <div id="professorCarousel">
                                     <div class="carousel-inner">
-                                        <?php foreach ($professors as $index => $professor): 
+                                        <?php 
+                                        foreach ($professors as $index => $professor): 
                                             $status_name = $professor['status_name'] ?? 'UN';
                                             $status_config = $statusLabels[$status_name] ?? $statusLabels['UN'];
                                             
@@ -118,14 +146,17 @@ $statusLabels = [
                                             $base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}";
                                             $complaint_url = "{$base_url}/myschedule/public/complaints.php?teacher_id={$professor['teacher_id']}";
                                             $qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . rawurlencode($complaint_url);
-
                                         ?>
-                                        <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+                                        <div class="custom-carousel-item <?= $index === 0 ? 'active' : '' ?>" 
+                                             data-index="<?= $index ?>"
+                                             data-teacher-id="<?= $professor['teacher_id'] ?>">
                                             <div class="profile-header">
                                                 <div class="profile-info">
                                                     <div class="profile-pic">
                                                         <?php if ($imgFound): ?>
-                                                            <img src="<?= htmlspecialchars($imgUrl) ?>" alt="<?= htmlspecialchars($professor['full_name']) ?>">
+                                                            <img src="<?= htmlspecialchars($imgUrl) ?>" 
+                                                                 alt="<?= htmlspecialchars($professor['full_name']) ?>"
+                                                                 onerror="this.onerror=null;this.parentElement.innerHTML='<i class=\'fas fa-user\'></i>';">
                                                         <?php else: ?>
                                                             <i class="fas fa-user"></i>
                                                         <?php endif; ?>
@@ -189,15 +220,6 @@ $statusLabels = [
                                         </div>
                                         <?php endforeach; ?>
                                     </div>
-                                    
-                                    <!-- <div class="carousel-controls">
-                                        <button class="carousel-control" data-bs-target="#professorCarousel" data-bs-slide="prev">
-                                            <i class="fas fa-chevron-left"></i>
-                                        </button>
-                                        <button class="carousel-control" data-bs-target="#professorCarousel" data-bs-slide="next">
-                                            <i class="fas fa-chevron-right"></i>
-                                        </button>
-                                    </div> -->
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -209,7 +231,7 @@ $statusLabels = [
     
     <script>
     $(document).ready(function() {
-    let headerTimeout;
+        let headerTimeout;
         const header = $('.main-header');
         
         function hideHeader() {
@@ -238,6 +260,54 @@ $statusLabels = [
         header.on('mouseleave', function() {
             headerTimeout = setTimeout(hideHeader, 2000);
         });
+    });
+
+    $(window).on('load', function () {
+        const items = document.querySelectorAll('.custom-carousel-item');
+        const totalItems = items.length;
+        
+        // console.log("=== Carousel Debug Information ===");
+        // console.log("Total DOM elements found:", totalItems);
+        
+        // items.forEach((item, index) => {
+        //     console.log(`Item ${index}:`, {
+        //         teacherId: item.getAttribute('data-teacher-id'),
+        //         professorName: item.querySelector('.teacher-name').innerText,
+        //         isActive: item.classList.contains('active')
+        //     });
+        // });
+        
+        // const teacherIds = new Set();
+        // items.forEach(item => {
+        //     const teacherId = item.getAttribute('data-teacher-id');
+        //     teacherIds.add(teacherId);
+        //     console.log(`Adding teacher ID to Set: ${teacherId}`);
+        // });
+        
+        // console.log("Unique teacher IDs:", Array.from(teacherIds));
+        // console.log("Total unique teachers:", teacherIds.size);
+        // console.log("Total carousel items:", totalItems);
+        
+        let currentIndex = 0;
+        
+        function cycleItems() {
+            items.forEach(item => item.classList.remove('active'));
+            
+            currentIndex = (currentIndex + 1) % totalItems;
+            
+            const nextItem = items[currentIndex];
+            nextItem.classList.add('active');
+            
+            // console.log("=== Carousel Cycle ===");
+            // console.log("Current Index:", currentIndex);
+            // console.log("Teacher ID:", nextItem.getAttribute('data-teacher-id'));
+            // console.log("Professor Name:", nextItem.querySelector('.teacher-name').innerText);
+        }
+        
+        if (totalItems > 1) {
+            const carouselInterval = setInterval(cycleItems, 10000);
+            window.addEventListener('beforeunload', () => clearInterval(carouselInterval));
+        }
     });
     </script>
 </body>

@@ -1,4 +1,6 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
+
 session_start();
 
 if (!isset($_SESSION['office_id'])) {
@@ -47,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->execute()) {
                 $success = 'Announcement created successfully!';
                 $title = $content = '';
-
+                log_action('INSERT', "Created announcement '$title' for office $office_id");
                 header('Location: ../../public/office/announcements.php');
                 exit();
             } else {

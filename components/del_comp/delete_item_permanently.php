@@ -1,4 +1,6 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
+
 session_start();
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
@@ -80,6 +82,7 @@ try {
         $response['success'] = true;
         $response['message'] = ucfirst($type) . ' permanently deleted successfully';
         http_response_code(200);
+        log_action('DELETE', "Permanently deleted $type with ID $id");
     } else {
         throw new Exception("Database operation failed", 500);
     }

@@ -1,4 +1,5 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
 header('Content-Type: application/json');
 
@@ -32,6 +33,7 @@ try {
                 'success' => true,
                 'message' => 'Room deleted successfully!'
             ];
+            log_action('DELETE', "Deleted room with ID $room_id");
         } else {
             throw new Exception("Error deleting room: " . $stmt->error);
         }
