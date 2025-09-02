@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $imgUrl = '';
 $imgFound = false;
@@ -31,12 +31,11 @@ if (!empty($_SESSION['img_filename'])) {
             min-width: 200px;">
 </div>
 
-<!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <ul class="navbar-nav">
         <li class="nav-item">
             <?php if (basename($_SERVER['PHP_SELF']) == 'disp_announ_sched.php'): ?>
-                <a class="nav-link" href="/myschedule/public/office/schedule.php"><i class="fas fa-arrow-left"></i></a>
+                <a class="nav-link" href="../../public/office/schedule.php"><i class="fas fa-arrow-left"></i></a>
             <?php else: ?>
                 <a class="nav-link" href="#" data-widget="pushmenu" role="button" onclick="return false;"><i class="fas fa-bars"></i></a>
             <?php endif; ?>

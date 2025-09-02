@@ -1,12 +1,13 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
+include_once '../../public/admin/logger.php';
 session_start();
 @include '../../components/links.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+
+require_once '../../config.php';
+require_once '../../constants.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
@@ -114,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         $_SESSION['success_message'] = "Schedule added successfully!";
         log_action('INSERT', "Created schedule for office $office_id, day $day, teacher $teach_id");
-        header("Location: /myschedule/public/office/schedule.php");
+        header("Location: ../../public/office/schedule.php");
         exit();
     } else {
         $error = "Error adding schedule: " . $conn->error;
@@ -128,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Schedule</title>
-    <link rel="stylesheet" href="/myschedule/assets/css/schedule.css">
+    <link rel="stylesheet" href="../../assets/css/schedule.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">

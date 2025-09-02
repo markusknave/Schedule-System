@@ -56,7 +56,7 @@ $(document).ready(function() {
                     $('#addOfficeModal').modal('hide');
                     form[0].reset();
                     showAlert(response.message);
-                    location.reload(); // Reload to show new office
+                    location.reload();
                 } else {
                     showAlert(response.message, 'danger');
                 }
@@ -88,7 +88,7 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#editOfficeModal').modal('hide');
                     showAlert(response.message);
-                    location.reload(); // Reload to show updated data
+                    location.reload();
                 } else {
                     showAlert(response.message, 'danger');
                 }
@@ -120,7 +120,7 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#deleteOfficeModal').modal('hide');
                     showAlert(response.message);
-                    location.reload(); // Reload to show updated list
+                    location.reload();
                 } else {
                     showAlert(response.message, 'danger');
                 }

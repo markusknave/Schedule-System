@@ -6,7 +6,6 @@ $(document).ready(function() {
     });
 
     function toggleScrollbar(container) {
-    // if content is taller than container → scrolling needed
     if (container.scrollHeight > container.clientHeight) {
         container.classList.add('needs-scroll');
     } else {
@@ -173,7 +172,7 @@ $(document).ready(function() {
     }
     
     $.ajax({
-        url: '/myschedule/components/admin_comp/user_comp/fetch_user.php',
+        url: '../../../components/admin_comp/user_comp/fetch_user.php',
         type: 'GET',
         data: { 
             search: search, 

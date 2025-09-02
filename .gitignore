@@ -10,3 +10,6 @@
 /announcements.php
 /archived.php
 *.jpg
+*.png
+*.webp
+*.txt

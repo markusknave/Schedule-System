@@ -3,12 +3,17 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
+
+if (!isset($_GET['id'])) {
+    header("Location: ../../public/office/sections.php");
+    exit();
+}
 
 $section_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -19,7 +24,7 @@ $section_result = $section_query->get_result();
 $section = $section_result->fetch_assoc();
 
 if (!$section) {
-    header("Location: /myschedule/public/office/sections.php");
+    header("Location: ../../public/office/sections.php");
     exit();
 }
 
@@ -53,7 +58,7 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Section Details - <?php echo htmlspecialchars($section['name']); ?></title>
-    <link rel="stylesheet" href="/myschedule/assets/css/section.css">
+    <link rel="stylesheet" href="../../assets/css/section.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
@@ -68,7 +73,7 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
                             <h1>Section: <?php echo htmlspecialchars($section['section_name']); ?></h1>
                         </div>
                         <div class="col-sm-6">
-                            <a href="/myschedule/public/office/sections.php" class="btn btn-default float-right">
+                            <a href="../../public/office/sections.php" class="btn btn-default float-right">
                                 <i class="fas fa-arrow-left"></i> Back to Sections
                             </a>
                         </div>

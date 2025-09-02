@@ -41,6 +41,6 @@ $(document).ready(function() {
 
 function confirmDelete(id) {
     if (confirm('Are you sure you want to delete this announcement?')) {
-        window.location.href = '/myschedule/components/announ_comp/delete_announcement.php?id=' + id;
+        window.location.href = '../../components/announ_comp/delete_announcement.php?id=' + id;
     }
 }

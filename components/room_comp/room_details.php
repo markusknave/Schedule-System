@@ -3,12 +3,17 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
+
+if (!isset($_GET['id'])) {
+    header("Location: ../../public/office/rooms.php");
+    exit();
+}
 
 $room_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -19,7 +24,7 @@ $room_result = $room_query->get_result();
 $room = $room_result->fetch_assoc();
 
 if (!$room) {
-    header("Location: /myschedule/public/office/rooms.php");
+    header("Location: ../../public/office/rooms.php");
     exit();
 }
 
@@ -51,7 +56,7 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room Details - <?php echo htmlspecialchars($room['name']); ?></title>
-    <link rel="stylesheet" href="/myschedule/assets/css/room.css">
+    <link rel="stylesheet" href="../../assets/css/room.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <?php ?>
@@ -67,7 +72,7 @@ $schedules = $schedules_query->get_result()->fetch_all(MYSQLI_ASSOC);
                             <h1>Room: <?php echo htmlspecialchars($room['name']); ?></h1>
                         </div>
                         <div class="col-sm-6">
-                            <a href="/myschedule/public/office/rooms.php" class="btn btn-default float-right">
+                            <a href="../../public/office/rooms.php" class="btn btn-default float-right">
                                 <i class="fas fa-arrow-left"></i> Back to Rooms
                             </a>
                         </div>

@@ -3,12 +3,12 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $limit = isset($_GET['mobile']) ? 5 : 7;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -56,7 +56,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subject Management</title>
-    <link rel="stylesheet" href="/myschedule/assets/css/subject.css">
+    <link rel="stylesheet" href="../../assets/css/subject.css">
 </head>
 <style>
         th {
@@ -238,7 +238,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                     </button>
                                 </div>
                                 <div class="col-sm-6" id="messageContainer"></div>
-                                <form id="addSubjectForm" action="/myschedule/components/subj_comp/add_subject.php" method="POST">
+                                <form id="addSubjectForm" action="../../components/subj_comp/add_subject.php" method="POST">
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <label for="subjectCode">Subject Code</label>
@@ -267,7 +267,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                     </button>
                                 </div>
                                 <div class="col-sm-6" id="messageContainer"></div>
-                                <form id="editSubjectForm" action="/myschedule/components/subj_comp/edit_subject.php" method="POST">
+                                <form id="editSubjectForm" action="../../components/subj_comp/edit_subject.php" method="POST">
                                     <input type="hidden" id="editSubjectId" name="subject_id">
                                     <div class="modal-body">
                                         <div class="form-group">
@@ -294,7 +294,7 @@ $subjects = $subjects_query->fetch_all(MYSQLI_ASSOC);
                                     <h5 class="modal-title">Confirm Deletion</h5>
                                 </div>
                                 <div class="col-sm-6" id="messageContainer"></div>
-                                <form id="deleteSubjectForm" action="/myschedule/components/subj_comp/del_subject.php" method="POST">
+                                <form id="deleteSubjectForm" action="../../components/subj_comp/del_subject.php" method="POST">
                                     <input type="hidden" id="deleteSubjectId" name="subject_id">
                                     <div class="modal-body">
                                         <p>Are you sure you want to archive this subject? This action cannot be undone.</p>
