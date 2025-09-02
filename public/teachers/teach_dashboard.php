@@ -8,7 +8,7 @@ if (!isset($_SESSION['status'])) {
 }
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 

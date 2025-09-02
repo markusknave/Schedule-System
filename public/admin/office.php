@@ -3,12 +3,12 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $limit = isset($_GET['mobile']) ? 5 : 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -38,7 +38,7 @@ $shown_count = $result->num_rows;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Offices Management</title>
-    <link rel="stylesheet" href="/myschedule/assets/css/teacher.css">
+    <link rel="stylesheet" href="../../assets/css/teacher.css">
     <style>
         th {
             min-width: 300px !important;
@@ -214,7 +214,7 @@ $shown_count = $result->num_rows;
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <form id="editOfficeForm" action="/myschedule/components/admin_comp/office_comp/edit_office.php" method="POST">
+                                <form id="editOfficeForm" action="../../components/admin_comp/office_comp/edit_office.php" method="POST">
                                     <input type="hidden" id="editOfficeId" name="office_id">
                                     <div class="modal-body">
                                         <div class="form-group">
@@ -244,7 +244,7 @@ $shown_count = $result->num_rows;
                                 <div class="modal-header">
                                     <h5 class="modal-title">Confirm Deletion</h5>
                                 </div>
-                                <form id="deleteOfficeForm" action="/myschedule/components/admin_comp/office_comp/delete_office.php" method="POST">
+                                <form id="deleteOfficeForm" action="../../components/admin_comp/office_comp/delete_office.php" method="POST">
                                     <input type="hidden" id="deleteOfficeId" name="office_id">
                                     <div class="modal-body">
                                         <p>Are you sure you want to delete this office? This action cannot be undone.</p>

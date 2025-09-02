@@ -1,8 +1,8 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 if (isset($_SESSION['user_id'])) {
     if (!isset($_SESSION['role'])) {

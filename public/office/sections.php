@@ -3,12 +3,12 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $limit = isset($_GET['mobile']) ? 5 : 7;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -246,7 +246,7 @@ $sections = $sections_query->fetch_all(MYSQLI_ASSOC);
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <form id="addSectionForm" action="/myschedule/components/sec_comp/add_section.php" method="POST">
+                                <form id="addSectionForm" action="../../components/sec_comp/add_section.php" method="POST">
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <label for="sectionName">Section Name</label>
@@ -270,7 +270,7 @@ $sections = $sections_query->fetch_all(MYSQLI_ASSOC);
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <form id="editSectionForm" action="/myschedule/components/sec_comp/edit_section.php" method="POST">
+                                <form id="editSectionForm" action="../../components/sec_comp/edit_section.php" method="POST">
                                     <input type="hidden" id="editSectionId" name="section_id">
                                     <div class="modal-body">
                                         <div class="form-group">
@@ -292,7 +292,7 @@ $sections = $sections_query->fetch_all(MYSQLI_ASSOC);
                                 <div class="modal-header">
                                     <h5 class="modal-title">Confirm Deletion</h5>
                                 </div>
-                                <form id="deleteSectionForm" action="/myschedule/components/sec_comp/delete_section.php" method="POST">
+                                <form id="deleteSectionForm" action="../../components/sec_comp/delete_section.php" method="POST">
                                     <input type="hidden" id="deleteSectionId" name="section_id">
                                     <div class="modal-body">
                                         <p>Are you sure you want to archive this section? This action cannot be undone.</p>
@@ -315,7 +315,7 @@ $sections = $sections_query->fetch_all(MYSQLI_ASSOC);
         const phpVars = {
             searchTerm: '<?= htmlspecialchars($search, ENT_QUOTES) ?>',
             currentPage: <?= $page ?>,
-            baseUrl: '/myschedule/components/sec_comp/'
+            baseUrl: '../../components/sec_comp/'
         };
     </script>
 </body>

@@ -3,12 +3,12 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $office_id = $_SESSION['office_id'];
 
@@ -139,7 +139,7 @@ foreach ($schedules as $schedule) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room Schedules</title>
-    <link rel="stylesheet" href="/myschedule/assets/css/schedule.css">
+    <link rel="stylesheet" href="../../assets/css/schedule.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
@@ -351,7 +351,7 @@ foreach ($schedules as $schedule) {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="deleteScheduleForm" action="/myschedule/components/sched_comp/delete_schedule.php" method="POST">
+                <form id="deleteScheduleForm" action="../../components/sched_comp/delete_schedule.php" method="POST">
                     <input type="hidden" id="deleteScheduleId" name="id">
                     <div class="modal-body">
                         <p>Are you sure you want to delete this schedule? This action cannot be undone.</p>

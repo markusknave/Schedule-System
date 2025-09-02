@@ -43,7 +43,7 @@ $(document).ready(function() {
 
     $(document).on('click', '.view-teacher', function() {
         const teacherId = $(this).data('id');
-        window.location.href = '/myschedule/components/teach_comp/teacher_details.php?id=' + teacherId;
+        window.location.href = '../../components/teach_comp/teacher_details.php?id=' + teacherId;
     });
 
     $('#addTeacherButton').click(function() {
@@ -162,7 +162,7 @@ $(document).ready(function() {
     }
     
     $.ajax({
-        url: '/myschedule/components/teach_comp/fetch_teachers.php',
+        url: '../../components/teach_comp/fetch_teachers.php',
         type: 'GET',
         data: { 
             search: search, 

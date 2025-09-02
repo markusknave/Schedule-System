@@ -3,12 +3,17 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
+
+if (!isset($_GET['id'])) {
+    header("Location: ../../public/office/subjects.php");
+    exit();
+}
 
 $subject_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -19,7 +24,7 @@ $subject_result = $subject_query->get_result();
 $subject = $subject_result->fetch_assoc();
 
 if (!$subject) {
-    header("Location: /myschedule/public/office/subjects.php");
+    header("Location: ../../public/office/subjects.php");
     exit();
 }
 
@@ -48,7 +53,7 @@ $teachers = $teachers_query->get_result()->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subject Details - <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['name']); ?></title>
-    <link rel="stylesheet" href="/myschedule/assets/css/subject.css">
+    <link rel="stylesheet" href="../../assets/css/subject.css">
     <style>
         .teacher-card {
             border: 1px solid #dee2e6;
@@ -75,7 +80,7 @@ $teachers = $teachers_query->get_result()->fetch_all(MYSQLI_ASSOC);
                             <h1>Subject: <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['name']); ?></h1>
                         </div>
                         <div class="col-sm-6">
-                            <a href="/myschedule/public/office/subjects.php" class="btn btn-default float-right">
+                            <a href="../../public/office/subjects.php" class="btn btn-default float-right">
                                 <i class="fas fa-arrow-left"></i> Back to Subjects
                             </a>
                         </div>

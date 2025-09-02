@@ -23,14 +23,17 @@ USE `sched_load_system`;
 CREATE TABLE IF NOT EXISTS `announcements` (
   `id` int NOT NULL AUTO_INCREMENT,
   `office_id` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
   `title` varchar(255) NOT NULL DEFAULT '0',
-  `img` text NOT NULL,
-  `content` longtext NOT NULL,
+  `img` text,
+  `content` longtext,
   `created_at` timestamp NOT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_announcements_offices` (`office_id`),
-  CONSTRAINT `FK_announcements_offices` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`)
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `FK_announcements_offices` FOREIGN KEY (`office_id`) REFERENCES `offices` (`id`),
+  CONSTRAINT `FK_announcements_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.

@@ -2,12 +2,12 @@
 session_start();
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: ../../login.html");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $error = '';
 $success = '';
@@ -23,7 +23,7 @@ if ($announcement_id) {
     $announcement = $result->fetch_assoc();
     
     if (!$announcement) {
-        header("Location: announcements.php");
+        header("Location: ../../public/office/announcements.php");
         exit();
     }
 }
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $image_changed = isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE;
         
         if ($image_changed) {
-            $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/myschedule/uploads/announcements/";
+            $target_dir = "../../uploads/announcements/";
             if (!file_exists($target_dir)) {
                 mkdir($target_dir, 0777, true);
             }
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif (!move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
                 $error = 'Sorry, there was an error uploading your file.';
             } else {
-                $img_path = "/myschedule/uploads/announcements/" . $filename;
+                $img_path = "../../uploads/announcements/" . $filename;
                 if ($current_image && file_exists($_SERVER['DOCUMENT_ROOT'] . $current_image)) {
                     unlink($_SERVER['DOCUMENT_ROOT'] . $current_image);
                 }
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Announcement</title>
     <?php include '../../components/links.php'; ?>
-    <script src="/myschedule/assets/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="../../assets/tinymce/js/tinymce/tinymce.min.js"></script>
 
     <style>
         .image-preview {
@@ -196,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     
                                     <div class="card-footer">
                                         <button type="submit" class="btn btn-primary">Update Announcement</button>
-                                        <a href="/myschedule/public/office/announcements.php" class="btn btn-default float-right">Cancel</a>
+                                        <a href="../../public/office/announcements.php" class="btn btn-default float-right">Cancel</a>
                                     </div>
                                 </form>
                             </div>

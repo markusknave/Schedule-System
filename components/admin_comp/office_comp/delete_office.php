@@ -1,5 +1,5 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
+include_once '../../../public/admin/logger.php';
 session_start();
 header('Content-Type: application/json');
 
@@ -8,8 +8,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../../config.php';
+require_once '../../../constants.php';
 
 $response = ['success' => false, 'message' => ''];
 

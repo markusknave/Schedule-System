@@ -1,4 +1,4 @@
 <?php
-define('BASE_PATH', __DIR__);
-define('PUBLIC_PATH', BASE_PATH . '/public');
-define('COMPONENTS_PATH', BASE_PATH . '/components');
+define('ROOT_PATH', __DIR__);
+define('PUBLIC_PATH', ROOT_PATH . '/public');
+define('COMPONENTS_PATH', ROOT_PATH . '/components');

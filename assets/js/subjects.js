@@ -25,7 +25,7 @@ $(document).ready(function() {
 
     $(document).on('click', '.view-subject', function() {
         const subjectId = $(this).data('id');
-        window.location.href = '/myschedule/components/subj_comp/subject_details.php?id=' + subjectId;
+        window.location.href = '../../components/subj_comp/subject_details.php?id=' + subjectId;
     });
 
     $('#addSubjectButton').click(function() {
@@ -92,7 +92,7 @@ $(document).ready(function() {
         }
         
         $.ajax({
-            url: '/myschedule/components/subj_comp/fetch_subjects.php',
+            url: '../../components/subj_comp/fetch_subjects.php',
             type: 'GET',
             dataType: 'json',
             data: { 

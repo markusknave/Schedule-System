@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['office_id'])) {
     header('HTTP/1.1 403 Forbidden');

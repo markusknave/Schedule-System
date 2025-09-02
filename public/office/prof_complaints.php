@@ -3,12 +3,12 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $limit = 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -53,7 +53,7 @@ $shown_count = $result->num_rows;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Professor Complaints | Leyte Normal University</title>
-    <link rel="stylesheet" href="/myschedule/assets/css/off_complaint.css">
+    <link rel="stylesheet" href="../../assets/css/off_complaint.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed lnu-bg">
     <div class="wrapper">

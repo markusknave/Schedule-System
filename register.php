@@ -1,9 +1,10 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
+include_once './public/admin/logger.php';
+
 session_start();
 session_regenerate_id(true);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
+require_once './config.php';
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -52,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         if ($stmt->execute()) {
             log_action('INSERT', "Registered new office: $name");
-            header("Location: /myschedule/login.php");
+            header("Location: ./login.php");
             exit();
         } else {
             die("Registration failed: " . $stmt->error);

@@ -1,11 +1,11 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
+include_once '../../public/admin/logger.php';
 session_start();
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: ../../login.html");
     exit();
 }
 
@@ -15,7 +15,7 @@ $permanent = $_REQUEST['permanent'] ?? false;
 
 if (!$announcement_id) {
     $_SESSION['error'] = "No announcement ID provided";
-    header("Location: /myschedule/public/admin/announcements.php");
+    header("Location: ../../public/admin/announcements.php");
     exit();
 }
 
@@ -56,6 +56,6 @@ if ($permanent) {
 $delete_stmt->close();
 $conn->close();
 
-header("Location: /myschedule/public/office/announcements.php");
+header("Location: ../../public/office/announcements.php");
 exit();
 ?>
