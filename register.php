@@ -1,5 +1,6 @@
 <?php
 include_once './public/admin/logger.php';
+
 session_start();
 session_regenerate_id(true);
 

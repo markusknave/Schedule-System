@@ -4,7 +4,6 @@
 
 ![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-blue)
 ![MySQL Version](https://img.shields.io/badge/MySQL-8.0%2B-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 A modern web-based scheduling system for educational institutions to efficiently manage teacher schedules, class assignments, and administrative tasks.
 
@@ -98,8 +97,8 @@ A modern web-based scheduling system for educational institutions to efficiently
    ```php
    // config.php
    $host = "localhost";
-   $username = "your_username";
-   $password = "your_password";
+   $username = "root";
+   $password = "";
    $database = "sched_load_system";
    ```
 
@@ -161,13 +160,9 @@ We welcome contributions! Please follow these steps:
    - Reference issues
    - Include tests
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 💬 Support
 
-- **Issues**: [GitHub Issues](issues-link)
+- **Issues**: [GitHub Issues](https://github.com/markusknave/myschedule/issues)
 
 - **Contact**: [Development Team](seandavenn@gmail.com)
 
