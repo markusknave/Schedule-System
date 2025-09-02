@@ -1,7 +1,8 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
+include_once '../../public/admin/logger.php';
 session_start();
 require_once '../../config.php';
+require_once '../../constants.php';
 
 header('Content-Type: application/json');
 

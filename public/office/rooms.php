@@ -3,12 +3,12 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $limit = isset($_GET['mobile']) ? 5 : 7;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -54,7 +54,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room Management</title>
-    <link rel="stylesheet" href="/myschedule/assets/css/room.css">
+    <link rel="stylesheet" href="../../assets/css/room.css">
 </head>
 <style >
     th {
@@ -247,7 +247,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="addRoomForm" action="/myschedule/components/room_comp/add_room.php" method="POST">
+                <form id="addRoomForm" action="../../components/room_comp/add_room.php" method="POST">
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="roomName">Room Name</label>
@@ -271,7 +271,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="editRoomForm" action="/myschedule/components/room_comp/edit_room.php" method="POST">
+                <form id="editRoomForm" action="../../components/room_comp/edit_room.php" method="POST">
                     <input type="hidden" id="editRoomId" name="room_id">
                     <div class="modal-body">
                         <div class="form-group">
@@ -293,7 +293,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
                 <div class="modal-header">
                     <h5 class="modal-title">Confirm Deletion</h5>
                 </div>
-                <form id="deleteRoomForm" action="/myschedule/components/room_comp/delete_room.php" method="POST">
+                <form id="deleteRoomForm" action="../../components/room_comp/delete_room.php" method="POST">
                     <input type="hidden" id="deleteRoomId" name="room_id">
                     <div class="modal-body">
                         <p>Are you sure you want to archive this room? This action cannot be undone.</p>
@@ -311,7 +311,7 @@ $rooms = $rooms_query->fetch_all(MYSQLI_ASSOC);
         const phpVars = {
             searchTerm: '<?= htmlspecialchars($search, ENT_QUOTES) ?>',
             currentPage: <?= $page ?>,
-            baseUrl: '/myschedule/components/room_comp/'
+            baseUrl: '../../components/room_comp/'
         };
     </script>
 </body>

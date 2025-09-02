@@ -1,15 +1,15 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
+include_once '../../public/admin/logger.php';
 
 session_start();
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.html");
+    header("Location: ../../login.html");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $error = '';
 $success = '';
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!isset($_FILES['image']) || $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE) {
         $error = 'Please select an image for the announcement!';
     } else {
-        $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/myschedule/uploads/announcements/";
+        $target_dir = "../../uploads/announcements/";
         if (!file_exists($target_dir)) {
             mkdir($target_dir, 0777, true);
         }
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
             $error = 'Sorry, there was an error uploading your file.';
         } else {
-            $img_path = "/myschedule/uploads/announcements/" . $filename;
+            $img_path = "../../uploads/announcements/" . $filename;
             $stmt = $conn->prepare("INSERT INTO announcements (office_id, title, img, content, created_at) VALUES (?, ?, ?, ?, NOW())");
             $stmt->bind_param("isss", $office_id, $title, $img_path, $content);
             
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Announcement</title>
      <?php include '../../components/links.php'; ?>
-    <script src="/myschedule/assets/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="../../assets/tinymce/js/tinymce/tinymce.min.js"></script>
 
     <style>
         .image-preview {
@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     
                                     <div class="card-footer">
                                         <button type="submit" class="btn btn-primary">Publish Announcement</button>
-                                        <a href="/myschedule/public/office/announcements.php" class="btn btn-default float-right">Cancel</a>
+                                        <a href="../../public/office/announcements.php" class="btn btn-default float-right">Cancel</a>
                                     </div>
                                 </form>
                             </div>

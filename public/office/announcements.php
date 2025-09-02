@@ -3,20 +3,39 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $office_id = $_SESSION['office_id'];
 $announcements_query = $conn->query("
-    SELECT * FROM announcements 
-    WHERE office_id = $office_id
-    AND deleted_at IS NULL
-    ORDER BY created_at DESC
+    SELECT a.*, 'office' as source_type
+    FROM announcements a 
+    WHERE a.office_id = $office_id
+    AND a.deleted_at IS NULL
+    AND a.office_id IS NOT NULL
+    ORDER BY a.created_at DESC
 ");
-$announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
+$office_announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
+
+$user_announcements_query = $conn->query("
+    SELECT a.*, 'user' as source_type
+    FROM announcements a 
+    JOIN teachers t ON a.user_id = t.user_id
+    WHERE t.office_id = $office_id
+    AND a.deleted_at IS NULL
+    AND a.user_id IS NOT NULL
+    ORDER BY a.created_at DESC
+");
+$user_announcements = $user_announcements_query->fetch_all(MYSQLI_ASSOC);
+
+$announcements = array_merge($office_announcements, $user_announcements);
+usort($announcements, function($a, $b) {
+    return strtotime($b['created_at']) - strtotime($a['created_at']);
+});
 ?>
 
 <!DOCTYPE html>
@@ -126,6 +145,24 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             background: linear-gradient(90deg, var(--lnu-blue) 50%, var(--lnu-gold) 50%);
             margin: 1.5rem 0;
         }
+        
+        .announcement-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge-office {
+            background-color: #007bff;
+        }
+        .badge-user {
+            background-color: #28a745;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -159,24 +196,35 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
                                 <?php foreach ($announcements as $index => $announcement): ?>
                                     <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
                                         style="background-image: url('<?= htmlspecialchars($announcement['img']) ?>')">
+                                        
+                                        <div class="announcement-badge <?= $announcement['source_type'] === 'office' ? 'badge-office' : 'badge-user' ?>">
+                                            <?= $announcement['source_type'] === 'office' ? 'Office' : 'Personal' ?>
+                                        </div>
+                                        
                                         <div class="edit-btn-container">
-                                            <form action="/myschedule/components/announ_comp/edit_announcement.php" method="GET" style="display: inline;">
+                                            <?php if ($announcement['source_type'] === 'office'): ?>
+                                                <form action="../../components/announ_comp/edit_announcement.php" method="GET" style="display: inline;">
+                                                    <input type="hidden" name="id" value="<?= $announcement['id'] ?>">
+                                                    <button type="submit" class="edit-btn">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </button>
+                                                </form>
+
+                                                <button class="del-btn ml-1" onclick="confirmDelete(<?= $announcement['id'] ?>)">
+                                                    <i class="fas fa-trash"></i> Archive
+                                                </button>
+
+                                                <form action="../../public/office/disp_announ_sched.php" method="GET" style="display: inline;">
                                                 <input type="hidden" name="id" value="<?= $announcement['id'] ?>">
-                                                <button type="submit" class="edit-btn">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </button>
-                                            </form>
-
-                                            <button class="del-btn ml-1" onclick="confirmDelete(<?= $announcement['id'] ?>)">
-                                                <i class="fas fa-trash"></i> Archive
-                                            </button>
-
-                                            <form action="/myschedule/public/office/disp_announ_sched.php" method="GET" style="display: inline;">
-                                            <input type="hidden" name="id" value="<?= $announcement['id'] ?>">
-                                                <button type="submit" class="ml-1 edit-btn">
-                                                    <i class="fas fa-calendar-alt"></i> View Schedule
-                                                </button>
-                                            </form>
+                                                    <button type="submit" class="ml-1 edit-btn">
+                                                        <i class="fas fa-calendar-alt"></i> View Schedule
+                                                    </button>
+                                                </form>
+                                            <?php else: ?>
+                                                <span class="edit-btn" style="background-color: #28a745;">
+                                                    <i class="fas fa-user"></i> User Created
+                                                </span>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="carousel-caption">
                                             <h2 class="carousel-title"><?= htmlspecialchars($announcement['title']) ?></h2>
@@ -215,7 +263,7 @@ $announcements = $announcements_query->fetch_all(MYSQLI_ASSOC);
             </section>
         </div>
         
-        <a href="/myschedule/components/announ_comp/create_announcement.php" 
+        <a href="../../components/announ_comp/create_announcement.php" 
             class="btn btn-primary btn-lg "
             style="position: fixed; bottom: 2.5rem; right: 2.5rem; z-index: 1000; height: 2.5rem; border-radius: 50%; font-size: 24px;">
                 <i class="fas fa-plus"></i>

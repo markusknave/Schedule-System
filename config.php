@@ -6,9 +6,14 @@ $database = "sched_load_system";
 
 $conn = new mysqli($host, $username, $password, $database);
 
-define('IMAGE_BASE', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]");
-define('UPLOAD_REL_PATH', '/myschedule/uploads/images/');
-define('IMAGE_DIR', $_SERVER['DOCUMENT_ROOT'] . UPLOAD_REL_PATH);
+$projectRoot = str_replace('\\', '/', realpath(__DIR__));
+
+$relativePath = str_replace(str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'])), '', $projectRoot);
+
+define('IMAGE_BASE', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")
+    . "://{$_SERVER['HTTP_HOST']}{$relativePath}");
+define('UPLOAD_REL_PATH','/uploads/images/');
+define('IMAGE_DIR', __DIR__ . UPLOAD_REL_PATH);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);

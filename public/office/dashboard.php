@@ -3,12 +3,12 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['office_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $limit = isset($_GET['mobile']) ? 5 : 7;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -49,7 +49,7 @@ $shown_count = $result->num_rows;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teachers Management</title>
-    <link rel="stylesheet" href="/myschedule/assets/css/teacher.css">
+    <link rel="stylesheet" href="../../assets/css/teacher.css">
     <style>
         th {
         min-width: 300px !important;
@@ -240,7 +240,7 @@ $shown_count = $result->num_rows;
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <form id="addTeacherForm" action="/myschedule/components/teach_comp/add_teacher.php" method="POST">
+                                <form id="addTeacherForm" action="../../components/teach_comp/add_teacher.php" method="POST">
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <label for="firstname">First Name</label>
@@ -286,7 +286,7 @@ $shown_count = $result->num_rows;
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <form id="editTeacherForm" action="/myschedule/components/teach_comp/edit_teacher.php" method="POST">
+                                <form id="editTeacherForm" action="../../components/teach_comp/edit_teacher.php" method="POST">
                                     <input type="hidden" id="editTeacherId" name="teacher_id">
                                     <div class="modal-body">
                                         <div class="form-group">
@@ -328,7 +328,7 @@ $shown_count = $result->num_rows;
                                 <div class="modal-header">
                                     <h5 class="modal-title">Confirm Deletion</h5>
                                 </div>
-                                <form id="deleteTeacherForm" action="/myschedule/components/teach_comp/delete_teacher.php" method="POST">
+                                <form id="deleteTeacherForm" action="../../components/teach_comp/delete_teacher.php" method="POST">
                                     <input type="hidden" id="deleteTeacherId" name="teacher_id">
                                     <div class="modal-body">
                                         <p>Are you sure you want to archive this teacher? This action cannot be undone.</p>

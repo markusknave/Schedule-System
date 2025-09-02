@@ -112,7 +112,7 @@ $('#uploadImageBtn').click(function() {
        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...');
 
     $.ajax({
-        url: '/myschedule/components/upload_image.php',
+        url: '../../components/upload_image.php',
         method: 'POST',
         data: formData,
         processData: false,

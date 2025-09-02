@@ -4,22 +4,41 @@ require '../../components/links.php';
 require '../../config.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
+
 $announcements = [];
+
 if (isset($_SESSION['user_id'])) {
+    // Get office announcements (from the user's office)
     $stmt = $conn->prepare("
-        SELECT a.* 
+        SELECT a.*, 'office' as source_type
         FROM announcements a
         JOIN teachers t ON a.office_id = t.office_id
-        WHERE t.user_id = ? AND a.deleted_at IS NULL
+        WHERE t.user_id = ? AND a.deleted_at IS NULL AND a.office_id IS NOT NULL
         ORDER BY a.created_at DESC
     ");
     $stmt->bind_param("i", $_SESSION['user_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $announcements = $result->fetch_all(MYSQLI_ASSOC);
+    $office_announcements = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    
+    // Get user announcements (created by the user themselves)
+    $stmt = $conn->prepare("
+        SELECT a.*, 'user' as source_type
+        FROM announcements a
+        WHERE a.user_id = ? AND a.deleted_at IS NULL AND a.user_id IS NOT NULL
+        ORDER BY a.created_at DESC
+    ");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $user_announcements = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    
+    // Combine and sort by creation date
+    $announcements = array_merge($office_announcements, $user_announcements);
+    usort($announcements, function($a, $b) {
+        return strtotime($b['created_at']) - strtotime($a['created_at']);
+    });
 }
 ?>
 
@@ -102,6 +121,23 @@ if (isset($_SESSION['user_id'])) {
         .carousel-control-prev-icon, .carousel-control-next-icon {
             
         }
+        .announcement-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge-office {
+            background-color: #007bff;
+        }
+        .badge-user {
+            background-color: #28a745;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -128,6 +164,26 @@ if (isset($_SESSION['user_id'])) {
                                 <?php foreach ($announcements as $index => $announcement): ?>
                                     <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>" 
                                         style="background-image: url('<?= htmlspecialchars($announcement['img']) ?>')">
+                                        
+                                        <!-- Announcement type badge -->
+                                        <div class="announcement-badge <?= $announcement['source_type'] === 'office' ? 'badge-office' : 'badge-user' ?>">
+                                            <?= $announcement['source_type'] === 'office' ? 'Office' : 'Personal' ?>
+                                        </div>
+                                        
+                                        <!-- Edit/Delete buttons for user announcements -->
+                                        <?php if ($announcement['source_type'] === 'user'): ?>
+                                            <div class="edit-btn-container" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
+                                                <a href="../../components/announ_comp/edit_user_announcement.php?id=<?= $announcement['id'] ?>" 
+                                                   class="btn btn-sm btn-success" style="margin-right: 5px;">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <button class="btn btn-sm btn-danger" 
+                                                        onclick="confirmDelete(<?= $announcement['id'] ?>)">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </div>
+                                        <?php endif; ?>
+                                        
                                         <div class="carousel-caption">
                                             <h2 class="carousel-title"><?= htmlspecialchars($announcement['title']) ?></h2>
                                             <div class="carousel-date">
@@ -157,8 +213,23 @@ if (isset($_SESSION['user_id'])) {
                 </div>
             </section>
         </div>
+        
+        <!-- Create Announcement Button -->
+        <a href="../../components/announ_comp/create_user_announcement.php" 
+            class="btn btn-primary btn-lg"
+            style="position: fixed; bottom: 2.5rem; right: 2.5rem; z-index: 1000; height: 2.5rem; border-radius: 50%; font-size: 24px;">
+                <i class="fas fa-plus"></i>
+        </a>
     </div>
 
     <script src="../../assets/js/announcements.js"></script>
+    
+    <script>
+        function confirmDelete(announcementId) {
+            if (confirm('Are you sure you want to delete this announcement? This action cannot be undone.')) {
+                window.location.href = '../../components/announ_comp/delete_user_announcement.php?id=' + announcementId;
+            }
+        }
+    </script>
 </body>
 </html>

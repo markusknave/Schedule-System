@@ -41,8 +41,8 @@ $(document).ready(function() {
         $('#confirmModal').modal('hide');
         
         const endpoint = currentAction === 'restore' 
-            ? '/myschedule/components/del_comp/restore_item.php' 
-            : '/myschedule/components/del_comp/delete_item_permanently.php';
+            ? '../../components/del_comp/restore_item.php' 
+            : '../../components/del_comp/delete_item_permanently.php';
         
         const formData = new FormData();
         formData.append('id', currentId);

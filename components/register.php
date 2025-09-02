@@ -2,7 +2,7 @@
 session_start();
 session_regenerate_id(true);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
+require_once '../../config.php';
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("sss", $name, $email, $hashed_password);
         
         if ($stmt->execute()) {
-            header("Location: /myschedule/login.php");
+            header("Location: ../../login.php");
             exit();
         } else {
             die("Registration failed: " . $stmt->error);
@@ -58,5 +58,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 
-require_once '../../myschedule/register.php';
+require_once '../../register.php';
 ?>

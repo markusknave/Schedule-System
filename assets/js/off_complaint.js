@@ -33,7 +33,7 @@ $(document).on('click', '.btn-mark-resolved', function(e) {
     const complaintId = $(this).data('id');
     
     $.ajax({
-        url: '/myschedule/components/complaint_comp/mark_resolved.php',
+        url: '../../components/complaint_comp/mark_resolved.php',
         type: 'POST',
         data: { id: complaintId },
         dataType: 'json',
@@ -66,7 +66,7 @@ $(document).on('click', '.btn-delete-complaint', function(e) {
     }
     
     $.ajax({
-        url: '/myschedule/components/complaint_comp/del_complaint.php',
+        url: '../../components/complaint_comp/del_complaint.php',
         type: 'POST',
         data: { id: complaintId },
         dataType: 'json',

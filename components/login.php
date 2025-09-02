@@ -2,14 +2,14 @@
 session_start();
 session_regenerate_id(true);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
+require_once '../config.php';
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 function redirectWithError() {
-    header("Location: /myschedule/login.php?error=1");
+    header("Location: ../login.php?error=1");
     exit();
 }
 
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['img_filename'] = $img;
 
             if ($role === 'admin') {
-                header("Location: /myschedule/public/admin/dashboard.php");
+                header("Location: ../public/admin/dashboard.php");
                 exit();
             } elseif ($role === 'teacher') {
                 $teacher_stmt = $conn->prepare("
@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $teacher_stmt->fetch();
                     $_SESSION['teacher_id'] = $teacher_id;
                     $_SESSION['status'] = $status ?? 'A';
-                    header("Location: /myschedule/public/teachers/teach_dashboard.php");
+                    header("Location: ../public/teachers/teach_dashboard.php");
                     exit();
                 } else {
                     redirectWithError();
@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['office_name'] = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
             $_SESSION['role'] = 'office';
             $_SESSION['img_filename'] = $img;
-            header("Location: /myschedule/public/office/dashboard.php");
+            header("Location: ../public/office/dashboard.php");
             exit();
         } else {
             redirectWithError();

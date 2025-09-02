@@ -1,8 +1,8 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/public/admin/logger.php';
 session_start();
-@include '../components/links.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
+include_once './admin/logger.php';
+@include_once '../components/nlinks.php';
+require_once '../config.php';
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -65,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($stmt->execute()) {
             $success = true;
-            // Clear form values on success
             $form_values = [
                 'name' => '',
                 'email' => '',
@@ -297,6 +296,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </footer>
     
-    <script src="../../assets/js/complaints.js"></script>
+    <script src="../assets/js/complaints.js"></script>
 </body>
 </html>

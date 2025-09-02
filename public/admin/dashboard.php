@@ -4,12 +4,12 @@ session_start();
 @include '../../components/links.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /myschedule/login.php");
+    header("Location: ../../login.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/constants.php';
+require_once '../../config.php';
+require_once '../../constants.php';
 
 $admin_user_id = $_SESSION['user_id'];
 
@@ -80,7 +80,7 @@ if (isset($_POST['clear_log']) && isset($_SESSION['is_admin']) && $_SESSION['is_
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teachers Management</title>
-    <link rel="stylesheet" href="/myschedule/assets/css/teacher.css">
+    <link rel="stylesheet" href="../../assets/css/teacher.css">
     <style>
         th {
         min-width: 300px !important;
@@ -306,7 +306,7 @@ if (isset($_POST['clear_log']) && isset($_SESSION['is_admin']) && $_SESSION['is_
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <form id="editTeacherForm" action="/myschedule/components/admin_comp/user_comp/edit_user.php" method="POST">
+                                <form id="editTeacherForm" action="../../components/admin_comp/user_comp/edit_user.php" method="POST">
                                     <input type="hidden" id="editTeacherId" name="teacher_id">
                                     <div class="modal-body">
                                         <div class="form-group">
@@ -352,7 +352,7 @@ if (isset($_POST['clear_log']) && isset($_SESSION['is_admin']) && $_SESSION['is_
                                 <div class="modal-header">
                                     <h5 class="modal-title">Confirm Deletion</h5>
                                 </div>
-                                <form id="deleteTeacherForm" action="/myschedule/components/admin_comp/user_comp/delete_user.php" method="POST">
+                                <form id="deleteTeacherForm" action="../../components/admin_comp/user_comp/delete_user.php" method="POST">
                                     <input type="hidden" id="deleteTeacherId" name="teacher_id">
                                     <div class="modal-body">
                                         <p>Are you sure you want to delete this teacher? This action cannot be undone.</p>

@@ -1,10 +1,14 @@
+<?php
+define('ROOT_PATH', __DIR__); 
+?>
+
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="./assets/img/favicon.png">
-    <script src="/myschedule/assets/js/jquery.min.js"></script>
+    <script src="./assets/js/jquery.min.js"></script>
     <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/all.min.css">
     <link rel="stylesheet" href="./assets/css/uf-style.css">

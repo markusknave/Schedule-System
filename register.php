@@ -1,14 +1,15 @@
 <?php
+include_once './public/admin/logger.php';
 session_start();
 session_regenerate_id(true);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/myschedule/config.php';
+require_once './config.php';
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$errors = []; // Array to hold all errors
+$errors = [];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = trim($_POST['name']);
@@ -16,7 +17,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     
-    // Validate Office Name
     $stmt = $conn->prepare("SELECT id FROM offices WHERE name = ?");
     $stmt->bind_param("s", $name);
     $stmt->execute();
@@ -26,12 +26,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
     $stmt->close();
     
-    // Validate Email Format
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format!";
     }
     
-    // Check Email Existence
     $stmt = $conn->prepare("SELECT id FROM offices WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -41,14 +39,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
     $stmt->close();
     
-    // Validate Password
     if (!preg_match('/^(?=.*[A-Z])(?=.*\d).{5,}$/', $password)) {
         $errors[] = "Password must be at least 5 characters long, contain 1 capital letter and 1 number.";
     } elseif ($password !== $confirm_password) {
         $errors[] = "Passwords do not match!";
     }
     
-    // Proceed if no errors
     if (empty($errors)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO offices (name, email, password) VALUES (?, ?, ?)");
@@ -56,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         if ($stmt->execute()) {
             log_action('INSERT', "Registered new office: $name");
-            header("Location: /myschedule/login.php");
+            header("Location: ./login.php");
             exit();
         } else {
             die("Registration failed: " . $stmt->error);
